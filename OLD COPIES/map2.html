@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>SITIOS: Mapa Arquitectónico de PR</title>
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+    <link href="https://api.mapbox.com/mapbox-gl-js/v3.6.0/mapbox-gl.css" rel="stylesheet">
+    <script src="https://api.mapbox.com/mapbox-gl-js/v3.6.0/mapbox-gl.js"></script>
+    <style>
+        body { margin: 0; padding: 0; }
+        #map { position: absolute; top: 0; bottom: 0; width: 100%; }
+        
+        /* Header styles */
+        header {
+            background-color: #fff;
+            color: #333;
+            padding: 20px;
+            font-family: Helvetica, Arial, sans-serif;
+            text-align: center;
+            top: 0;
+            width: 100%;
+            z-index: 1;
+            transition: transform 0.3s ease;
+        }
+
+        /* Header menu styles */
+        nav ul {
+            list-style: none;
+            padding: 0;
+            background-color: #fff;
+            text-align: left;
+            font-size: 18px;
+        }
+
+        nav ul li {
+            display: inline;
+            margin-right: 20px;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: #000;
+            font-weight: bold;
+        }
+
+        #map {
+            position: absolute;
+            top: 100px; /* Adjusted to accommodate the header */
+            bottom: 0;
+            width: 100%;
+        }
+
+        /* Legend styles */
+        .legend {
+            background-color: #fff;
+            border-radius: 3px;
+            bottom: 30px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.10);
+            font-family: Arial, sans-serif;
+            padding: 10px;
+            position: absolute;
+            right: 10px;
+            z-index: 1;
+            width: 220px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .legend h4 {
+            margin: 0 0 10px;
+            font-size: 14px;
+        }
+        .legend div {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+        .legend div span {
+            background-color: #fff;
+            border-radius: 50%;
+            display: inline-block;
+            height: 12px;
+            margin-right: 8px;
+            width: 12px;
+        }
+        .legend .blue { background-color: #51bbd6; }
+        .legend .yellow { background-color: #f1f075; }
+        .legend .pink { background-color: #f28cb1; }
+        .legend label {
+            margin-left: 5px;
+        }
+        .legend .toggle {
+            display: flex;
+            align-items: center;
+            margin-top: 5px;
+        }
+        .legend .toggle input {
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="map.html">Sitios Map</a></li>
+                <li><a href="about.html">About</a></li>
+            </ul>
+        </nav>
+    </header>
+    
+    <div id="map"></div>
+    
+    <div class="legend">
+        <h4>Map Legend</h4>
+        <div class="toggle">
+            <input type="checkbox" id="clusters-toggle" checked>
+            <label for="clusters-toggle">Clusters</label>
+        </div>
+        <div class="toggle">
+            <input type="checkbox" id="unclustered-toggle" checked>
+            <label for="unclustered-toggle">Unclustered Points</label>
+        </div>
+        <h4>Cluster Colors</h4>
+        <div><span class="blue"></span> <label for="blue">Less than 100 points</label></div>
+        <div><span class="yellow"></span> <label for="yellow">100 - 749 points</label></div>
+        <div><span class="pink"></span> <label for="pink">750 or more points</label></div>
+    </div>
+
+    <script>
+        mapboxgl.accessToken = 'pk.eyJ1IjoiY3BlcmV6bSIsImEiOiJjbGlsejM5ZWcwZ2t0M3NtcGJicWw0NmxwIn0.mh73FxbqH2Zl-5fRbuZB_w';
+        const map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/mapbox/dark-v11',
+            center: [-103.5917, 40.6699],
+            zoom: 3
+        });
+
+        map.on('load', () => {
+            map.addSource('earthquakes', {
+                type: 'geojson',
+                data: 'https://docs.mapbox.com/mapbox-gl-js/assets/earthquakes.geojson',
+                cluster: true,
+                clusterMaxZoom: 14,
+                clusterRadius: 50
+            });
+
+            map.addLayer({
+                id: 'clusters',
+                type: 'circle',
+                source: 'earthquakes',
+                filter: ['has', 'point_count'],
+                paint: {
+                    'circle-color': [
+                        'step',
+                        ['get', 'point_count'],
+                        '#51bbd6',
+                        100,
+                        '#f1f075',
+                        750,
+                        '#f28cb1'
+                    ],
+                    'circle-radius': [
+                        'step',
+                        ['get', 'point_count'],
+                        20,
+                        100,
+                        30,
+                        750,
+                        40
+                    ]
+                }
+            });
+
+            map.addLayer({
+                id: 'cluster-count',
+                type: 'symbol',
+                source: 'earthquakes',
+                filter: ['has', 'point_count'],
+                layout: {
+                    'text-field': ['get', 'point_count_abbreviated'],
+                    'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+                    'text-size': 12
+                }
+            });
+
+            map.addLayer({
+                id: 'unclustered-point',
+                type: 'circle',
+                source: 'earthquakes',
+                filter: ['!', ['has', 'point_count']],
+                paint: {
+                    'circle-color': '#11b4da',
+                    'circle-radius': 4,
+                    'circle-stroke-width': 1,
+                    'circle-stroke-color': '#fff'
+                }
+            });
+
+            // Toggle visibility of clusters and unclustered points
+            document.getElementById('clusters-toggle').addEventListener('change', (e) => {
+                map.setLayoutProperty('clusters', 'visibility', e.target.checked ? 'visible' : 'none');
+                map.setLayoutProperty('cluster-count', 'visibility', e.target.checked ? 'visible' : 'none');
+            });
+
+            document.getElementById('unclustered-toggle').addEventListener('change', (e) => {
+                map.setLayoutProperty('unclustered-point', 'visibility', e.target.checked ? 'visible' : 'none');
+            });
+
+            map.on('click', 'clusters', (e) => {
+                const features = map.queryRenderedFeatures(e.point, {
+                    layers: ['clusters']
+                });
+                const clusterId = features[0].properties.cluster_id;
+                map.getSource('earthquakes').getClusterExpansionZoom(
+                    clusterId,
+                    (err, zoom) => {
+                        if (err) return;
+
+                        map.easeTo({
+                            center: features[0].geometry.coordinates,
+                            zoom: zoom
+                        });
+                    }
+                );
+            });
+
+            map.on('click', 'unclustered-point', (e) => {
+                const coordinates = e.features[0].geometry.coordinates.slice();
+                const mag = e.features[0].properties.mag;
+                const tsunami =
+                    e.features[0].properties.tsunami === 1 ? 'yes' : 'no';
+
+                if (['mercator', 'equirectangular'].includes(map.getProjection().name)) {
+                    while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+                        coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+                    }
+                }
+
+                new mapboxgl.Popup()
+                    .setLngLat(coordinates)
+                    .setHTML(
+                        `magnitude: ${mag}<br>Was there a tsunami?: ${tsunami}`
+                    )
+                    .addTo(map);
+            });
+
+            map.on('mouseenter', 'clusters', () => {
+                map.getCanvas().style.cursor = 'pointer';
+            });
+
+            map.on('mouseleave', 'clusters', () => {
+                map.getCanvas().style.cursor = '';
+            });
+        });
+    </script>
+</body>
+</html>

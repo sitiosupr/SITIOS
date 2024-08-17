@@ -1,1 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
 
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SITIOS: Mapa Arquitectónico de PR</title>
+    <!-- <link rel="stylesheet" href="styles.css"> Link to external CSS -->
+    <style>
+        body {
+            font-family: Helvetica, Arial, sans-serif;
+            background-color: #fff; /* White background */
+            color: #333; /* Dark gray text color */
+            font-family: Helvetica, Arial, sans-serif;
+            overflow-x: hidden; /* Hide horizontal scrollbar */
+            margin: 0; /* Remove default margin */
+        }
+
+        /* Header styles */
+        header {
+            background-color: #fff;
+            color: #333;
+            padding: 20px;
+            font-family: Helvetica, Arial, sans-serif;
+            text-align: center;
+            top: 0;
+            width: 100%;
+            z-index: 1; /* Ensure the header is above other content */
+            transition: transform 0.3s ease; /* Transition for hiding/showing header */
+        }
+
+        /* Header menu styles */
+        nav ul {
+            list-style: none;
+            padding: 0;
+            background-color: #fff; /* White background */
+            text-align: left; /* Center-align the menu items */
+            font-size: 18px;
+        }
+
+        nav ul li {
+            display: inline; /* Display the menu items in a row */
+            margin-right: 20px;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: #000; /* Black text color */
+            font-weight: bold;
+        }
+
+        body {
+            font-family: Helvetica, Arial, sans-serif;
+            background-color: #fff; /* White background */
+            color: #333; /* Dark gray text color */
+            font-family: Helvetica, Arial, sans-serif;
+            overflow-x: hidden; /* Hide horizontal scrollbar */
+            margin: 0; /* Remove default margin */
+        }
+        .image-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            padding: 80px 20px;
+        }
+        .image-item {
+            margin: 20px;
+            transition: transform 0.3s ease;
+        }
+        .image-item img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+        }
+        .image-item:hover {
+            transform: scale(1.05);
+        }
+
+        p {
+            margin-bottom: 20px;
+            margin-left: 50px;
+            margin-right: 50px;
+            text-align: justify;
+        }
+
+        ul {
+            list-style: disc;
+            margin-right: 50px;
+            padding-left: 100px;
+        }
+
+        li {
+            margin-bottom: 10px;
+        }
+
+        h1 {
+            font-size: 36px;
+            font-weight: bold;
+            text-align: center;
+            margin: 20px 50px; /* Add 20px top and bottom margin, and 50px left and right margin */
+        }
+
+        h2 {
+            font-size: 18px;
+            font-weight: bold;
+            text-align: justify;
+            margin: 20px 50px; /* Add 20px top and bottom margin, and 50px left and right margin */
+        }
+        
+        footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 98%;
+    height: 4%;
+    background-color: #fff;
+    color: #333; /* Change text color to dark gray */
+    padding: 20px;
+    display: flex; /* Use flexbox to horizontally align content */
+    align-items: center; /* Vertically align content to the center */
+    justify-content: space-between; /* Add space between icons and text */
+    z-index: 2;
+}
+/* Footer icon styles */
+.footer-icons a {
+    text-decoration: none;
+    font-size: 18px;
+    margin: 0 10px;
+}
+
+/* Facebook icon */
+.footer-icons .fa-facebook {
+    color: #1877f2; /* Change to Facebook blue color */
+}
+
+/* Instagram icon */
+.footer-icons .fa-instagram {
+    color: #c13584; /* Change to Instagram pink color */
+}
+
+/* LinkedIn icon */
+.footer-icons .fa-linkedin {
+    color: #0a66c2; /* Change to LinkedIn blue color */
+}
+
+#welcomeScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95); /* Semi-transparent black overlay */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 36px;
+            z-index: 999; /* Ensure the welcome screen is above other content */
+            transition: transform 0.5s ease; /* Transition for swiping off the screen */
+        }
+
+        #content {
+            text-align: center;
+        }
+
+
+#myBtn {
+  display: none; /* Hidden by default */
+  position: fixed; /* Fixed/sticky position */
+  bottom: 100px; /* Place the button at the bottom of the page */
+  right: 30px; /* Place the button 30px from the right */
+  z-index: 99; /* Make sure it does not overlap */
+  border: none; /* Remove borders */
+  outline: none; /* Remove outline */
+  background-color: rgb(36, 35, 35); /* Set a background color */
+  color: white; /* Text color */
+  cursor: pointer; /* Add a mouse pointer on hover */
+  padding: 20px; /* Some padding */
+  border-radius: 100px; /* Rounded corners */
+  font-size: 18px; /* Increase font size */
+}
+
+#myBtn:hover {
+  background-color: #555; /* Add a dark-grey background on hover */
+}
+
+    </style>
+</head>
+<body>
+    
+    <div class="menu-button" onclick="toggleMenu()"></div>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="map.html">Sitios Map</a></li>
+                <li><a href="about.html">About</a></li>
+                <!-- <li><a href="contact.html">Contact</a></li> -->
+            </ul>
+        </nav>
+    </header>
+    <!-- <footer>
+        <div class="footer-icons" style="display: inline-block;">
+            <a href="https://www.facebook.com/profile.php?id=100024006336205" target="_blank"><i class="fab fa-facebook"></i></a>
+            <a href="https://www.instagram.com/carolina_perez_mendez/" target="_blank"><i class="fab fa-instagram"></i></a>
+            <a href="https://www.linkedin.com/in/carolina-perez-mendez/" target="_blank"><i class="fab fa-linkedin"></i></a>
+        </div>
+        <p style="color: grey; text-align: left; font-style: italic;">&copy; Made by Carolina Pérez Méndez</p>
+        <p style="color: black; text-align: left;">&copy; 2023 Carolina Pérez Méndez. All rights reserved.</p>
+    
+    </footer> -->
+
+    
+    <button onclick="topFunction()" id="myBtn" title="Go to top">Top</button>
+
+    <script>
+     // Get the button:
+let mybutton = document.getElementById("myBtn");
+
+// When the user scrolls down 20px from the top of the document, show the button
+window.onscroll = function() {scrollFunction()};
+
+function scrollFunction() {
+  if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+    mybutton.style.display = "block";
+  } else {
+    mybutton.style.display = "none";
+  }
+}
+
+// When the user clicks on the button, scroll to the top of the document
+function topFunction() {
+  document.body.scrollTop = 0; // For Safari
+  document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
+}
+
+  // Welcome screen functionality
+  document.addEventListener("DOMContentLoaded", function () {
+            var welcomeScreen = document.getElementById("welcomeScreen");
+
+            window.addEventListener("scroll", function () {
+                welcomeScreen.style.transform = "translateY(-100%)";
+                document.body.style.overflow = "auto";
+            });
+
+            // Optional: You can add a timeout to automatically hide the welcome screen after a certain time
+            setTimeout(function () {
+                welcomeScreen.style.transform = "translateY(-100%)";
+                document.body.style.overflow = "auto";
+            }, 5000); // Adjust the time (in milliseconds) as needed
+        });
+        // Optional: Add JavaScript for menu toggle or other interactive features
+    </script>
+</body>
+</html>
