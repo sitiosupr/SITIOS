@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>SITIOS: Mapa Arquitectónico de PR</title>
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+    <link href="https://api.mapbox.com/mapbox-gl-js/v3.6.0/mapbox-gl.css" rel="stylesheet">
+    <script src="https://api.mapbox.com/mapbox-gl-js/v3.6.0/mapbox-gl.js"></script>
+    <style>
+        body { margin: 0; padding: 0; }
+        #map { position: absolute; top: 0; bottom: 0; width: 100%; }
+        
+        /* Header styles */
+        header {
+            background-color: #fff;
+            color: #333;
+            padding: 20px;
+            font-family: Helvetica, Arial, sans-serif;
+            text-align: center;
+            top: 0;
+            width: 100%;
+            z-index: 1;
+            transition: transform 0.3s ease;
+        }
+
+        /* Header menu styles */
+        nav ul {
+            list-style: none;
+            padding: 0;
+            background-color: #fff;
+            text-align: left;
+            font-size: 18px;
+        }
+
+        nav ul li {
+            display: inline;
+            margin-right: 20px;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: #000;
+            font-weight: bold;
+        }
+
+        #map {
+            position: absolute;
+            top: 100px; /* Adjusted to accommodate the header */
+            bottom: 0;
+            width: 100%;
+        }
+
+        /* Legend styles */
+        .legend {
+            background-color: #fff;
+            border-radius: 3px;
+            bottom: 30px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.10);
+            font-family: Arial, sans-serif;
+            padding: 10px;
+            position: absolute;
+            right: 10px;
+            z-index: 1;
+            width: 220px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .legend h4 {
+            margin: 0 0 10px;
+            font-size: 14px;
+        }
+        .legend div {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+        .legend div span {
+            background-color: #fff;
+            border-radius: 50%;
+            display: inline-block;
+            height: 12px;
+            margin-right: 8px;
+            width: 12px;
+        }
+        .legend .blue { background-color: #51bbd6; }
+        .legend .yellow { background-color: #f1f075; }
+        .legend .pink { background-color: #f28cb1; }
+        .legend label {
+            margin-left: 5px;
+        }
+        .legend .toggle {
+            display: flex;
+            align-items: center;
+            margin-top: 5px;
+        }
+        .legend .toggle input {
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+       <header>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="map.html">Sitios Map</a></li>
+                <li><a href="about.html">About</a></li>
+            </ul>
+        </nav>
+    </header>
+    
+    <div id="map"></div>
+
+    <script>
+        mapboxgl.accessToken = 'pk.eyJ1IjoiY3BlcmV6bSIsImEiOiJjbGo0b3lhZjIwM3R2M2treGMwc3Z2NDhoIn0.Py5P82ue0Klm3gJYJsrc2g';
+        var map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/mapbox/dark-v11',
+            center: [-66.590149,  18.220833], // Starting position [lng, lat]
+            zoom: 3
+        });
+
+        map.on('load', function () {
+            // Add a GeoJSON source
+            map.addSource('my-data', {
+                'type': 'geojson',
+                'data': 'ASSETS/map.geojson' // URL to your GeoJSON file
+              
+            });
+
+            // Add a layer for polygons
+            map.addLayer({
+                'id': 'polygon',
+                'type': 'fill',
+                'source': 'my-data',
+                'filter': ['==', '$type', 'Polygon'],
+                'layout': {},
+                'paint': {
+                    'fill-color': '#888888',
+                    'fill-opacity': 0.5
+                }
+            });
+
+            // Add a layer for points
+            map.addLayer({
+                'id': 'point',
+                'type': 'circle',
+                'source': 'my-data',
+                'filter': ['==', '$type', 'Point'],
+                'paint': {
+                    'circle-radius': 6,
+                    'circle-color': '#ff0000'
+                }
+            });
+        });
+    </script>
+</body>
+</html>
