@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SITIOS: Mapa Arquitectónico de PR</title>
+    <!-- <link rel="stylesheet" href="styles.css"> Link to external CSS -->
+    <style>
+        
+        
+        header {
+            background: rgba(255, 255, 255, 0); /* Transparent background */
+            position: absolute;
+            font-family: Helvetica, Arial, sans-serif;
+            width: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1; /* Ensure the header is above the map */
+            padding: 20px; /* Optional: adjust as needed */
+            /* box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);  */
+            transition: transform 0.3s ease;
+        }
+        
+        
+        nav ul {
+            list-style: none;
+            padding: 20;
+            background-color: rgba(255, 255, 255, 0);
+            text-align: left;
+            font-size: 14px;
+        }
+
+        nav ul li {
+            display: inline;
+            margin-right: 20px;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: #272727;
+            font-weight: bold;
+        }
+        nav ul li a:hover {
+            color: #ff0000; /* Color when hovered */
+        }
+    </style>
+</head>
+<body>
+    <div class="menu-button" onclick="toggleMenu()"></div>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="map.html">Sitios Map</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="contact.html">Contact</a></li>
+                <!-- <li><a href="contact.html">Contact</a></li> -->
+            </ul>
+        </nav>
+    </header>
+</body>
+</html>

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>SITIOS: Mapa Arquitectónico de PR</title>
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+    <link href="https://api.mapbox.com/mapbox-gl-js/v3.6.0/mapbox-gl.css" rel="stylesheet">
+    <script src="https://api.mapbox.com/mapbox-gl-js/v3.6.0/mapbox-gl.js"></script>
+    <style>
+        body { margin: 0; padding: 0; }
+        #map { position: absolute; top: 0; bottom: 0; width: 100%; }
+      
+        
+        header {
+            background: rgba(255, 255, 255, 0); /* Transparent background */
+            position: absolute;
+            font-family: Helvetica, Arial, sans-serif;
+            width: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1; /* Ensure the header is above the map */
+            padding: 20px; /* Optional: adjust as needed */
+            /* box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);  */
+            transition: transform 0.3s ease;
+        }
+        
+        nav ul {
+            list-style: none;
+            padding: 20;
+            background-color: rgba(255, 255, 255, 0);
+            text-align: left;
+            font-size: 14px;
+        }
+
+        nav ul li {
+            display: inline;
+            margin-right: 20px;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: #272727;
+            font-weight: bold;
+        }
+
+
+        nav ul li a:hover {
+            color: #ff0000; /* Color when hovered */
+        }
+
+          /* Ensure the geocoder control is positioned correctly */
+          .mapboxgl-ctrl-geocoder {
+            position: absolute;
+            top: 20px; /* Adjust as needed */
+            left: -20px; /* Adjust as needed */
+            /* z-index: 2; Ensure it is above the map layers */
+        }
+
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="map.html">Sitios Map</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Load the `mapbox-gl-geocoder` plugin. -->
+<script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.min.js"></script>
+<link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.css" type="text/css">
+    
+    <div id="map"></div>
+    
+    <script>
+        mapboxgl.accessToken = 'pk.eyJ1IjoiY3BlcmV6bSIsImEiOiJjbGo0b3lhZjIwM3R2M2treGMwc3Z2NDhoIn0.Py5P82ue0Klm3gJYJsrc2g';
+        var map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/mapbox/light-v11',
+            center: [-66.590149,  18.220833], // Starting position [lng, lat]
+            zoom: 8
+        });
+
+        map.on('load', function () {
+            // Add a GeoJSON source
+            map.addSource('my-data', {
+                'type': 'geojson',
+                'data': 'ASSETS/map2.geojson' // Replace with the URL to your GeoJSON file
+            });
+
+            // Add a layer for polygons
+            map.addLayer({
+                'id': 'polygon',
+                'type': 'fill',
+                'source': 'my-data',
+                'filter': ['==', '$type', 'Polygon'],
+                'layout': {},
+                'paint': {
+                    'fill-color': '#ff0000',
+                     'fill-opacity': 0.5
+                }
+            });
+
+            // Add a layer for points
+            map.addLayer({
+                'id': 'point',
+                'type': 'circle',
+                'source': 'my-data',
+                'filter': ['==', '$type', 'Point'],
+                'paint': {
+                    'circle-radius': 6,
+                    'circle-color': '#ff0000'
+                }
+            });
+               // Add the control to the map.
+    map.addControl(
+        new MapboxGeocoder({
+            accessToken: mapboxgl.accessToken,
+            mapboxgl: mapboxgl
+        })
+        );
+        });
+    </script>
+</body>
+</html>

@@ -7,122 +7,45 @@
     <title>SITIOS: Mapa Arquitectónico de PR</title>
     <!-- <link rel="stylesheet" href="styles.css"> Link to external CSS -->
     <style>
-        body {
-            font-family: Helvetica, Arial, sans-serif;
-            background-color: #fff; /* White background */
-            color: #333; /* Dark gray text color */
-            font-family: Helvetica, Arial, sans-serif;
-            overflow-x: hidden; /* Hide horizontal scrollbar */
-            margin: 0; /* Remove default margin */
-        }
-
-        /* Header styles */
+        
+        
         header {
-            background-color: #fff;
-            color: #333;
-            padding: 20px;
+            background: rgba(255, 255, 255, 0); /* Transparent background */
+            position: absolute;
             font-family: Helvetica, Arial, sans-serif;
-            text-align: center;
-            top: 0;
             width: 100%;
-            z-index: 1; /* Ensure the header is above other content */
-            transition: transform 0.3s ease; /* Transition for hiding/showing header */
+            top: 0;
+            left: 0;
+            z-index: 1; /* Ensure the header is above the map */
+            padding: 20px; /* Optional: adjust as needed */
+            /* box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);  */
+            transition: transform 0.3s ease;
         }
-
-        /* Header menu styles */
+        
+        
         nav ul {
             list-style: none;
-            padding: 0;
-            background-color: #fff; /* White background */
-            text-align: left; /* Center-align the menu items */
-            font-size: 18px;
+            padding: 20;
+            background-color: rgba(255, 255, 255, 0);
+            text-align: left;
+            font-size: 14px;
         }
 
         nav ul li {
-            display: inline; /* Display the menu items in a row */
+            display: inline;
             margin-right: 20px;
         }
 
         nav ul li a {
             text-decoration: none;
-            color: #000; /* Black text color */
+            color: #272727;
             font-weight: bold;
         }
-
-        body {
-            font-family: Helvetica, Arial, sans-serif;
-            background-color: #fff; /* White background */
-            color: #333; /* Dark gray text color */
-            font-family: Helvetica, Arial, sans-serif;
-            overflow-x: hidden; /* Hide horizontal scrollbar */
-            margin: 0; /* Remove default margin */
-        }
-        .image-container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            padding: 80px 20px;
-        }
-        .image-item {
-            margin: 20px;
-            transition: transform 0.3s ease;
-        }
-        .image-item img {
-            width: 100%;
-            height: auto;
-            border-radius: 8px;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-            cursor: pointer;
-        }
-        .image-item:hover {
-            transform: scale(1.05);
+        nav ul li a:hover {
+            color: #ff0000; /* Color when hovered */
         }
 
-        p {
-            margin-bottom: 20px;
-            margin-left: 50px;
-            margin-right: 50px;
-            text-align: justify;
-        }
-
-        ul {
-            list-style: disc;
-            margin-right: 50px;
-            padding-left: 100px;
-        }
-
-        li {
-            margin-bottom: 10px;
-        }
-
-        h1 {
-            font-size: 36px;
-            font-weight: bold;
-            text-align: center;
-            margin: 20px 50px; /* Add 20px top and bottom margin, and 50px left and right margin */
-        }
-
-        h2 {
-            font-size: 18px;
-            font-weight: bold;
-            text-align: justify;
-            margin: 20px 50px; /* Add 20px top and bottom margin, and 50px left and right margin */
-        }
-        
-        footer {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 98%;
-    height: 4%;
-    background-color: #fff;
-    color: #333; /* Change text color to dark gray */
-    padding: 20px;
-    display: flex; /* Use flexbox to horizontally align content */
-    align-items: center; /* Vertically align content to the center */
-    justify-content: space-between; /* Add space between icons and text */
-    z-index: 2;
-}
+   
 /* Footer icon styles */
 .footer-icons a {
     text-decoration: none;
@@ -197,6 +120,7 @@
                 <li><a href="index.html">Home</a></li>
                 <li><a href="map.html">Sitios Map</a></li>
                 <li><a href="about.html">About</a></li>
+                <li><a href="contact.html">Contact</a></li>
                 <!-- <li><a href="contact.html">Contact</a></li> -->
             </ul>
         </nav>
