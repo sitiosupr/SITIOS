@@ -3,15 +3,74 @@
 <head>
     <meta charset="utf-8">
     <title>SITIOS: Mapa Arquitectónico de PR</title>
-
     <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
-
-    <link rel="stylesheet" href="stylesheet.css">
-    
     <link href="https://api.mapbox.com/mapbox-gl-js/v3.6.0/mapbox-gl.css" rel="stylesheet">
     <script src="https://api.mapbox.com/mapbox-gl-js/v3.6.0/mapbox-gl.js"></script>
     <style>
-       
+        body { margin: 0; padding: 0; }
+        #map { position: absolute; top: 0; bottom: 0; width: 100%; }
+        
+        header {
+            background: rgba(255, 255, 255, 0); /* Transparent background */
+            position: absolute;
+            font-family: Helvetica, Arial, sans-serif;
+            width: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1; /* Ensure the header is above the map */
+            padding: 20px; /* Optional: adjust as needed */
+            transition: transform 0.3s ease;
+        }
+        
+        nav ul {
+            list-style: none;
+            padding: 20;
+            background-color: rgba(255, 255, 255, 0);
+            text-align: left;
+            font-size: 14px;
+        }
+
+        nav ul li {
+            display: inline;
+            margin-right: 20px;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: #272727;
+            font-weight: bold;
+        }
+
+        nav ul li a:hover {
+            color: #ff0000; /* Color when hovered */
+        }
+
+        .filter-controls {
+            position: absolute;
+            top: 100px; /* Adjust as needed */
+            left: 58px; /* Adjust as needed */
+            z-index: 2; /* Ensure it is above the map */
+            background: rgba(105, 105, 105, 0.304); /* Semi-transparent background */
+            padding: 20px;
+            border-radius: 5px;
+        }
+
+        .filter-controls label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
+            font-family: Helvetica, Arial, sans-serif;
+            
+        }
+
+        select {
+            margin-bottom: 10px;
+            padding: 5px;
+            font-size: 14px;
+            background: rgba(207, 207, 207, 0.549);
+        }
+        
+     
     </style>
 </head>
 <body>
@@ -70,25 +129,14 @@
             <option value="1940">1940s</option>
             <option value="1950">1950s</option>
             <option value="1960">1960s</option>
+            <!-- Add more decades as needed -->
         </select>
-
-        <button id="reset-filters">Reset Filters</button>
     </div>
 
-     <!-- Toggle Filter Button -->
-     <button id="toggle-filter" class="toggle-filter-button">
-        &#9776; <!-- This is the HTML entity for the "three lines" icon -->
-    </button>
-
-    <!-- Load the `mapbox-gl-geocoder` plugin -->
+    <!-- Load the `mapbox-gl-geocoder` plugin. -->
     <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.min.js"></script>
     <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.css" type="text/css">
-
-    <!-- <div class="search-container">
-        <input type="text" id="search-input" placeholder="Enter Project Number">
-        <button id="search-button">Search</button>
-    </div> -->
-
+    
     <div id="map"></div>
     
     <script>
@@ -99,7 +147,6 @@
             center: [-66.590149, 18.220833], // Starting position [lng, lat]
             zoom: 8
         });
-        var marker = null; // Global variable to hold the marker
 
         map.on('load', function () {
             // Add a GeoJSON source
@@ -163,19 +210,22 @@
             map.on('click', 'points', function (e) {
                 var coordinates = e.features[0].geometry.coordinates.slice();
                 var description = `
-                    <strong style="font-size:14px;">${e.features[0].properties.Name}</strong><br><br>
-                    <strong style="color:#333;">Tipology:</strong> ${e.features[0].properties["Tipology "]}<br>
-                     <strong style="color:#333;">Description:</strong> ${e.features[0].properties.Description}<br>
-                    <strong style="color:#333;">Status:</strong> ${e.features[0].properties.Status}<br>
-                    <strong style="color:#333;">Style:</strong> ${e.features[0].properties.Style}<br>
-                    <strong style="color:#333;">Architect:</strong> ${e.features[0].properties.Architect}<br>
-                    <strong style="color:#333;">Decade:</strong> ${e.features[0].properties.Decade}
+                   <strong style="font-size:14px;">${e.features[0].properties.Name}</strong><br><br>
+        
+                  <strong style="color:#333;">Tipology:</strong> ${e.features[0].properties["Tipology "]}<br>
+        <strong style="color:#333;">Status:</strong> ${e.features[0].properties.Status}<br>
+        <strong style="color:#333;">Style:</strong> ${e.features[0].properties.Style}<br>
+        <strong style="color:#333;">Architect:</strong> ${e.features[0].properties.Architect}<br>
+        <strong style="color:#333;">Year:</strong> ${e.features[0].properties.Year}
                 `;
 
+                // Ensure that if the map is zoomed out such that multiple copies of the feature are visible, the popup appears over the copy being clicked.
                 while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+                    coordinates[0] += e.lngLat
                     coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
                 }
 
+                // Create the popup and add it to the map
                 new mapboxgl.Popup()
                     .setLngLat(coordinates)
                     .setHTML(description)
@@ -191,70 +241,13 @@
             map.on('mouseleave', 'points', function () {
                 map.getCanvas().style.cursor = '';
             });
-
-            // Reset filters
-            document.getElementById('reset-filters').addEventListener('click', function () {
-                document.getElementById('tipology-filter').value = '';
-                document.getElementById('status-filter').value = '';
-                document.getElementById('style-filter').value = '';
-                document.getElementById('architect-filter').value = '';
-                document.getElementById('decade-filter').value = '';
-                map.setFilter('points', null);
-            });
-
-            // Add the geocoder control to the map
-            var geocoder = new MapboxGeocoder({
-                accessToken: mapboxgl.accessToken,
-                mapboxgl: mapboxgl,
-                marker: false, // Disable the default marker
-                placeholder: 'Search for places', // Placeholder text for the search bar
-            });
-
-            map.addControl(geocoder);
-
-            // Add geocoder results to the map
-            geocoder.on('result', function (e) {
-                if (marker) {
-                    marker.remove(); // Remove the previous marker
-                }
-
-                // Add a custom red marker at the search result location
-                marker = new mapboxgl.Marker({ color: 'red' })
-                    .setLngLat(e.result.geometry.coordinates)
-                    .addTo(map);
-
-                map.flyTo({
-                    center: e.result.geometry.coordinates,
-                    zoom: 14
-                });
-            });
-
-            // Remove the marker when the search bar is cleared
-            geocoder.on('clear', function () {
-                if (marker) {
-                    marker.remove();
-                    marker = null; // Reset the marker variable
-                }
-            });
-             // Add zoom control buttons
-             map.addControl(new mapboxgl.NavigationControl(), 'bottom-right');
         });
-         // Handle filter toggle
-         document.addEventListener('DOMContentLoaded', function () {
-            var toggleButton = document.getElementById('toggle-filter');
-            var filterControls = document.querySelector('.filter-controls');
 
-            toggleButton.addEventListener('click', function () {
-                if (filterControls.classList.contains('hidden')) {
-                    filterControls.classList.remove('hidden');
-                } else {
-                    filterControls.classList.add('hidden');
-                }
-            });
-        });
- 
-     
-    
+        // Add the geocoder control to the map.
+        map.addControl(new MapboxGeocoder({
+            accessToken: mapboxgl.accessToken,
+            mapboxgl: mapboxgl
+        }));
     </script>
 </body>
 </html>
