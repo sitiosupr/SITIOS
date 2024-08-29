@@ -3,27 +3,23 @@
 <head>
     <meta charset="utf-8">
     <title>SITIOS: Mapa Arquitectónico de PR</title>
-
     <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
-
     <link rel="stylesheet" href="stylesheet.css">
-    
     <link href="https://api.mapbox.com/mapbox-gl-js/v3.6.0/mapbox-gl.css" rel="stylesheet">
     <script src="https://api.mapbox.com/mapbox-gl-js/v3.6.0/mapbox-gl.js"></script>
     <style>
        /* .project-number-search {
-    margin: 10px;
-    display: flex;
-    align-items: center;
-}
+            margin: 10px;
+            display: flex;
+            align-items: center;
+        }
 
-#project-number-input {
-    padding: 5px;
-    font-size: 14px;
-    margin-left: 10px;
-    width: 250px;
-} */
-
+        #project-number-input {
+            padding: 5px;
+            font-size: 14px;
+            margin-left: 10px;
+            width: 250px;
+        } */
     </style>
 </head>
 <body>
@@ -73,8 +69,8 @@
         <label for="architect-filter">Filter by Architect:</label>
         <select id="architect-filter">
             <option value="">All</option>
-            <option value="Henry Klum ">Henry Klum</option>
-            <option value="Robin Planas ">Robin Planas</option>
+            <option value="Henry Klum">Henry Klum</option>
+            <option value="Robin Planas">Robin Planas</option>
         </select>
 
         <label for="decade-filter">Filter by Decade:</label>
@@ -88,30 +84,26 @@
         <button id="reset-filters">Reset Filters</button>
     </div>
 
-     <!-- Toggle Filter Button -->
-     <button id="toggle-filter" class="toggle-filter-button">
+    <!-- Toggle Filter Button -->
+    <button id="toggle-filter" class="toggle-filter-button">
         &#9776; <!-- This is the HTML entity for the "three lines" icon -->
     </button>
-
-      <!-- Toggle Search Bar Button -->
-      <!-- <button id="toggle-search" class="toggle-search-button">
-        🔍 
-    </button> -->
 
     <!-- Load the `mapbox-gl-geocoder` plugin -->
     <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.min.js"></script>
     <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.css" type="text/css">
 
-  <!-- Search Bar -->
-  <div class="search-container">
-    <input type="text" id="project-search" placeholder="HKL">
-     <button id="clear-search" class="clear-btn">X</button>
-</div>
- <!-- Coordinates Display -->
- <div id="coordinates">Lng: 0, Lat: 0</div>
+    <!-- Search Bar -->
+    <div class="search-container">
+        <input type="text" id="project-search" placeholder="HKL">
+        <button id="clear-search" class="clear-btn">X</button>
+    </div>
+
+    <!-- Coordinates Display -->
+    <div id="coordinates">Lng: 0, Lat: 0</div>
 
     <div id="map"></div>
-    
+
     <script>
         mapboxgl.accessToken = 'pk.eyJ1IjoiY3BlcmV6bSIsImEiOiJjbGo0b3lhZjIwM3R2M2treGMwc3Z2NDhoIn0.Py5P82ue0Klm3gJYJsrc2g';
         var map = new mapboxgl.Map({
@@ -129,59 +121,59 @@
                 'data': 'ASSETS/Conimagen.geojson' // Replace with the URL to your GeoJSON file
             });
 
-            // Add a layer for points
+            // Add a cluster source
+            map.addSource('clusters', {
+                type: 'geojson',
+                data: 'ASSETS/Conimagen.geojson',
+                cluster: true,
+                clusterMaxZoom: 14, // Max zoom to cluster points
+                clusterRadius: 50 // Radius of each cluster when clustering points
+            });
+
+            // Add cluster layer
             map.addLayer({
-                'id': 'points',
-                'type': 'circle',
-                'source': 'my-data',
-                'paint': {
-                    'circle-radius': 6,
-                    'circle-color': '#ff0000'
+                id: 'clusters',
+                type: 'circle',
+                source: 'clusters',
+                filter: ['has', 'point_count'],
+                paint: {
+                    'circle-color': '#FF0000',
+                    'circle-radius': 30
                 }
             });
 
-            // Filtering function
-            function filterMap() {
-                var selectedTipology = document.getElementById('tipology-filter').value;
-                var selectedStatus = document.getElementById('status-filter').value;
-                var selectedStyle = document.getElementById('style-filter').value;
-                var selectedArchitect = document.getElementById('architect-filter').value;
-                var selectedDecade = document.getElementById('decade-filter').value;
+            // Add cluster count labels
+            map.addLayer({
+                id: 'cluster-count',
+                type: 'symbol',
+                source: 'clusters',
+                filter: ['has', 'point_count'],
+                layout: {
+                    'text-field': '{point_count_abbreviated}',
+                    'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
+                    'text-size': 14
+                },
+                paint: {
+            'text-color': '#FFFFFF' // White text color
+        }
+                
+            });
+            
 
-                var filters = ['all'];
-
-                if (selectedTipology) {
-                    filters.push(['==', ['get', 'Tipology '], selectedTipology]);
+            // Add unclustered points layer
+            map.addLayer({
+                id: 'unclustered-point',
+                type: 'circle',
+                source: 'clusters',
+                filter: ['!', ['has', 'point_count']],
+                paint: {
+                    'circle-color': '#FF0000',
+                    'circle-radius': 6
                 }
-
-                if (selectedStatus) {
-                    filters.push(['==', ['get', 'Status'], selectedStatus]);
-                }
-
-                if (selectedStyle) {
-                    filters.push(['==', ['get', 'Style'], selectedStyle]);
-                }
-
-                if (selectedArchitect) {
-                    filters.push(['==', ['get', 'Architect'], selectedArchitect]);
-                }
-
-                if (selectedDecade) {
-                    filters.push(['==', ['get', 'Decade'], parseInt(selectedDecade)]);
-                }
-
-                map.setFilter('points', filters.length > 1 ? filters : null);
-            }
-
-            // Event listeners for the dropdowns
-            document.getElementById('tipology-filter').addEventListener('change', filterMap);
-            document.getElementById('status-filter').addEventListener('change', filterMap);
-            document.getElementById('style-filter').addEventListener('change', filterMap);
-            document.getElementById('architect-filter').addEventListener('change', filterMap);
-            document.getElementById('decade-filter').addEventListener('change', filterMap);
+            });
 
             // Add popup on click
-            map.on('click', 'points', function (e) {
+            map.on('click', 'unclustered-point', function (e) {
                 var coordinates = e.features[0].geometry.coordinates.slice();
                 var description = `
                 <div style="max-height: 200px; overflow-y: auto;">
@@ -206,13 +198,13 @@
                     .addTo(map);
             });
 
-            // Change the cursor to a pointer when the mouse is over the points layer
-            map.on('mouseenter', 'points', function () {
+            // Change the cursor to a pointer when the mouse is over the unclustered-point layer
+            map.on('mouseenter', 'unclustered-point', function () {
                 map.getCanvas().style.cursor = 'pointer';
             });
 
             // Change it back to default when it leaves
-            map.on('mouseleave', 'points', function () {
+            map.on('mouseleave', 'unclustered-point', function () {
                 map.getCanvas().style.cursor = '';
             });
 
@@ -223,7 +215,8 @@
                 document.getElementById('style-filter').value = '';
                 document.getElementById('architect-filter').value = '';
                 document.getElementById('decade-filter').value = '';
-                map.setFilter('points', null);
+                map.setFilter('clusters', null);
+                map.setFilter('unclustered-point', null);
             });
 
             // Add the geocoder control to the map
@@ -260,11 +253,13 @@
                     marker = null; // Reset the marker variable
                 }
             });
-             // Add zoom control buttons
-             map.addControl(new mapboxgl.NavigationControl(), 'bottom-right');
+
+            // Add zoom control buttons
+            map.addControl(new mapboxgl.NavigationControl(), 'bottom-right');
         });
-         // Handle filter toggle
-         document.addEventListener('DOMContentLoaded', function () {
+
+        // Handle filter toggle
+        document.addEventListener('DOMContentLoaded', function () {
             var toggleButton = document.getElementById('toggle-filter');
             var filterControls = document.querySelector('.filter-controls');
 
@@ -277,81 +272,64 @@
             });
         });
 
-         // Toggle Search Bar Functionality
-        //  document.addEventListener('DOMContentLoaded', function () {
-        //     var toggleSearchButton = document.getElementById('toggle-search');
-        //     var searchContainer = document.querySelector('.search-container');
+        // Add search functionality
+        document.getElementById('project-search').addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') {
+                var searchValue = e.target.value.trim().toUpperCase();
 
-        //     toggleSearchButton.addEventListener('click', function () {
-        //         if (searchContainer.classList.contains('hidden')) {
-        //             searchContainer.classList.remove('hidden');
-        //         } else {
-        //             searchContainer.classList.add('hidden');
-        //         }
-        //     });
-        // });
- 
-   // Add search functionality
-document.getElementById('project-search').addEventListener('keydown', function (e) {
-    if (e.key === 'Enter') {
-        var searchValue = e.target.value.trim().toUpperCase();
+                if (searchValue) {
+                    var features = map.querySourceFeatures('my-data');
+                    var matchingFeature = features.find(function (feature) {
+                        var projectNumber = feature.properties['Proyect Number'].trim().toUpperCase();
+                        return projectNumber.includes(searchValue); // Use includes for partial matching
+                    });
 
-        if (searchValue) {
-            var features = map.querySourceFeatures('my-data');
-            var matchingFeature = features.find(function (feature) {
-                var projectNumber = feature.properties['Proyect Number'].trim().toUpperCase();
-                return projectNumber.includes(searchValue); // Use includes for partial matching
-            });
+                    if (matchingFeature) {
+                        var coordinates = matchingFeature.geometry.coordinates;
 
-            if (matchingFeature) {
-                var coordinates = matchingFeature.geometry.coordinates;
+                        if (marker) {
+                            marker.remove(); // Remove the previous marker
+                        }
 
-                if (marker) {
-                    marker.remove(); // Remove the previous marker
+                        // Add a custom red marker at the matching feature location
+                        marker = new mapboxgl.Marker({ color: 'red' })
+                            .setLngLat(coordinates)
+                            .addTo(map);
+
+                        map.flyTo({
+                            center: coordinates,
+                            zoom: 14
+                        });
+                    } else {
+                        alert('No matching project number found.');
+                    }
                 }
-
-                // Add a custom red marker at the matching feature location
-                marker = new mapboxgl.Marker({ color: 'red' })
-                    .setLngLat(coordinates)
-                    .addTo(map);
-
-                map.flyTo({
-                    center: coordinates,
-                    zoom: 14
-                });
-            } else {
-                alert('No matching project number found.');
             }
-        }
-    }
-});
-
-     
+        });
 
         // Display the coordinates of the mouse on the map
         map.on('mousemove', function (e) {
             document.getElementById('coordinates').textContent =
                 `Lng: ${e.lngLat.lng.toFixed(5)}, Lat: ${e.lngLat.lat.toFixed(5)}`;
         });
+
         // Handle search clearing
-document.getElementById('clear-search').addEventListener('click', function () {
-    // Clear the search input field
-    document.getElementById('project-search').value = '';
+        document.getElementById('clear-search').addEventListener('click', function () {
+            // Clear the search input field
+            document.getElementById('project-search').value = '';
 
-    // Remove the marker if it exists
-    if (marker) {
-        marker.remove();
-        marker = null;
-    }
+            // Remove the marker if it exists
+            if (marker) {
+                marker.remove();
+                marker = null;
+            }
 
-    // Reset the map view to the initial position
-    map.flyTo({
-        center: [-66.590149, 18.220833], // Initial map center
-        zoom: 8 // Initial zoom level
-    });
-});
-
-    
+            // Reset the map view to the initial position
+            map.flyTo({
+                center: [-66.590149, 18.220833], // Initial map center
+                zoom: 8 // Initial zoom level
+            });
+        });
     </script>
 </body>
 </html>

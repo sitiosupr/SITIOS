@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>SITIOS: Mapa Arquitectónico de PR</title>
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+    <link rel="stylesheet" href="stylesheet.css">
+    <link href="https://api.mapbox.com/mapbox-gl-js/v3.6.0/mapbox-gl.css" rel="stylesheet">
+    <script src="https://api.mapbox.com/mapbox-gl-js/v3.6.0/mapbox-gl.js"></script>
+    <style>
+        /* Custom styles */
+        .filter-controls {
+            margin: 10px;
+            display: flex;
+            flex-direction: column;
+        }
+        .filter-controls label {
+            margin: 5px 0;
+        }
+        .filter-controls select {
+            margin-bottom: 10px;
+        }
+        .toggle-filter-button {
+            margin: 10px;
+        }
+        .search-container {
+            margin: 10px;
+            display: flex;
+            align-items: center;
+        }
+        .search-container input {
+            padding: 5px;
+            font-size: 14px;
+            margin-left: 10px;
+            width: 250px;
+        }
+        .clear-btn {
+            margin-left: 10px;
+        }
+        #coordinates {
+            margin: 10px;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="map.html">Sitios Map</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Filter Controls -->
+    <div class="filter-controls">
+        <label for="tipology-filter">Filter by Typology:</label>
+        <select id="tipology-filter">
+            <option value="">All</option>
+            <option value="Residential">Residential</option>
+            <option value="Institutional">Institutional</option>
+            <option value="Industrial">Industrial</option>
+            <option value="Recreational">Recreational</option>
+            <option value="Commercial">Commercial</option>
+            <option value="Religious">Religious</option>
+        </select>
+
+        <label for="status-filter">Filter by Status:</label>
+        <select id="status-filter">
+            <option value="">All</option>
+            <option value="Built">Built</option>
+            <option value="Unbuilt">Unbuilt</option>
+            <option value="Demolished">Demolished</option>
+        </select>
+
+        <label for="style-filter">Filter by Style:</label>
+        <select id="style-filter">
+            <option value="">All</option>
+            <option value="Modern">Modern</option>
+            <option value="Neoclassical">Neoclassical</option>
+            <option value="Art Deco">Art Deco</option>
+            <option value="Spanish Colonial">Spanish Colonial</option>
+            <option value="Postmodern">Postmodern</option>
+            <option value="Contemporary">Contemporary</option>
+        </select>
+
+        <label for="architect-filter">Filter by Architect:</label>
+        <select id="architect-filter">
+            <option value="">All</option>
+            <option value="Henry Klum">Henry Klum</option>
+            <option value="Robin Planas">Robin Planas</option>
+        </select>
+
+        <label for="decade-filter">Filter by Decade:</label>
+        <select id="decade-filter">
+            <option value="">All</option>
+            <option value="1940">1940s</option>
+            <option value="1950">1950s</option>
+            <option value="1960">1960s</option>
+        </select>
+
+        <button id="reset-filters">Reset Filters</button>
+    </div>
+
+    <!-- Toggle Filter Button -->
+    <button id="toggle-filter" class="toggle-filter-button">
+        &#9776; <!-- This is the HTML entity for the "three lines" icon -->
+    </button>
+
+    <!-- Search Bar -->
+    <div class="search-container">
+        <input type="text" id="project-search" placeholder="Search by Project Number">
+        <button id="clear-search" class="clear-btn">X</button>
+    </div>
+
+    <!-- Coordinates Display -->
+    <div id="coordinates">Lng: 0, Lat: 0</div>
+
+    <div id="map"></div>
+
+    <script>
+        mapboxgl.accessToken = 'pk.eyJ1IjoiY3BlcmV6bSIsImEiOiJjbGo0b3lhZjIwM3R2M2treGMwc3Z2NDhoIn0.Py5P82ue0Klm3gJYJsrc2g';
+        var map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/mapbox/light-v11',
+            center: [-66.590149, 18.220833], // Starting position [lng, lat]
+            zoom: 8
+        });
+
+        var marker = null; // Global variable to hold the marker
+        var dataUrl = 'ASSETS/Conimagen.geojson'; // Define your source data URL
+
+        map.on('load', function () {
+            // Add a GeoJSON source for clustered data
+            map.addSource('my-data', {
+                type: 'geojson',
+                data: dataUrl,
+                cluster: true,
+                clusterMaxZoom: 14,
+                clusterRadius: 50
+            });
+
+            // Add clustered circles layer
+            map.addLayer({
+                id: 'clusters',
+                type: 'circle',
+                source: 'my-data',
+                filter: ['has', 'point_count'],
+                paint: {
+                    'circle-color': '#FF0000',
+                    'circle-radius': [
+                        'step',
+                        ['get', 'point_count'],
+                        20,
+                        100,
+                        30,
+                        750,
+                        40
+                    ]
+                }
+            });
+
+            // Add cluster labels layer
+            map.addLayer({
+                id: 'cluster-labels',
+                type: 'symbol',
+                source: 'my-data',
+                filter: ['has', 'point_count'],
+                layout: {
+                    'text-field': '{point_count_abbreviated}',
+                    'text-size': 12,
+                    'text-font': ['Open Sans Semibold', 'Arial Unicode MS Bold'],
+                    'text-offset': [0, 0],
+                    'text-anchor': 'center'
+                },
+                paint: {
+                    'text-color': '#FFFFFF'
+                }
+            });
+
+            // Add unclustered points layer
+            map.addLayer({
+                id: 'unclustered-point',
+                type: 'circle',
+                source: 'my-data',
+                filter: ['!', ['has', 'point_count']],
+                paint: {
+                    'circle-color': '#FF0000',
+                    'circle-radius': 6
+                }
+            });
+
+            function applyFilters() {
+                var selectedTipology = document.getElementById('tipology-filter').value;
+                var selectedStatus = document.getElementById('status-filter').value;
+                var selectedStyle = document.getElementById('style-filter').value;
+                var selectedArchitect = document.getElementById('architect-filter').value;
+                var selectedDecade = document.getElementById('decade-filter').value;
+
+                var filters = ['all'];
+
+                if (selectedTipology) {
+                    filters.push(['==', ['get', 'Tipology '], selectedTipology]);
+                }
+
+                if (selectedStatus) {
+                    filters.push(['==', ['get', 'Status'], selectedStatus]);
+                }
+
+                if (selectedStyle) {
+                    filters.push(['==', ['get', 'Style'], selectedStyle]);
+                }
+
+                if (selectedArchitect) {
+                    filters.push(['==', ['get', 'Architect'], selectedArchitect]);
+                }
+
+                if (selectedDecade) {
+                    filters.push(['==', ['get', 'Decade'], parseInt(selectedDecade)]);
+                }
+
+                // Update the source data with filters applied
+                var filteredData = map.querySourceFeatures('my-data', {
+                    filter: filters.length > 1 ? filters : null
+                });
+
+                // If there are filtered features, replace the data source without clustering
+                if (filteredData.length) {
+                    map.getSource('my-data').setData({
+                        type: 'FeatureCollection',
+                        features: filteredData
+                    });
+
+                    // Uncluster the points
+                    map.getSource('my-data').setCluster(false);
+                } else {
+                    // If no filtered features, reset to clustered data
+                    map.getSource('my-data').setData(dataUrl);
+                    map.getSource('my-data').setCluster(true);
+                }
+            }
+
+            // Event listeners for filter changes
+            document.getElementById('tipology-filter').addEventListener('change', applyFilters);
+            document.getElementById('status-filter').addEventListener('change', applyFilters);
+            document.getElementById('style-filter').addEventListener('change', applyFilters);
+            document.getElementById('architect-filter').addEventListener('change', applyFilters);
+            document.getElementById('decade-filter').addEventListener('change', applyFilters);
+            document.getElementById('decade-filter').addEventListener('change', applyFilters);
+
+            // Reset filters button
+            document.getElementById('reset-filters').addEventListener('click', function () {
+                document.getElementById('tipology-filter').value = '';
+                document.getElementById('status-filter').value = '';
+                document.getElementById('style-filter').value = '';
+                document.getElementById('architect-filter').value = '';
+                document.getElementById('decade-filter').value = '';
+                applyFilters(); // Apply filters after reset
+            });
+
+            // Toggle filter visibility
+            document.getElementById('toggle-filter').addEventListener('click', function () {
+                var filters = document.querySelector('.filter-controls');
+                if (filters.classList.contains('hidden')) {
+                    filters.classList.remove('hidden');
+                } else {
+                    filters.classList.add('hidden');
+                }
+            });
+
+            // Handle search functionality
+            document.getElementById('project-search').addEventListener('input', function () {
+                var searchTerm = this.value.toLowerCase();
+                var filteredData = map.querySourceFeatures('my-data', {
+                    filter: ['match', ['to-string', ['get', 'Project Number']], searchTerm, true, false]
+                });
+
+                // Update the source data with search results
+                if (filteredData.length) {
+                    map.getSource('my-data').setData({
+                        type: 'FeatureCollection',
+                        features: filteredData
+                    });
+
+                    // Uncluster the points
+                    map.getSource('my-data').setCluster(false);
+                } else {
+                    map.getSource('my-data').setData(dataUrl);
+                    map.getSource('my-data').setCluster(true);
+                }
+            });
+
+            // Clear search input
+            document.getElementById('clear-search').addEventListener('click', function () {
+                document.getElementById('project-search').value = '';
+                map.getSource('my-data').setData(dataUrl);
+                map.getSource('my-data').setCluster(true);
+            });
+
+            // Update coordinates display on map click
+            map.on('click', function (e) {
+                document.getElementById('coordinates').innerHTML =
+                    'Lng: ' + e.lngLat.lng.toFixed(4) + ', Lat: ' + e.lngLat.lat.toFixed(4);
+            });
+        });
+    </script>
+</body>
+</html>

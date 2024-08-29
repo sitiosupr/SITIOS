@@ -1,6 +1,14 @@
+body { 
+    margin: 0; 
+    padding: 0; 
+}
 
-body { margin: 0; padding: 0; }
-#map { position: absolute; top: 0; bottom: 0; width: 100%; }
+#map { 
+    position: absolute; 
+    top: 0; 
+    bottom: 0; 
+    width: 100%; 
+}
 
 header {
     background: rgba(255, 255, 255, 0); /* Transparent background */
@@ -72,39 +80,73 @@ select {
     background-color: rgba(255, 255, 255, 0.549);
     color: rgb(255, 0, 0);
     font-size: 14px;
-    /* font-weight: bold; */
     cursor: pointer;
     border: none;
     border-radius: 5px;
 }
 
- /* Add styles for the toggle filter button */
- .toggle-filter-button {
+/* Base button styling for both filter and polygon buttons */
+.toggle-button {
     position: absolute;
-    top: 80px; /* Adjust as needed */
-    right: 1435px; /* Adjust as needed */
+    width: 40px;
+    height: 40px;
     background-color: rgb(255, 0, 0); /* Red background */
     color: rgb(255, 255, 255); /* White icon */
     border: none;
     border-radius: 5px;
     padding: 10px;
-    font-size: 18px;
     cursor: pointer;
     z-index: 3; /* Ensure it is above other elements */
+}
+
+/* Specific styling for the filter button */
+.toggle-filter-button {
+    top: 80px; /* Adjust as needed */
+    right: 1435px; /* Adjust as needed */
 }
 
 .toggle-filter-button:hover {
     background-color: darkred; /* Darker red on hover */
 }
- /* Style for the geocoder control */
- .mapboxgl-ctrl-geocoder {
+
+/* Specific styling for the polygon button */
+.toggle-polygon-button {
+    top: 140px; /* Adjust the position as needed */
+    left: 10px;
+}
+
+/* Add the polygon shape using a pseudo-element */
+.toggle-polygon-button::before {
+    content: '';
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 15px solid #fff;
+    transform: rotate(45deg); /* Adjust the rotation to make it look more abstract */
+}
+
+/* Hover effect for both buttons */
+.toggle-button:hover {
+    background-color: darkred; /* Darker red on hover */
+}
+
+/* Adjust the polygon shape on hover (optional) */
+.toggle-polygon-button:hover::before {
+    border-bottom-color: #ccc;
+}
+
+/* Style for the geocoder control */
+.mapboxgl-ctrl-geocoder {
     position: absolute;
     top: 15px; /* Adjust as needed */
     right: 10px; /* Adjust as needed */
     z-index: 2; /* Ensure it is above the map */
 }
 
-    
 .search-container {
     position: absolute;
     top: 130px;
@@ -116,6 +158,7 @@ select {
     border-radius: 5px;
     z-index: 2;
 }
+
 #search-input {
     padding: 30px;
     right: 25px;
@@ -124,21 +167,13 @@ select {
     border-radius: 10px;
     margin-right: 1px;
 }
-/* #search-button {
 
-    padding: 5px 10px;
-    background-color: rgb(255, 0, 0);
-    color: rgb(255, 255, 255);
-    border: none;
-    border-radius: 5px;
-    font-size: 14px;
-    cursor: pointer;
-} */
 #search-button:hover {
     background-color: darkred;
 }
- /* Add styles for the coordinates display */
- #coordinates {
+
+/* Add styles for the coordinates display */
+#coordinates {
     position: absolute;
     bottom: 10px;
     left: 10px;
@@ -148,13 +183,14 @@ select {
     border-radius: 3px;
     z-index: 3;
 }
+
 /* Add CSS for the clear button */
 .clear-btn {
     background-color: transparent;
     border: none;
     cursor: pointer;
     font-size: 14px;
-    margin-left:-20px;
+    margin-left: -20px;
     position: relative;
     color: #999;
 }
@@ -162,19 +198,3 @@ select {
 .clear-btn:hover {
     color: #000;
 }
- /* CSS for the search toggle button */
- /* .toggle-search-button {
-    position: fixed;
-    top: 100px;
-    left: 10px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    padding: 10px;
-    cursor: pointer;
-    border-radius: 5px;
-}
-
-.toggle-search-button:hover {
-    background-color: #45a049;
-} */
