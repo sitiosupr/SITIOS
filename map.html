@@ -11,7 +11,19 @@
     <link href="https://api.mapbox.com/mapbox-gl-js/v3.6.0/mapbox-gl.css" rel="stylesheet">
     <script src="https://api.mapbox.com/mapbox-gl-js/v3.6.0/mapbox-gl.js"></script>
     <style>
-       
+       /* .project-number-search {
+    margin: 10px;
+    display: flex;
+    align-items: center;
+}
+
+#project-number-input {
+    padding: 5px;
+    font-size: 14px;
+    margin-left: 10px;
+    width: 250px;
+} */
+
     </style>
 </head>
 <body>
@@ -80,14 +92,22 @@
         &#9776; <!-- This is the HTML entity for the "three lines" icon -->
     </button>
 
+      <!-- Toggle Search Bar Button -->
+      <!-- <button id="toggle-search" class="toggle-search-button">
+        🔍 
+    </button> -->
+
     <!-- Load the `mapbox-gl-geocoder` plugin -->
     <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.min.js"></script>
     <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.css" type="text/css">
 
-    <!-- <div class="search-container">
-        <input type="text" id="search-input" placeholder="Enter Project Number">
-        <button id="search-button">Search</button>
-    </div> -->
+  <!-- Search Bar -->
+  <div class="search-container">
+    <input type="text" id="project-search" placeholder="HKL">
+     <button id="clear-search" class="clear-btn">X</button>
+</div>
+ <!-- Coordinates Display -->
+ <div id="coordinates">Lng: 0, Lat: 0</div>
 
     <div id="map"></div>
     
@@ -169,7 +189,9 @@
                     <strong style="color:#333;">Status:</strong> ${e.features[0].properties.Status}<br>
                     <strong style="color:#333;">Style:</strong> ${e.features[0].properties.Style}<br>
                     <strong style="color:#333;">Architect:</strong> ${e.features[0].properties.Architect}<br>
-                    <strong style="color:#333;">Decade:</strong> ${e.features[0].properties.Decade}
+                    <strong style="color:#333;">Year:</strong> ${e.features[0].properties.Year}<br>
+                    <strong style="color:#333;">URL:</strong> <a href="${e.features[0].properties.URL}" target="_blank" style="color:#1a73e8;">${e.features[0].properties.URL}</a>
+                    <img src="${e.features[0].properties.ImageURL}" alt="${e.features[0].properties.Name}" style="width:100%;max-width:300px;height:auto;">
                 `;
 
                 while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
@@ -252,8 +274,81 @@
                 }
             });
         });
+
+         // Toggle Search Bar Functionality
+        //  document.addEventListener('DOMContentLoaded', function () {
+        //     var toggleSearchButton = document.getElementById('toggle-search');
+        //     var searchContainer = document.querySelector('.search-container');
+
+        //     toggleSearchButton.addEventListener('click', function () {
+        //         if (searchContainer.classList.contains('hidden')) {
+        //             searchContainer.classList.remove('hidden');
+        //         } else {
+        //             searchContainer.classList.add('hidden');
+        //         }
+        //     });
+        // });
  
+   // Add search functionality
+document.getElementById('project-search').addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') {
+        var searchValue = e.target.value.trim().toUpperCase();
+
+        if (searchValue) {
+            var features = map.querySourceFeatures('my-data');
+            var matchingFeature = features.find(function (feature) {
+                var projectNumber = feature.properties['Proyect Number'].trim().toUpperCase();
+                return projectNumber.includes(searchValue); // Use includes for partial matching
+            });
+
+            if (matchingFeature) {
+                var coordinates = matchingFeature.geometry.coordinates;
+
+                if (marker) {
+                    marker.remove(); // Remove the previous marker
+                }
+
+                // Add a custom red marker at the matching feature location
+                marker = new mapboxgl.Marker({ color: 'red' })
+                    .setLngLat(coordinates)
+                    .addTo(map);
+
+                map.flyTo({
+                    center: coordinates,
+                    zoom: 14
+                });
+            } else {
+                alert('No matching project number found.');
+            }
+        }
+    }
+});
+
      
+
+        // Display the coordinates of the mouse on the map
+        map.on('mousemove', function (e) {
+            document.getElementById('coordinates').textContent =
+                `Lng: ${e.lngLat.lng.toFixed(5)}, Lat: ${e.lngLat.lat.toFixed(5)}`;
+        });
+        // Handle search clearing
+document.getElementById('clear-search').addEventListener('click', function () {
+    // Clear the search input field
+    document.getElementById('project-search').value = '';
+
+    // Remove the marker if it exists
+    if (marker) {
+        marker.remove();
+        marker = null;
+    }
+
+    // Reset the map view to the initial position
+    map.flyTo({
+        center: [-66.590149, 18.220833], // Initial map center
+        zoom: 8 // Initial zoom level
+    });
+});
+
     
     </script>
 </body>
