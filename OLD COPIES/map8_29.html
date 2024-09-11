@@ -6,7 +6,7 @@
 
     <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
 
-    <link rel="stylesheet" href="stylesheet2.css">
+    <link rel="stylesheet" href="stylesheet.css">
     
     <link href="https://api.mapbox.com/mapbox-gl-js/v3.6.0/mapbox-gl.css" rel="stylesheet">
     <script src="https://api.mapbox.com/mapbox-gl-js/v3.6.0/mapbox-gl.js"></script>
@@ -93,9 +93,6 @@
         &#9776; <!-- This is the HTML entity for the "three lines" icon -->
     </button>
 
-    <button id="toggle-polygon-layer" class="toggle-polygon-button">
-    </button>
-
       <!-- Toggle Search Bar Button -->
       <!-- <button id="toggle-search" class="toggle-search-button">
         🔍 
@@ -142,35 +139,6 @@
                     'circle-color': '#ff0000'
                 }
             });
-
-            // Add a GeoJSON source for polygons
-            map.addSource('polygon-data', {
-                'type': 'geojson',
-                'data': 'ASSETS/polygons.geojson' // Add your polygons GeoJSON file here
-            });
-
-             // Add a layer for polygons
-             map.addLayer({
-                'id': 'polygon-layer',
-                'type': 'fill',
-                'source': 'polygon-data',
-                'paint': {
-                    'fill-color': '#ff0000', // Green fill color for polygons
-                    'fill-opacity': 0.2 // Set opacity for polygons
-                }
-            });
-
-            // Optional outline for polygons
-            map.addLayer({
-                'id': 'polygon-layer-outline',
-                'type': 'line',
-                'source': 'polygon-data',
-                'paint': {
-                    'line-color': '#ff0000', // Black outline for polygons
-                    'line-width': .25
-                }
-            });
-
 
             // Filtering function
             function filterMap() {
@@ -382,19 +350,6 @@ document.getElementById('clear-search').addEventListener('click', function () {
         zoom: 8 // Initial zoom level
     });
 });
-
-document.getElementById('toggle-polygon-layer').addEventListener('click', function () {
-    var visibility = map.getLayoutProperty('polygon-layer', 'visibility');
-    
-    if (visibility === 'visible') {
-        map.setLayoutProperty('polygon-layer', 'visibility', 'none');
-        map.setLayoutProperty('polygon-layer-outline', 'visibility', 'none');
-    } else {
-        map.setLayoutProperty('polygon-layer', 'visibility', 'visible');
-        map.setLayoutProperty('polygon-layer-outline', 'visibility', 'visible');
-    }
-});
-
 
     
     </script>

@@ -1,14 +1,6 @@
-body { 
-    margin: 0; 
-    padding: 0; 
-}
 
-#map { 
-    position: absolute; 
-    top: 0; 
-    bottom: 0; 
-    width: 100%; 
-}
+body { margin: 0; padding: 0; }
+#map { position: absolute; top: 0; bottom: 0; width: 100%; }
 
 header {
     background: rgba(255, 255, 255, 0); /* Transparent background */
@@ -43,12 +35,13 @@ nav ul li a {
 
 nav ul li a:hover {
     color: #ff0000; /* Color when hovered */
+    text-decoration: none; /* Prevent underline on hover */
 }
 
 .filter-controls {
     position: absolute;
-    top: 130px; /* Adjust as needed */
-    left: 58px; /* Adjust as needed */
+    top: 80px; /* Adjust as needed */
+    left: 120px; /* Adjust as needed */
     z-index: 2; /* Ensure it is above the map */
     background: rgba(105, 105, 105, 0.304); /* Semi-transparent background */
     padding: 20px;
@@ -70,19 +63,81 @@ nav ul li a:hover {
 select {
     margin-bottom: 10px;
     padding: 5px;
-    font-size: 14px;
+    font-size: 11px;
     background: rgba(207, 207, 207, 0.549);
 }
 
 #reset-filters {
-    margin-top: 10px;
-    padding: 10px;
+    margin-top: 1px;
+    padding: 3px;
     background-color: rgba(255, 255, 255, 0.549);
     color: rgb(255, 0, 0);
-    font-size: 14px;
+    font-size: 11px;
     cursor: pointer;
     border: none;
     border-radius: 5px;
+}
+
+
+
+/* Style for the geocoder control */
+.mapboxgl-ctrl-geocoder {
+    position: absolute;
+    top: 15px; /* Adjust as needed */
+    right: 10px; /* Adjust as needed */
+    z-index: 2; /* Ensure it is above the map */
+}
+
+.search-container {
+    position: absolute;
+    top: 80px;
+    right: 20px;
+    display: flex;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.7);
+    padding: 12px;
+    border-radius: 5px;
+    z-index: 2;
+}
+
+#search-input {
+    padding: 22px;
+    right: 25px;
+    font-size: 11px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    margin-right: 1px;
+}
+
+#search-button:hover {
+    background-color: darkred;
+}
+
+/* Add styles for the coordinates display */
+/* #coordinates {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    padding: 5px 10px;
+    background-color: rgba(255, 255, 255, 0.9);
+    font-size: 14px;
+    border-radius: 3px;
+    z-index: 3;
+} */
+
+/* Add CSS for the clear button */
+.clear-btn {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    margin-left: 10px;
+    position: relative;
+    color: #999;
+}
+
+.clear-btn:hover {
+    color: #000;
 }
 
 /* Base button styling for both filter and polygon buttons */
@@ -104,97 +159,28 @@ select {
     top: 80px; /* Adjust as needed */
     right: 1435px; /* Adjust as needed */
 }
-
-.toggle-filter-button:hover {
-    background-color: darkred; /* Darker red on hover */
-}
-
 /* Specific styling for the polygon button */
 .toggle-polygon-button {
-    top: 140px; /* Adjust the position as needed */
-    left: 10px;
+    top: 130px; /* Adjust as needed */
+    right: 1435px; /* Adjust as needed */
 }
 
-/* Add the polygon shape using a pseudo-element */
 .toggle-polygon-button::before {
     content: '';
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    width: 0;
-    height: 0;
-    border-left: 10px solid transparent;
-    border-right: 10px solid transparent;
-    border-bottom: 15px solid #fff;
-    transform: rotate(45deg); /* Adjust the rotation to make it look more abstract */
+    width: 10px;
+    height: 15px;
+    background-color: #FF0000; /* Color of the parallelogram */
+    border: 2px solid white; /* White stroke */
+    transform: skew(20deg);
+    display: inline-block;
+}
+.toggle-search-button {
+    top: 180px; /* Adjust the position */
+    right: 1435px;
+    
 }
 
-/* Hover effect for both buttons */
-.toggle-button:hover {
-    background-color: darkred; /* Darker red on hover */
-}
-
-/* Adjust the polygon shape on hover (optional) */
-.toggle-polygon-button:hover::before {
-    border-bottom-color: #ccc;
-}
-
-/* Style for the geocoder control */
-.mapboxgl-ctrl-geocoder {
-    position: absolute;
-    top: 15px; /* Adjust as needed */
-    right: 10px; /* Adjust as needed */
-    z-index: 2; /* Ensure it is above the map */
-}
-
-.search-container {
-    position: absolute;
-    top: 130px;
-    right: 20px;
-    display: flex;
-    align-items: center;
-    background-color: rgba(255, 255, 255, 0.7);
-    padding: 22px;
-    border-radius: 5px;
-    z-index: 2;
-}
-
-#search-input {
-    padding: 30px;
-    right: 25px;
-    font-size: 14px;
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    margin-right: 1px;
-}
-
-#search-button:hover {
-    background-color: darkred;
-}
-
-/* Add styles for the coordinates display */
-#coordinates {
-    position: absolute;
-    bottom: 10px;
-    left: 10px;
-    padding: 5px 10px;
-    background-color: rgba(255, 255, 255, 0.9);
-    font-size: 14px;
-    border-radius: 3px;
-    z-index: 3;
-}
-
-/* Add CSS for the clear button */
-.clear-btn {
-    background-color: transparent;
-    border: none;
-    cursor: pointer;
-    font-size: 14px;
-    margin-left: -20px;
-    position: relative;
-    color: #999;
-}
-
-.clear-btn:hover {
-    color: #000;
-}
+     /* Hide elements by default */
+     .hidden {
+        display: none;
+    }

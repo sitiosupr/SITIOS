@@ -6,10 +6,13 @@
 
     <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
 
-    <link rel="stylesheet" href="stylesheet.css">
+    <link rel="stylesheet" href="stylesheet2.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     
     <link href="https://api.mapbox.com/mapbox-gl-js/v3.6.0/mapbox-gl.css" rel="stylesheet">
     <script src="https://api.mapbox.com/mapbox-gl-js/v3.6.0/mapbox-gl.js"></script>
+
+    
     <style>
        /* .project-number-search {
     margin: 10px;
@@ -39,7 +42,7 @@
     </header>
 
     <!-- Filter Controls -->
-    <div class="filter-controls">
+    <div class="filter-controls hidden">
         <label for="tipology-filter">Filter by Typology:</label>
         <select id="tipology-filter">
             <option value="">All</option>
@@ -88,27 +91,30 @@
         <button id="reset-filters">Reset Filters</button>
     </div>
 
-     <!-- Toggle Filter Button -->
-     <button id="toggle-filter" class="toggle-filter-button">
-        &#9776; <!-- This is the HTML entity for the "three lines" icon -->
-    </button>
+    <!-- Toggle Filter Button -->
+<button id="toggle-filter" class="toggle-button toggle-filter-button">
+    &#9776; <!-- This is the HTML entity for the "three lines" icon -->
+</button>
 
-      <!-- Toggle Search Bar Button -->
-      <!-- <button id="toggle-search" class="toggle-search-button">
-        🔍 
-    </button> -->
+<!-- Toggle Polygon Layer Button -->
+<button id="toggle-polygon-layer" class="toggle-button toggle-polygon-button">
+</button>
+
+<button id="toggle-search-bar" class="toggle-button toggle-search-button">
+    <i class="glyphicon glyphicon-search"></i>  <!-- This is the HTML entity for the magnifying glass icon -->
+</button>
 
     <!-- Load the `mapbox-gl-geocoder` plugin -->
     <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.min.js"></script>
     <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.css" type="text/css">
 
   <!-- Search Bar -->
-  <div class="search-container">
+  <div class="search-container hidden">
     <input type="text" id="project-search" placeholder="HKL">
      <button id="clear-search" class="clear-btn">X</button>
 </div>
  <!-- Coordinates Display -->
- <div id="coordinates">Lng: 0, Lat: 0</div>
+ <!-- <div id="coordinates">Lng: 0, Lat: 0</div> -->
 
     <div id="map"></div>
     
@@ -139,6 +145,35 @@
                     'circle-color': '#ff0000'
                 }
             });
+
+            // Add a GeoJSON source for polygons
+            map.addSource('polygon-data', {
+                'type': 'geojson',
+                'data': 'ASSETS/polygons.geojson' // Add your polygons GeoJSON file here
+            });
+
+             // Add a layer for polygons
+             map.addLayer({
+                'id': 'polygon-layer',
+                'type': 'fill',
+                'source': 'polygon-data',
+                'paint': {
+                    'fill-color': '#ff0000', // Green fill color for polygons
+                    'fill-opacity': 0.2 // Set opacity for polygons
+                }
+            });
+
+            // Optional outline for polygons
+            map.addLayer({
+                'id': 'polygon-layer-outline',
+                'type': 'line',
+                'source': 'polygon-data',
+                'paint': {
+                    'line-color': '#ff0000', // Black outline for polygons
+                    'line-width': .25
+                }
+            });
+
 
             // Filtering function
             function filterMap() {
@@ -185,13 +220,20 @@
                 var coordinates = e.features[0].geometry.coordinates.slice();
                 var description = `
                 <div style="max-height: 200px; overflow-y: auto;">
-                    <strong style="font-size:14px;">${e.features[0].properties.Name}</strong><br><br>
-                    <strong style="color:#333;">Tipology:</strong> ${e.features[0].properties["Tipology "]}<br>
+                    
+                     <strong style="font-size:14px;">${e.features[0].properties.Name}</strong><br><br>
+                      <strong style="color:#333;">Project Number:</strong> ${e.features[0].properties.projectNumber}<br>
+                <strong style="color:#333;">Year:</strong> ${e.features[0].properties.Year}<br>
+                  <strong style="color:#333;">Architect:</strong> ${e.features[0].properties.Architect}<br>
+                   <strong style="color:#333;">Style:</strong> ${e.features[0].properties.Style}<br>
+                  <strong style="color:#333;">Tipology:</strong> ${e.features[0].properties["Tipology "]}<br>
+                  <strong style="color:#333;">Status:</strong> ${e.features[0].properties.Status}<br>
+                 
+                   
+                   
                      <strong style="color:#333;">Description:</strong> ${e.features[0].properties.Description}<br>
-                    <strong style="color:#333;">Status:</strong> ${e.features[0].properties.Status}<br>
-                    <strong style="color:#333;">Style:</strong> ${e.features[0].properties.Style}<br>
-                    <strong style="color:#333;">Architect:</strong> ${e.features[0].properties.Architect}<br>
-                    <strong style="color:#333;">Year:</strong> ${e.features[0].properties.Year}<br>
+                
+                    
                     <strong style="color:#333;">URL:</strong> <a href="${e.features[0].properties.URL}" target="_blank" style="color:#1a73e8;">${e.features[0].properties.URL}</a>
                     <img src="${e.features[0].properties.ImageURL}" alt="${e.features[0].properties.Name}" style="width:100%;max-width:300px;height:auto;">
                 `;
@@ -263,6 +305,26 @@
              // Add zoom control buttons
              map.addControl(new mapboxgl.NavigationControl(), 'bottom-right');
         });
+
+
+         // Toggle visibility of polygon layer
+        //  document.getElementById('toggle-polygon-layer').addEventListener('click', function () {
+        //     var visibility = map.getLayoutProperty('polygon-layer', 'visibility');
+        //     if (visibility === 'visible') {
+        //         map.setLayoutProperty('polygon-layer', 'visibility', 'none');
+        //         map.setLayoutProperty('polygon-layer-outline', 'visibility', 'none');
+        //     } else {
+        //         map.setLayoutProperty('polygon-layer', 'visibility', 'visible');
+        //         map.setLayoutProperty('polygon-layer-outline', 'visibility', 'visible');
+        //     }
+        // });
+
+        // Toggle visibility of search bar
+        document.getElementById('toggle-search-bar').addEventListener('click', function () {
+            var searchContainer = document.querySelector('.search-container');
+            searchContainer.classList.toggle('hidden');
+        });
+
          // Handle filter toggle
          document.addEventListener('DOMContentLoaded', function () {
             var toggleButton = document.getElementById('toggle-filter');
@@ -277,19 +339,6 @@
             });
         });
 
-         // Toggle Search Bar Functionality
-        //  document.addEventListener('DOMContentLoaded', function () {
-        //     var toggleSearchButton = document.getElementById('toggle-search');
-        //     var searchContainer = document.querySelector('.search-container');
-
-        //     toggleSearchButton.addEventListener('click', function () {
-        //         if (searchContainer.classList.contains('hidden')) {
-        //             searchContainer.classList.remove('hidden');
-        //         } else {
-        //             searchContainer.classList.add('hidden');
-        //         }
-        //     });
-        // });
  
    // Add search functionality
 document.getElementById('project-search').addEventListener('keydown', function (e) {
@@ -328,11 +377,11 @@ document.getElementById('project-search').addEventListener('keydown', function (
 
      
 
-        // Display the coordinates of the mouse on the map
-        map.on('mousemove', function (e) {
-            document.getElementById('coordinates').textContent =
-                `Lng: ${e.lngLat.lng.toFixed(5)}, Lat: ${e.lngLat.lat.toFixed(5)}`;
-        });
+        // // Display the coordinates of the mouse on the map
+        // map.on('mousemove', function (e) {
+        //     document.getElementById('coordinates').textContent =
+        //         `Lng: ${e.lngLat.lng.toFixed(5)}, Lat: ${e.lngLat.lat.toFixed(5)}`;
+        // });
         // Handle search clearing
 document.getElementById('clear-search').addEventListener('click', function () {
     // Clear the search input field
@@ -350,6 +399,29 @@ document.getElementById('clear-search').addEventListener('click', function () {
         zoom: 8 // Initial zoom level
     });
 });
+
+document.getElementById('toggle-polygon-layer').addEventListener('click', function () {
+    var visibility = map.getLayoutProperty('polygon-layer', 'visibility');
+    
+    if (visibility === 'visible') {
+        map.setLayoutProperty('polygon-layer', 'visibility', 'none');
+        map.setLayoutProperty('polygon-layer-outline', 'visibility', 'none');
+    } else {
+        map.setLayoutProperty('polygon-layer', 'visibility', 'visible');
+        map.setLayoutProperty('polygon-layer-outline', 'visibility', 'visible');
+    }
+});
+
+document.getElementById('toggle-search-bar').addEventListener('click', function () {
+    var searchContainer = document.querySelector('.search-container');
+
+    if (searchContainer.style.display === 'none' || searchContainer.style.display === '') {
+        searchContainer.style.display = 'block';
+    } else {
+        searchContainer.style.display = 'none';
+    }
+});
+
 
     
     </script>
