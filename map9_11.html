@@ -176,6 +176,33 @@
             });
 
 
+               // Add a GeoJSON source for polygons
+               map.addSource('E_B-data', {
+                'type': 'geojson',
+                'data': 'ASSETS\E_B.geojson' // Add your polygons GeoJSON file here
+            });
+
+             // Add a layer for polygons
+             map.addLayer({
+                'id': 'E_B-layer',
+                'type': 'fill',
+                'source': 'E_B-data',
+                'paint': {
+                    'fill-color': '#000000', // Green fill color for polygons
+                }
+            });
+
+            // Optional outline for polygons
+            map.addLayer({
+                'id': 'E_B-layer-outline',
+                'type': 'line',
+                'source': 'E_B-data',
+                'paint': {
+                    'line-color': '#000000', // Black outline for polygons
+                    'line-width': .25
+                }
+            });
+
             // Filtering function
             function filterMap() {
                 var selectedTipology = document.getElementById('tipology-filter').value;
