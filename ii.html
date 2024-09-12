@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mapbox Pattern Fill Example</title>
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.7.0/mapbox-gl.css" rel="stylesheet">
+    <style>
+        body { margin: 0; }
+        #map { width: 100vw; height: 100vh; }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.7.0/mapbox-gl.js"></script>
+    <script>
+        // Replace 'YOUR_MAPBOX_ACCESS_TOKEN' with your Mapbox access token
+        mapboxgl.accessToken = 'pk.eyJ1IjoiY3BlcmV6bSIsImEiOiJjbGo0b3lhZjIwM3R2M2treGMwc3Z2NDhoIn0.Py5P82ue0Klm3gJYJsrc2g';
+
+        const map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/mapbox/streets-v11',
+            center: [-66, 18], // Change the center coordinate to your desired location
+            zoom: 9 // Adjust the zoom level as needed
+        });
+
+        map.on('load', function () {
+            // Add the pattern image to the map
+            map.addImage('stripe-pattern', 'ASSETS/Stripe_pattern.png');
+
+            // Add the source
+            map.addSource('E_D-data', {
+                'type': 'geojson',
+                'data': 'ASSETS/E_D.geojson'
+            });
+
+            // Add the layer with the pattern fill
+            map.addLayer({
+                'id': 'E_D-layer',
+                'type': 'fill',
+                'source': 'E_D-data',
+                'paint': {
+                    'fill-color': '#ff0000',
+                    'fill-pattern': 'stripe-pattern'
+                }
+            });
+                // Optional outline for polygons
+                map.addLayer({
+                'id': 'E_D-layer-outline',
+                'type': 'line',
+                'source': 'E_D-data',
+                'paint': {
+                    'line-color': '#000000', // Black outline for polygons
+                    'line-width': 1
+                }
+            });
+        });
+    </script>
+</body>
+</html>
