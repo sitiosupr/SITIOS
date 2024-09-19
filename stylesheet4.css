@@ -1,0 +1,240 @@
+body { 
+    margin: 0; 
+    padding: 0; 
+}
+
+#map { 
+    position: absolute; 
+    top: 0; 
+    bottom: 0; 
+    width: 100%; 
+}
+
+header {
+    background: rgba(255, 255, 255, 0); /* Transparent background */
+    position: absolute;
+    font-family: Helvetica, Arial, sans-serif;
+    width: 100%;
+    top: 0;
+    left: 0;
+    z-index: 1; /* Ensure the header is above the map */
+    padding: 20px; /* Optional: adjust as needed */
+    transition: transform 0.3s ease;
+}
+
+nav ul {
+    list-style: none;
+    padding: 20px; /* Added units to padding */
+    background-color: rgba(255, 255, 255, 0);
+    text-align: left;
+    font-size: 14px;
+}
+
+nav ul li {
+    display: inline;
+    margin-right: 20px;
+}
+
+nav ul li a {
+    text-decoration: none;
+    color: #272727;
+    font-weight: bold;
+}
+
+nav ul li a:hover {
+    color: #ff0000; /* Color when hovered */
+    text-decoration: none; /* Prevent underline on hover */
+}
+
+.filter-controls {
+    position: absolute;
+    top: 80px; /* Adjust as needed */
+    left: 10px; /* Adjust as needed */
+    z-index: 2; /* Ensure it is above the map */
+    background: rgba(105, 105, 105, 0.304); /* Semi-transparent background */
+    padding: 20px;
+    border-radius: 5px;
+}
+
+.filter-controls.hidden {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.filter-controls label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 11px;
+    font-family: Helvetica, Arial, sans-serif;
+}
+
+select {
+    margin-bottom: 10px;
+    padding: 5px;
+    font-size: 11px;
+    background: rgba(207, 207, 207, 0.549);
+}
+
+#reset-filters {
+    margin-top: 1px;
+    padding: 3px;
+    background-color: rgba(255, 255, 255, 0.549);
+    color: rgb(255, 0, 0);
+    font-size: 11px;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+}
+
+/* Style for the geocoder control */
+.mapboxgl-ctrl-geocoder {
+    position: absolute;
+    top: 15px; /* Adjust as needed */
+    right: 10px; /* Adjust as needed */
+    z-index: 2; /* Ensure it is above the map */
+}
+
+.search-container {
+    position: absolute;
+    top: 80px;
+    right: 10px; /* Adjust right positioning */
+    display: flex;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.7);
+    padding: 12px;
+    border-radius: 5px;
+    z-index: 2;
+}
+
+#search-input {
+    padding: 22px;
+    font-size: 11px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    margin-right: 1px;
+}
+
+#search-button:hover {
+    background-color: darkred;
+}
+
+/* Add CSS for the clear button */
+.clear-btn {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    margin-left: 10px;
+    color: #999;
+}
+
+.clear-btn:hover {
+    color: #000;
+}
+
+/* Base button styling for both filter and polygon buttons */
+.toggle-button {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    background-color: rgb(255, 0, 0); /* Red background */
+    color: rgb(255, 255, 255); /* White icon */
+    border: none;
+    border-radius: 5px;
+    padding: 10px;
+    cursor: pointer;
+    z-index: 3; /* Ensure it is above other elements */
+}
+
+/* Specific styling for the filter button */
+.toggle-filter-button {
+    top: 80px; /* Adjust as needed */
+    right: 70px; /* Adjust for responsiveness */
+}
+
+/* Specific styling for the polygon button */
+.toggle-polygon-button {
+    top: 130px; /* Adjust as needed */
+    right: 70px; /* Adjust for responsiveness */
+}
+
+.toggle-polygon-button::before {
+    content: '';
+    width: 10px;
+    height: 15px;
+    background-color: #FF0000; /* Color of the parallelogram */
+    border: 2px solid white; /* White stroke */
+    transform: skew(20deg);
+    display: inline-block;
+}
+
+/* Specific styling for the search button */
+.toggle-search-button {
+    top: 180px; /* Adjust the position */
+    right: 70px; /* Adjust for responsiveness */
+}
+
+/* Hide elements by default */
+.hidden {
+    display: none;
+}
+
+/* Media Queries for responsiveness */
+@media only screen and (max-width: 768px) {
+    .filter-controls, .toggle-button {
+      
+        right: 10px; /* Adjust right positioning */
+    }
+
+
+    .toggle-filter-button {
+        width: 35px;
+        height: 35px;
+        top: 30%; /* Adjust position for mobile */
+        right: 10px;
+    }
+
+    .toggle-polygon-button { 
+
+        width: 35px;
+        height: 35px;
+        top: 36%; /* Adjust position for mobile */
+        right: 10px;
+    }
+
+    .toggle-search-button {
+        width: 35px;
+        height: 35px;
+        top: 42%; /* Adjust position for mobile */
+        right: 10px;
+    }
+
+    .mapboxgl-ctrl-geocoder {
+       
+        top: 70px; /* Adjust as needed */
+        right: 21px; /* Adjust as needed */
+        z-index: 2; /* Ensure it is above the map */
+    }
+
+    .filter-controls {
+       
+        top: 200px; /* Adjust as needed */
+        width: 215px;
+        left: 120px; /* Adjust as needed */
+       
+       
+    }
+
+    #search-input {
+        width: 20%; /* Adjust width for mobile */
+   
+    }
+
+    .search-container {
+          top: 200px; /* Adjust as needed */
+        width: 215px;
+        left: 120px; /* Adjust as needed */
+       
+       
+    }
+}
