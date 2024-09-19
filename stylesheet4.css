@@ -49,7 +49,7 @@ nav ul li a:hover {
 .filter-controls {
     position: absolute;
     top: 80px; /* Adjust as needed */
-    left: 10px; /* Adjust as needed */
+    left: 120px; /* Adjust as needed */
     z-index: 2; /* Ensure it is above the map */
     background: rgba(105, 105, 105, 0.304); /* Semi-transparent background */
     padding: 20px;
@@ -97,7 +97,7 @@ select {
 .search-container {
     position: absolute;
     top: 80px;
-    right: 10px; /* Adjust right positioning */
+    right: 20px; /* Adjust right positioning */
     display: flex;
     align-items: center;
     background-color: rgba(255, 255, 255, 0.7);
@@ -108,6 +108,7 @@ select {
 
 #search-input {
     padding: 22px;
+    right: 25px;
     font-size: 11px;
     border: 1px solid #ccc;
     border-radius: 10px;
@@ -149,13 +150,13 @@ select {
 /* Specific styling for the filter button */
 .toggle-filter-button {
     top: 80px; /* Adjust as needed */
-    right: 70px; /* Adjust for responsiveness */
+    right: 1447px; /* Adjust for responsiveness */
 }
 
 /* Specific styling for the polygon button */
 .toggle-polygon-button {
     top: 130px; /* Adjust as needed */
-    right: 70px; /* Adjust for responsiveness */
+    right: 1447px; /* Adjust for responsiveness */
 }
 
 .toggle-polygon-button::before {
@@ -171,7 +172,7 @@ select {
 /* Specific styling for the search button */
 .toggle-search-button {
     top: 180px; /* Adjust the position */
-    right: 70px; /* Adjust for responsiveness */
+    right: 1447px; /* Adjust for responsiveness */
 }
 
 /* Hide elements by default */
