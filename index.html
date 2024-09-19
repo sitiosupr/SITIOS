@@ -8,9 +8,33 @@
     <link rel="stylesheet" href="stylesheet2.css">
     <!-- <link rel="stylesheet" href="styles.css"> Link to external CSS -->
     <style>
-        
-        
+        body {
+            margin: 0;
+            font-family: Helvetica, sans-serif, sans-serif;
+            overflow: hidden; /* Hide scroll until welcome screen disappears */
+        }
 
+        #welcomeScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #1a1a1a; /* Change to desired color */
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            transition: transform 1s ease; /* Smooth exit */
+        }
+
+        #welcomeScreen h1 {
+            font-size: 2rem;
+            text-align: center;
+        }
+
+    
     </style>
 </head>
 <body>
@@ -27,6 +51,13 @@
             </ul>
         </nav>
     </header>
+
+    <div id="welcomeScreen">
+        <h1>SITIOS: Mapa Arquitectónico de PR</h1>
+    </div>
+
+    <!-- Rest of your content -->
+    
     <!-- <footer>
         <div class="footer-icons" style="display: inline-block;">
             <a href="https://www.facebook.com/profile.php?id=100024006336205" target="_blank"><i class="fab fa-facebook"></i></a>
@@ -35,35 +66,13 @@
         </div>
         <p style="color: grey; text-align: left; font-style: italic;">&copy; Made by Carolina Pérez Méndez</p>
         <p style="color: black; text-align: left;">&copy; 2023 Carolina Pérez Méndez. All rights reserved.</p>
-    
     </footer> -->
 
-    
     <!-- <button onclick="topFunction()" id="myBtn" title="Go to top">Top</button> -->
 
     <script>
-     // Get the button:
-// let mybutton = document.getElementById("myBtn");
-
-// When the user scrolls down 20px from the top of the document, show the button
-// window.onscroll = function() {scrollFunction()};
-
-// function scrollFunction() {
-//   if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
-//     mybutton.style.display = "block";
-//   } else {
-//     mybutton.style.display = "none";
-//   }
-// }
-
-// When the user clicks on the button, scroll to the top of the document
-// function topFunction() {
-//   document.body.scrollTop = 0; // For Safari
-//   document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
-// }
-
-  // Welcome screen functionality
-  document.addEventListener("DOMContentLoaded", function () {
+        // Welcome screen functionality
+        document.addEventListener("DOMContentLoaded", function () {
             var welcomeScreen = document.getElementById("welcomeScreen");
 
             window.addEventListener("scroll", function () {
@@ -75,9 +84,13 @@
             setTimeout(function () {
                 welcomeScreen.style.transform = "translateY(-100%)";
                 document.body.style.overflow = "auto";
-            }, 5000); // Adjust the time (in milliseconds) as needed
+            }, 1000); // Adjust the time (in milliseconds) as needed
+
+            
         });
-        // Optional: Add JavaScript for menu toggle or other interactive features
+
+        
+
     </script>
 </body>
 </html>
