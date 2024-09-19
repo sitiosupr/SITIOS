@@ -150,13 +150,13 @@ select {
 /* Specific styling for the filter button */
 .toggle-filter-button {
     top: 80px; /* Adjust as needed */
-    right: 1447px; /* Adjust for responsiveness */
+    right: 20px; /* Adjust for responsiveness */
 }
 
 /* Specific styling for the polygon button */
 .toggle-polygon-button {
     top: 130px; /* Adjust as needed */
-    right: 1447px; /* Adjust for responsiveness */
+    right: 20px; /* Adjust for responsiveness */
 }
 
 .toggle-polygon-button::before {
@@ -172,7 +172,7 @@ select {
 /* Specific styling for the search button */
 .toggle-search-button {
     top: 180px; /* Adjust the position */
-    right: 1447px; /* Adjust for responsiveness */
+    right: 20px; /* Adjust for responsiveness */
 }
 
 /* Hide elements by default */
