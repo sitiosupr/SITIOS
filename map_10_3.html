@@ -3,43 +3,139 @@
 <head>
     <meta charset="utf-8">
     <title>SITIOS: Mapa Arquitectónico de PR</title>
-
     <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
-
-    <link rel="stylesheet" href="stylesheet4.css">
+    
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-    
-    <link href="https://api.mapbox.com/mapbox-gl-js/v3.6.0/mapbox-gl.css" rel="stylesheet">
-    <script src="https://api.mapbox.com/mapbox-gl-js/v3.6.0/mapbox-gl.js"></script>
 
-    
+    <!-- Use the latest stable version of Mapbox GL JS -->
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet">
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
+
     <style>
-       /* .project-number-search {
-    margin: 10px;
-    display: flex;
-    align-items: center;
+        body {
+            display: flex;
+        }
+        #sidebar {
+            width: 250px;
+            padding: 15px;
+            border-right: 1px solid #ccc;
+            background-color: #f9f9f9;
+            font-family: Helvetica, Arial, sans-serif;
+        }
+        #map {
+            flex-grow: 1;
+            height: 100vh;
+        }
+        .project-item {
+            cursor: pointer;
+            padding: 5px 0;
+            border-bottom: 1px solid #ddd;
+        }
+        .project-item:hover {
+            background-color: #eee;
+            color: red;
+        }
+
+        
+
+.filter-controls {
+    position: absolute;
+    top: 80px; /* Adjust as needed */
+    left: 1255px; /* Adjust as needed */
+    z-index: 2; /* Ensure it is above the map */
+    background: rgba(105, 105, 105, 0.304); /* Semi-transparent background */
+    padding: 20px;
+    border-radius: 5px;
 }
 
-#project-number-input {
+.filter-controls.hidden {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.filter-controls label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 11px;
+    font-family: Helvetica, Arial, sans-serif;
+}
+
+select {
+    margin-bottom: 10px;
     padding: 5px;
-    font-size: 14px;
-    margin-left: 10px;
-    width: 250px;
-} */
+    font-size: 11px;
+    background: rgba(207, 207, 207, 0.549);
+}
+
+#reset-filters {
+    margin-top: 1px;
+    padding: 3px;
+    background-color: rgba(255, 255, 255, 0.549);
+    color: rgb(255, 0, 0);
+    font-size: 11px;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+}
+
+/* Style for the geocoder control */
+.mapboxgl-ctrl-geocoder {
+    position: absolute;
+    top: 15px; /* Adjust as needed */
+    right: 10px; /* Adjust as needed */
+    z-index: 2; /* Ensure it is above the map */
+}
+/* Base button styling for both filter and polygon buttons */
+.toggle-button {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    background-color: rgb(255, 0, 0); /* Red background */
+    color: rgb(255, 255, 255); /* White icon */
+    border: none;
+    border-radius: 5px;
+    padding: 10px;
+    cursor: pointer;
+    z-index: 3; /* Ensure it is above other elements */
+}
+
+/* Specific styling for the filter button */
+.toggle-filter-button {
+    top: 80px; /* Adjust as needed */
+    right: 20px; /* Adjust for responsiveness */
+}
+
+/* Specific styling for the polygon button */
+.toggle-polygon-button {
+    top: 130px; /* Adjust as needed */
+    right: 20px; /* Adjust for responsiveness */
+}
+
+.toggle-polygon-button::before {
+    content: '';
+    width: 10px;
+    height: 15px;
+    background-color: #FF0000; /* Color of the parallelogram */
+    border: 2px solid white; /* White stroke */
+    transform: skew(20deg);
+    display: inline-block;
+}
+
+
+
 
     </style>
 </head>
 <body>
-    <header>
-        <nav>
-            <ul>
-                <li><a href="index.html">Home</a></li>
-                <li><a href="map9_18.html">Sitios Map</a></li>
-                <li><a href="about.html">About</a></li>
-                <li><a href="contact.html">Contact</a></li>
-            </ul>
-        </nav>
-    </header>
+
+ <!-- Toggle Filter Button -->
+ <button id="toggle-filter" class="toggle-button toggle-filter-button">
+    &#9776; <!-- This is the HTML entity for the "three lines" icon -->
+</button>
+
+<!-- Toggle Polygon Layer Button -->
+<button id="toggle-polygon-layer" class="toggle-button toggle-polygon-button">
+</button>
 
     <!-- Filter Controls -->
     <div class="filter-controls hidden">
@@ -92,48 +188,83 @@
         <button id="reset-filters">Reset Filters</button>
     </div>
 
-    <!-- Toggle Filter Button -->
-<button id="toggle-filter" class="toggle-button toggle-filter-button">
-    &#9776; <!-- This is the HTML entity for the "three lines" icon -->
-</button>
-
-<!-- Toggle Polygon Layer Button -->
-<button id="toggle-polygon-layer" class="toggle-button toggle-polygon-button">
-</button>
-
-<button id="toggle-search-bar" class="toggle-button toggle-search-button">
-    <i class="glyphicon glyphicon-search"></i>  <!-- This is the HTML entity for the magnifying glass icon -->
-</button>
+    
 
     <!-- Load the `mapbox-gl-geocoder` plugin -->
     <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.min.js"></script>
     <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.css" type="text/css">
 
-  <!-- Search Bar -->
-  <div class="search-container hidden">
-    <input type="text" id="project-search" placeholder="HKL">
-     <button id="clear-search" class="clear-btn">X</button>
-</div>
- <!-- Coordinates Display -->
- <!-- <div id="coordinates">Lng: 0, Lat: 0</div> -->
+
+    <div id="sidebar">
+        <h3>Project Numbers</h3>
+        <div id="project-list"></div>
+    </div>
 
     <div id="map"></div>
-    
+
     <script>
+        // Replace with your actual Mapbox access token
         mapboxgl.accessToken = 'pk.eyJ1IjoiY3BlcmV6bSIsImEiOiJjbGo0b3lhZjIwM3R2M2treGMwc3Z2NDhoIn0.Py5P82ue0Klm3gJYJsrc2g';
+        
         var map = new mapboxgl.Map({
             container: 'map',
             style: 'mapbox://styles/mapbox/light-v11',
             center: [-66.590149, 18.220833], // Starting position [lng, lat]
             zoom: 8
         });
-        var marker = null; // Global variable to hold the marker
 
-        
+      
+        var marker = null;
+        var popup = null;
 
-        map.on('load', function () {
+        // Fetch project numbers and coordinates from the JSON file
+        fetch('ASSETS/project_numbers.json')
+            .then(response => response.json())
+            .then(data => {
+                var projectList = document.getElementById('project-list');
+                
+                data.forEach(function(item) {
+                    var div = document.createElement('div');
+                    div.className = 'project-item';
+                    div.textContent = item.project_number;
+                    div.onclick = function() {
+                        if (marker) marker.remove();
+                        if (popup) popup.remove(); // Remove any existing popup
+                        
+                        var coordinates = item.coordinates;
 
-                map.addSource('E_D-data', {
+                        // Add the marker to the map
+                        marker = new mapboxgl.Marker({ color: 'red' })
+                            .setLngLat(coordinates)
+                            .addTo(map);
+
+                        // Fly to the coordinates
+                        map.flyTo({ center: coordinates, zoom: 14 });
+
+                        // Create a popup with project details
+                        var description = `
+                            <div style="max-height: 200px; overflow-y: auto;">
+                                <strong style="font-size:14px;">${item.name || 'Unknown Project'}</strong><br><br>
+                                <strong style="color:#333;">Project Number:</strong> ${item.project_number}<br>
+                                <strong style="color:#333;">Description:</strong> ${item.description || 'No description available.'}<br>
+                            </div>
+                        `;
+
+                        // Add the popup to the map
+                        popup = new mapboxgl.Popup()
+                            .setLngLat(coordinates)
+                            .setHTML(description)
+                            .addTo(map);
+                    };
+                    projectList.appendChild(div);
+                });
+            })
+            .catch(error => console.error('Error fetching project numbers:', error));
+
+        map.on('load', function() {
+            // Map has loaded, additional map setup or layers can go here
+
+            map.addSource('E_D-data', {
                     'type': 'geojson',
                     'data': 'ASSETS/E_D.geojson'
                 });
@@ -275,9 +406,6 @@
                 }
             });
 
-
-         
-
             // Filtering function
             function filterMap() {
                 var selectedTipology = document.getElementById('tipology-filter').value;
@@ -407,27 +535,10 @@
             });
              // Add zoom control buttons
              map.addControl(new mapboxgl.NavigationControl(), 'bottom-right');
+    
         });
 
-
-         // Toggle visibility of polygon layer
-        //  document.getElementById('toggle-polygon-layer').addEventListener('click', function () {
-        //     var visibility = map.getLayoutProperty('polygon-layer', 'visibility');
-        //     if (visibility === 'visible') {
-        //         map.setLayoutProperty('polygon-layer', 'visibility', 'none');
-        //         map.setLayoutProperty('polygon-layer-outline', 'visibility', 'none');
-        //     } else {
-        //         map.setLayoutProperty('polygon-layer', 'visibility', 'visible');
-        //         map.setLayoutProperty('polygon-layer-outline', 'visibility', 'visible');
-        //     }
-        // });
-
-        // Toggle visibility of search bar
-        document.getElementById('toggle-search-bar').addEventListener('click', function () {
-            var searchContainer = document.querySelector('.search-container');
-            searchContainer.classList.toggle('hidden');
-        });
-
+        
          // Handle filter toggle
          document.addEventListener('DOMContentLoaded', function () {
             var toggleButton = document.getElementById('toggle-filter');
@@ -442,67 +553,7 @@
             });
         });
 
- 
-   // Add search functionality
-document.getElementById('project-search').addEventListener('keydown', function (e) {
-    if (e.key === 'Enter') {
-        var searchValue = e.target.value.trim().toUpperCase();
-
-        if (searchValue) {
-            var features = map.querySourceFeatures('my-data');
-            var matchingFeature = features.find(function (feature) {
-                var projectNumber = feature.properties['Proyect Number'].trim().toUpperCase();
-                return projectNumber.includes(searchValue); // Use includes for partial matching
-            });
-
-            if (matchingFeature) {
-                var coordinates = matchingFeature.geometry.coordinates;
-
-                if (marker) {
-                    marker.remove(); // Remove the previous marker
-                }
-
-                // Add a custom red marker at the matching feature location
-                marker = new mapboxgl.Marker({ color: 'red' })
-                    .setLngLat(coordinates)
-                    .addTo(map);
-
-                map.flyTo({
-                    center: coordinates,
-                    zoom: 14
-                });
-            } else {
-                alert('No matching project number found.');
-            }
-        }
-    }
-});
-
-     
-
-        // // Display the coordinates of the mouse on the map
-        // map.on('mousemove', function (e) {
-        //     document.getElementById('coordinates').textContent =
-        //         `Lng: ${e.lngLat.lng.toFixed(5)}, Lat: ${e.lngLat.lat.toFixed(5)}`;
-        // });
-        // Handle search clearing
-document.getElementById('clear-search').addEventListener('click', function () {
-    // Clear the search input field
-    document.getElementById('project-search').value = '';
-
-    // Remove the marker if it exists
-    if (marker) {
-        marker.remove();
-        marker = null;
-    }
-
-    // Reset the map view to the initial position
-    map.flyTo({
-        center: [-66.590149, 18.220833], // Initial map center
-        zoom: 8 // Initial zoom level
-    });
-});
-
+        
 document.getElementById('toggle-polygon-layer').addEventListener('click', function () {
     var visibility = map.getLayoutProperty('polygon-layer', 'visibility');
     
@@ -514,19 +565,7 @@ document.getElementById('toggle-polygon-layer').addEventListener('click', functi
         map.setLayoutProperty('polygon-layer-outline', 'visibility', 'visible');
     }
 });
-
-document.getElementById('toggle-search-bar').addEventListener('click', function () {
-    var searchContainer = document.querySelector('.search-container');
-
-    if (searchContainer.style.display === 'none' || searchContainer.style.display === '') {
-        searchContainer.style.display = 'block';
-    } else {
-        searchContainer.style.display = 'none';
-    }
-});
-
-
-    
     </script>
+
 </body>
 </html>

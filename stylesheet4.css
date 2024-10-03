@@ -180,6 +180,8 @@ select {
     display: none;
 }
 
+
+
 /* Media Queries for responsiveness */
 @media only screen and (max-width: 768px) {
     .filter-controls, .toggle-button {

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>SITIOS: Mapa Arquitectónico de PR</title>
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+    
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+    <!-- Use the latest stable version of Mapbox GL JS -->
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet">
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
+
+    <style>
+        body {
+            display: flex;
+        }
+        #sidebar {
+            width: 250px;
+            padding: 15px;
+            border-right: 1px solid #ccc;
+            background-color: #f9f9f9;
+        }
+        #map {
+            flex-grow: 1;
+            height: 100vh;
+        }
+        .project-item {
+            cursor: pointer;
+            padding: 5px 0;
+            border-bottom: 1px solid #ddd;
+        }
+        .project-item:hover {
+            background-color: #eee;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="sidebar">
+        <h3>Project Numbers</h3>
+        <div id="project-list"></div>
+    </div>
+
+    <div id="map"></div>
+
+    <script>
+        // Replace with your actual Mapbox access token
+        mapboxgl.accessToken = 'pk.eyJ1IjoiY3BlcmV6bSIsImEiOiJjbGo0b3lhZjIwM3R2M2treGMwc3Z2NDhoIn0.Py5P82ue0Klm3gJYJsrc2g';
+        
+        var map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/mapbox/light-v11',
+            center: [-66.590149, 18.220833], // Starting position [lng, lat]
+            zoom: 8
+        });
+
+        var marker = null;
+        var popup = null;
+
+        // Fetch project numbers and coordinates from the JSON file
+        fetch('ASSETS/project_numbers.json')
+            .then(response => response.json())
+            .then(data => {
+                var projectList = document.getElementById('project-list');
+                
+                data.forEach(function(item) {
+                    var div = document.createElement('div');
+                    div.className = 'project-item';
+                    div.textContent = item.project_number;
+                    div.onclick = function() {
+                        if (marker) marker.remove();
+                        if (popup) popup.remove(); // Remove any existing popup
+                        
+                        var coordinates = item.coordinates;
+
+                        // Add the marker to the map
+                        marker = new mapboxgl.Marker({ color: 'red' })
+                            .setLngLat(coordinates)
+                            .addTo(map);
+
+                        // Fly to the coordinates
+                        map.flyTo({ center: coordinates, zoom: 14 });
+
+                        // Create a popup with project details
+                        var description = `
+                            <div style="max-height: 200px; overflow-y: auto;">
+                                <strong style="font-size:14px;">${item.name || 'Unknown Project'}</strong><br><br>
+                                <strong style="color:#333;">Project Number:</strong> ${item.project_number}<br>
+                                <strong style="color:#333;">Description:</strong> ${item.description || 'No description available.'}<br>
+                            </div>
+                        `;
+
+                        // Add the popup to the map
+                        popup = new mapboxgl.Popup()
+                            .setLngLat(coordinates)
+                            .setHTML(description)
+                            .addTo(map);
+                    };
+                    projectList.appendChild(div);
+                });
+            })
+            .catch(error => console.error('Error fetching project numbers:', error));
+
+        map.on('load', function() {
+            // Additional map setup or layers can go here
+        });
+    </script>
+
+</body>
+</html>
