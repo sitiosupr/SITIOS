@@ -11,54 +11,80 @@
     <link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet">
     <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
 
+    <!-- Load the Mapbox Geocoder plugin -->
+    <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.min.js"></script>
+    <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.css" type="text/css">
+
     <style>
         body {
+            margin: 0;
+            padding: 0;
             display: flex;
-        }
-        #sidebar {
-            width: 250px;
-            padding: 15px;
-            border-right: 1px solid #ccc;
-            background-color: #f9f9f9;
-            font-family: Helvetica, Arial, sans-serif;
-            transition: transform 0.3s ease-in-out;
-           
-        }
-        #sidebar.hidden {
-            transform: translateX(100%);
-        }
-
-        /* Sidebar toggle button */
-        .toggle-sidebar {
-            position: absolute;
-            left: 250px; /* Adjust to position the button right next to the sidebar */
-            top: 50%; /* Position vertically in the middle of the screen */
-            transform: translateY(-50%); /* Offset by 50% to truly center it */
-            background-color: #333;
-            color: white;
-            padding: 10px;
-            cursor: pointer;
-            z-index: 5; /* Ensure it is above the sidebar and other elements */
-            border-radius: 5px 0 0 5px; /* Rounded corners on the right */
-            border: 1px solid #ccc;
+            height: 100vh;
         }
 
         #map {
             flex-grow: 1;
             height: 100vh;
-            transition: width .00001s ease-in-out; /* Smooth transition for map resizing */
+            position: relative;
+            z-index: 1;
         }
-        
+
+        #project-controls {
+            position: absolute;
+            top: 10px; 
+            left: 10px;
+            z-index: 2;
+            background: rgba(105, 105, 105, 0.304);
+            padding: 15px;
+            border-radius: 5px;
+            max-height: 600px; 
+            overflow-y: auto;
+           
+        }
+        #project-controls.hidden {
+            display: none; /* Hide project controls when the hidden class is applied */
+        }
+
+           /* Style the h3 inside project-controls */
+           #project-controls h3 {
+            font-size: 16px; /* Set font size */
+            color: #333; /* Text color */
+            margin-bottom: 10px; /* Add space below */
+            font-family: Helvetica, Arial, sans-serif; /* Font family */
+            text-align: left; /* Center the text */
+            border-bottom: 2px solid #ccc; /* Bottom border */
+            padding-bottom: 5px; /* Padding below the heading */
+        }
+.project-item label{ font-size: 11px;
+    font-family: Helvetica, Arial, sans-serif;}
+      
         .project-item {
             cursor: pointer;
             padding: 5px 0;
-            border-bottom: 1px solid #ddd;
+            border-bottom: 1px solid rgb(207, 207, 207, 0.549);
         }
         .project-item:hover {
-            background-color: #eee;
-            color: red;
+            background-color: #a4a4a4;
+            color: rgb(219, 219, 219);
         }
+        #project-controls::-webkit-scrollbar {
+    width: 10px; /* Set the width of the scrollbar */
+}
 
+#project-controls::-webkit-scrollbar-track {
+    background: #f1f1f1; /* Color of the track (scrollbar background) */
+}
+
+#project-controls::-webkit-scrollbar-thumb {
+    background-color: #888; /* Color of the scrollbar handle */
+    border-radius: 10px; /* Rounded corners for the scrollbar */
+    border: 2px solid #f1f1f1; /* Padding around the handle */
+}
+
+#project-controls::-webkit-scrollbar-thumb:hover {
+    background: #555; /* Darken on hover */
+}
         
 
 .filter-controls {
@@ -144,6 +170,12 @@ select {
     display: inline-block;
 }
 
+  /* New Toggle Project Controls Button */
+  .toggle-project-button {
+            top: 180px; /* Place it below the other buttons */
+            right: 20px;
+        }
+
 
 
 
@@ -152,8 +184,11 @@ select {
 <body>
 
     
-    <!-- Toggle Sidebar Button -->
-    <div class="toggle-sidebar" id="sidebar-toggle">&#9776;</div>
+    <!-- Toggle Project Controls Button -->
+    <button id="toggle-project" class="toggle-button toggle-project-button">
+        P <!-- 'P' for projects, customize as needed -->
+    </button>
+
 
  <!-- Toggle Filter Button -->
  <button id="toggle-filter" class="toggle-button toggle-filter-button">
@@ -215,19 +250,15 @@ select {
         <button id="reset-filters">Reset Filters</button>
     </div>
 
-    
 
-    <!-- Load the `mapbox-gl-geocoder` plugin -->
-    <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.min.js"></script>
-    <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.css" type="text/css">
+    <div id="map"></div>
 
-
-    <div id="sidebar">
+    <div id="project-controls" class="hidden">
         <h3>Project Numbers</h3>
         <div id="project-list"></div>
     </div>
 
-    <div id="map"></div>
+    
 
     <script>
         // Replace with your actual Mapbox access token
@@ -243,6 +274,77 @@ select {
       
         var marker = null;
         var popup = null;
+
+         // Fetch the GeoJSON file with the locations
+         fetch('https://storage.googleapis.com/carolina_test/50pts.geojson') // Replace with the actual path to your GeoJSON file
+            .then(response => response.json())
+            .then(data => {
+                // Parse the GeoJSON and use it for the geocoder
+                var locations = data.features.map(function(feature) {
+                    return {
+                        place_name: feature.properties.Name, // Match the exact property name in your GeoJSON
+                        center: feature.geometry.coordinates,
+                        geometry: feature.geometry,
+                        properties: feature.properties
+                    };
+                });
+
+                // Create a custom geocoder with the GeoJSON data
+                var customGeocoder = function(query) {
+                    return locations.filter(function(location) {
+                        return location.place_name.toLowerCase().indexOf(query.toLowerCase()) !== -1;
+                    });
+                };
+
+                // Create and add the geocoder control to the map, set localGeocoder here
+                var geocoder = new MapboxGeocoder({
+                    accessToken: mapboxgl.accessToken,
+                    localGeocoder: customGeocoder, // Use the custom geocoder
+                    marker: false, // Disable the default marker
+                    placeholder: 'Search for places', // Placeholder text for the search bar
+                });
+
+                map.addControl(geocoder, 'top-right');
+
+                // Add geocoder results to the map
+                geocoder.on('result', function (e) {
+                    if (marker) {
+                        marker.remove(); // Remove the previous marker
+                    }
+
+                    // Add a custom red marker at the search result location
+                    marker = new mapboxgl.Marker({ color: 'red' })
+                        .setLngLat(e.result.geometry.coordinates)
+                        .addTo(map);
+
+                    map.flyTo({
+                        center: e.result.geometry.coordinates,
+                        zoom: 14
+                    });
+
+                    // Create a popup with place details
+                    var description = `
+                        <div style="max-height: 200px; overflow-y: auto;">
+                            <strong style="font-size:14px;">${e.result.properties.Name}</strong><br><br>
+                            <strong style="color:#333;">Description:</strong> ${e.result.properties.Description || 'No description available.'}<br>
+                        </div>
+                    `;
+
+                    popup = new mapboxgl.Popup()
+                        .setLngLat(e.result.geometry.coordinates)
+                        .setHTML(description)
+                        .addTo(map);
+                });
+
+                // Remove the marker when the search bar is cleared
+                geocoder.on('clear', function () {
+                    if (marker) {
+                        marker.remove();
+                        marker = null; // Reset the marker variable
+                    }
+                });
+            })
+            .catch(error => console.error('Error fetching GeoJSON:', error));
 
         // Fetch project numbers and coordinates from the JSON file
         fetch('ASSETS/project_numbers.json')
@@ -526,40 +628,10 @@ select {
                 map.setFilter('points', null);
             });
 
-            // Add the geocoder control to the map
-            var geocoder = new MapboxGeocoder({
-                accessToken: mapboxgl.accessToken,
-                mapboxgl: mapboxgl,
-                marker: false, // Disable the default marker
-                placeholder: 'Search for places', // Placeholder text for the search bar
-            });
+     
+        
 
-            map.addControl(geocoder);
-
-            // Add geocoder results to the map
-            geocoder.on('result', function (e) {
-                if (marker) {
-                    marker.remove(); // Remove the previous marker
-                }
-
-                // Add a custom red marker at the search result location
-                marker = new mapboxgl.Marker({ color: 'red' })
-                    .setLngLat(e.result.geometry.coordinates)
-                    .addTo(map);
-
-                map.flyTo({
-                    center: e.result.geometry.coordinates,
-                    zoom: 14
-                });
-            });
-
-            // Remove the marker when the search bar is cleared
-            geocoder.on('clear', function () {
-                if (marker) {
-                    marker.remove();
-                    marker = null; // Reset the marker variable
-                }
-            });
+          
              // Add zoom control buttons
              map.addControl(new mapboxgl.NavigationControl(), 'bottom-right');
     
@@ -593,19 +665,15 @@ document.getElementById('toggle-polygon-layer').addEventListener('click', functi
     }
 });
 
-
-
-        // Sidebar toggle functionality
-        document.getElementById('sidebar-toggle').addEventListener('click', function() {
-            var sidebar = document.getElementById('sidebar');
-            sidebar.classList.toggle('hidden');
-            
-            // Trigger a map resize after the sidebar is toggled with a delay that matches the sidebar transition
-            setTimeout(function() {
-                map.resize();
-            }, 300); // Matches the CSS transition time
+ // Toggle Project Controls Button Functionality
+ document.getElementById('toggle-project').addEventListener('click', function() {
+            var projectControls = document.getElementById('project-controls');
+            projectControls.classList.toggle('hidden');
         });
-        
+
+
+
+      
     </script>
 
 </body>

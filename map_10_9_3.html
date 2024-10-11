@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>SITIOS: Mapa Arquitectónico de PR</title>
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+    
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+    <!-- Use the latest stable version of Mapbox GL JS -->
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet">
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
+
+    <!-- Load the Mapbox Geocoder plugin -->
+    <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.min.js"></script>
+    <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.css" type="text/css">
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            height: 100vh;
+        }
+
+        #map {
+            flex-grow: 1;
+            height: 100vh;
+            position: relative;
+            z-index: 1;
+        }
+
+        #project-controls {
+            position: absolute;
+            top: 10px; 
+            left: 10px;
+            z-index: 2;
+            background: rgba(105, 105, 105, 0.304);
+            padding: 15px;
+            border-radius: 5px;
+            max-height: 600px; 
+            overflow-y: auto;
+        }
+
+        #project-controls.hidden {
+            display: none;
+        }
+
+        .project-item {
+            cursor: pointer;
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(207, 207, 207, 0.549);
+        }
+
+        .project-item:hover {
+            background-color: #a4a4a4;
+            color: rgb(219, 219, 219);
+        }
+
+        /* Style for the geocoder control */
+        .mapboxgl-ctrl-geocoder {
+            position: absolute;
+            top: 15px;
+            right: 10px;
+            z-index: 2;
+        }
+
+        /* Other styling omitted for brevity */
+    </style>
+</head>
+<body>
+
+    <!-- Toggle Project Controls Button -->
+    <button id="toggle-project" class="toggle-button toggle-project-button">
+        P
+    </button>
+
+    <!-- Filter Controls Button -->
+    <button id="toggle-filter" class="toggle-button toggle-filter-button">
+        &#9776;
+    </button>
+
+    <!-- Toggle Polygon Layer Button -->
+    <button id="toggle-polygon-layer" class="toggle-button toggle-polygon-button"></button>
+
+    <!-- Filter Controls -->
+    <div class="filter-controls hidden">
+        <label for="tipology-filter">Filter by Typology:</label>
+        <select id="tipology-filter">
+            <option value="">All</option>
+            <option value="Residential">Residential</option>
+            <option value="Institutional">Institutional</option>
+            <option value="Industrial">Industrial</option>
+            <option value="Recreational">Recreational</option>
+            <option value="Commercial">Commercial</option>
+            <option value="Religious">Religious</option>
+        </select>
+
+        <label for="status-filter">Filter by Status:</label>
+        <select id="status-filter">
+            <option value="">All</option>
+            <option value="Built">Built</option>
+            <option value="Unbuilt">Unbuilt</option>
+            <option value="Demolished">Demolished</option>
+        </select>
+
+        <label for="style-filter">Filter by Style:</label>
+        <select id="style-filter">
+            <option value="">All</option>
+            <option value="Modern">Modern</option>
+            <option value="Neoclassical">Neoclassical</option>
+            <option value="Art Deco">Art Deco</option>
+            <option value="Spanish Colonial">Spanish Colonial</option>
+            <option value="Postmodern">Postmodern</option>
+            <option value="Contemporary">Contemporary</option>
+        </select>
+
+        <label for="architect-filter">Filter by Architect:</label>
+        <select id="architect-filter">
+            <option value="">All</option>
+            <option value="Henry Klum">Henry Klumb</option>
+            <option value="Robin Planas">Robin Planas</option>
+        </select>
+
+        <label for="decade-filter">Filter by Decade:</label>
+        <select id="decade-filter">
+            <option value="">All</option>
+            <option value="1940">1940-1949</option>
+            <option value="1950">1950-1959</option>
+            <option value="1960">1960-1969</option>
+            <option value="1970">1970-1979</option>
+        </select>
+
+        <button id="reset-filters">Reset Filters</button>
+    </div>
+
+    <div id="map"></div>
+
+    <div id="project-controls" class="hidden">
+        <h3>Project Numbers</h3>
+        <div id="project-list"></div>
+    </div>
+
+    <script>
+        // Replace with your actual Mapbox access token
+        mapboxgl.accessToken = 'pk.eyJ1IjoiY3BlcmV6bSIsImEiOiJjbGo0b3lhZjIwM3R2M2treGMwc3Z2NDhoIn0.Py5P82ue0Klm3gJYJsrc2g';
+
+        var map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/mapbox/light-v11',
+            center: [-66.590149, 18.220833],
+            zoom: 8
+        });
+
+        var marker = null;
+        var popup = null;
+
+        // Fetch the GeoJSON file for the geocoder
+        fetch('https://storage.googleapis.com/carolina_test/50pts.geojson')
+            .then(response => response.json())
+            .then(data => {
+                var locations = data.features.map(function(feature) {
+                    return {
+                        place_name: feature.properties.Name,
+                        center: feature.geometry.coordinates,
+                        geometry: feature.geometry,
+                        properties: feature.properties
+                    };
+                });
+
+                // Create a custom geocoder with the GeoJSON data
+                var customGeocoder = function(query) {
+                    return locations.filter(function(location) {
+                        return location.place_name.toLowerCase().indexOf(query.toLowerCase()) !== -1;
+                    });
+                };
+
+                // Create and add the geocoder control to the map
+                var geocoder = new MapboxGeocoder({
+                    accessToken: mapboxgl.accessToken,
+                    localGeocoder: customGeocoder,
+                    marker: false,
+                    placeholder: 'Search for places',
+                });
+
+                map.addControl(geocoder, 'top-right');
+
+                // Handle geocoder result selection
+                geocoder.on('result', function (e) {
+                    if (marker) {
+                        marker.remove(); // Remove the previous marker
+                    }
+
+                    marker = new mapboxgl.Marker({ color: 'red' })
+                        .setLngLat(e.result.geometry.coordinates)
+                        .addTo(map);
+
+                    map.flyTo({
+                        center: e.result.geometry.coordinates,
+                        zoom: 14
+                    });
+
+                    var description = `
+                        <div style="max-height: 200px; overflow-y: auto;">
+                            <strong style="font-size:14px;">${e.result.properties.Name}</strong><br><br>
+                            <strong style="color:#333;">Description:</strong> ${e.result.properties.Description || 'No description available.'}<br>
+                        </div>
+                    `;
+
+                    popup = new mapboxgl.Popup()
+                        .setLngLat(e.result.geometry.coordinates)
+                        .setHTML(description)
+                        .addTo(map);
+                });
+
+                // Remove the marker when the search bar is cleared
+                geocoder.on('clear', function () {
+                    if (marker) {
+                        marker.remove();
+                        marker = null;
+                    }
+                });
+            })
+            .catch(error => console.error('Error fetching GeoJSON:', error));
+
+        // Fetch project numbers and coordinates from a JSON file
+        fetch('ASSETS/project_numbers.json')
+            .then(response => response.json())
+            .then(data => {
+                var projectList = document.getElementById('project-list');
+
+                data.forEach(function(item) {
+                    var div = document.createElement('div');
+                    div.className = 'project-item';
+                    div.textContent = item.project_number;
+                    div.onclick = function() {
+                        if (marker) marker.remove();
+                        if (popup) popup.remove();
+
+                        var coordinates = item.coordinates;
+
+                        // Add the marker to the map
+                        marker = new mapboxgl.Marker({ color: 'red' })
+                            .setLngLat(coordinates)
+                            .addTo(map);
+
+                        // Fly to the coordinates
+                        map.flyTo({ center: coordinates, zoom: 14 });
+
+                        // Create a popup with project details
+                        var description = `
+                            <div style="max-height: 200px; overflow-y: auto;">
+                                <strong style="font-size:14px;">${item.name || 'Unknown Project'}</strong><br><br>
+                                <strong style="color:#333;">Project Number:</strong> ${item.project_number}<br>
+                                <strong style="color:#333;">Description:</strong> ${item.description || 'No description available.'}<br>
+                            </div>
+                        `;
+
+                        popup = new mapboxgl.Popup()
+                            .setLngLat(coordinates)
+                            .setHTML(description)
+                            .addTo(map);
+                    };
+                    projectList.appendChild(div);
+                });
+            })
+            .catch(error => console.error('Error fetching project numbers:', error));
+
+        // Map loaded event handler
+        map.on('load', function() {
+            // Add sources and layers for polygons
+            map.addSource('E_D-data', { type: 'geojson', data: 'ASSETS/E_D.geojson' });
+            map.addLayer({
+                'id': 'E_D-layer',
+                'type': 'fill',
+                'source': 'E_D-data',
+                'paint': { 'fill-color': '#ff0000', 'fill-pattern': 'stripe-pattern' }
+            });
+            map.addLayer({
+                'id': 'E_D-layer-outline',
+                'type': 'line',
+                'source': 'E_D-data',
+                'paint': { 'line-color': '#000000', 'line-width': 1 }
+            });
+
+            // Add more polygon layers as needed...
+
+            // Add points GeoJSON layer
+            map.addSource('my-data', { type: 'geojson', data: 'https://storage.googleapis.com/carolina_test/50pts.geojson' });
+            map.addLayer({
+                'id': 'points',
+                'type': 'circle',
+                'source': 'my-data',
+                'paint': { 'circle-radius': 6, 'circle-color': '#ff0000' }
+            });
+
+            // Add event listeners and filters
+            document.getElementById('reset-filters').addEventListener('click', function () {
+                // Reset filters logic
+            });
+
+            // Handle point clicks to show popups
+            map.on('click', 'points', function (e) {
+                var coordinates = e.features[0].geometry.coordinates.slice();
+                var description = `
+                    <strong style="font-size:14px;">${e.features[0].properties.Name}</strong><br><br>
+                    <strong>Project Number:</strong> ${e.features[0].properties['Proyect Number']}<br>
+                    <strong>Year:</strong> ${e.features[0].properties.Year}<br>
+                    <strong>Architect:</strong> ${e.features[0].properties.Architect}<br>
+                    <strong>Style:</strong> ${e.features[0].properties.Style}<br>
+                    <strong>Tipology:</strong> ${e.features[0].properties["Tipology"]}<br>
+                    <strong>Status:</strong> ${e.features[0].properties.Status}<br>
+                    <strong>Description:</strong> ${e.features[0].properties.Description}<br>
+                    <strong>URL:</strong> <a href="${e.features[0].properties.URL}" target="_blank">Link</a>
+                    <img src="${e.features[0].properties.ImageURL}" alt="${e.features[0].properties.Name}" style="width:100%;max-width:300px;height:auto;">
+                `;
+
+                new mapboxgl.Popup()
+                    .setLngLat(coordinates)
+                    .setHTML(description)
+                    .addTo(map);
+            });
+        });
+
+        // Add zoom control buttons
+        map.addControl(new mapboxgl.NavigationControl(), 'bottom-right');
+        
+        // Toggle project controls visibility
+        document.getElementById('toggle-project').addEventListener('click', function() {
+            var projectControls = document.getElementById('project-controls');
+            projectControls.classList.toggle('hidden');
+        });
+
+        // Toggle polygon layers
+        document.getElementById('toggle-polygon-layer').addEventListener('click', function () {
+            var visibility = map.getLayoutProperty('E_D-layer', 'visibility');
+            map.setLayoutProperty('E_D-layer', 'visibility', visibility === 'visible' ? 'none' : 'visible');
+            map.setLayoutProperty('E_D-layer-outline', 'visibility', visibility === 'visible' ? 'none' : 'visible');
+        });
+    </script>
+
+</body>
+</html>
