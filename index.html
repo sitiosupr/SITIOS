@@ -38,7 +38,8 @@
             background: rgba(105, 105, 105, 0.304);
             padding: 15px;
             border-radius: 5px;
-            max-height: 600px; 
+            max-height: 650px; 
+            max-width: 400px; /* Limit the width of the project box */
             overflow-y: auto;
            
         }
@@ -294,7 +295,7 @@ select {
         var popup = null;
 
          // Fetch the GeoJSON file with the locations
-         fetch('https://storage.googleapis.com/carolina_test/50pts.geojson') // Replace with the actual path to your GeoJSON file
+         fetch('https://storage.googleapis.com/carolina_test/SITIOS_ALL_POINTS.geojson') // Replace with the actual path to your GeoJSON file
             .then(response => response.json())
             .then(data => {
                 // Parse the GeoJSON and use it for the geocoder
@@ -364,7 +365,7 @@ select {
                 });
             })
             .catch(error => console.error('Error fetching GeoJSON:', error));
-            fetch('https://storage.googleapis.com/carolina_test/50pts.geojson')
+            fetch('https://storage.googleapis.com/carolina_test/SITIOS_ALL_POINTS.geojson')
     .then(response => response.json())
     .then(data => {
         var projectList = document.getElementById('project-list');
@@ -510,7 +511,7 @@ select {
             // Add a GeoJSON source
             map.addSource('my-data', {
                 'type': 'geojson',
-                'data': 'https://storage.googleapis.com/carolina_test/50pts.geojson' // Replace with the URL to your GeoJSON file
+                'data': 'https://storage.googleapis.com/carolina_test/SITIOS_ALL_POINTS.geojson' // Replace with the URL to your GeoJSON file
               
             });
 
