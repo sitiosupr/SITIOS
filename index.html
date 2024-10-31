@@ -196,13 +196,27 @@ select {
         }
 
 
-
-
+ /* Centered Rectangle Styling */
+ #center-rectangle {
+        width: 400px;           /* Rectangle width */
+        height: 500px;          /* Rectangle height */
+        background-color: transparent; /* No fill color */
+        border: 2px solid black; /* Black border */
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 999;           /* Make sure it's on top */
+    
+    
+    }
     </style>
 </head>
 <body>
 
     
+    <div id="center-rectangle"></div> 
+
     <!-- Toggle Project Controls Button -->
     <button id="toggle-project" class="toggle-button toggle-project-button">
         P <!-- 'P' for projects, customize as needed -->
@@ -481,7 +495,7 @@ select {
                 'type': 'fill',
                 'source': 'PwP-data',
                 'paint': {
-                    'fill-color': '#000000', // Green fill color for polygons
+                    'fill-color': 'rgb(194, 181, 155)', // Green fill color for polygons
                 }
             });
 
