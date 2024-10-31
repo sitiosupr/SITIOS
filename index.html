@@ -427,7 +427,7 @@ select {
 
             map.addSource('E_D-data', {
                     'type': 'geojson',
-                    'data': 'ASSETS/E_D.geojson'
+                    'data': 'https://storage.googleapis.com/sitios_bucket/E-D.geojson'
                 });
 
                 map.addLayer({
@@ -435,7 +435,7 @@ select {
                     'type': 'fill',
                     'source': 'E_D-data',
                     'paint': {
-                        'fill-color': '#808080',
+                        'fill-color': 'rgb(194, 181, 155)',
                         
                     }
                 });
@@ -445,7 +445,7 @@ select {
                   // Add a GeoJSON source for polygons
                   map.addSource('E_B-data', {
                 'type': 'geojson',
-                'data': 'ASSETS/E_B.geojson' // Add your polygons GeoJSON file here
+                'data': 'https://storage.googleapis.com/sitios_bucket/E-B.geojson' // Add your polygons GeoJSON file here
             });
 
              // Add a layer for polygons
@@ -454,7 +454,7 @@ select {
                 'type': 'fill',
                 'source': 'E_B-data',
                 'paint': {
-                    'fill-color': '#000000', // Green fill color for polygons
+                    'fill-color': 'rgb(65, 64, 66)', // Green fill color for polygons
                 }
             });
 
@@ -464,34 +464,63 @@ select {
                 'type': 'line',
                 'source': 'E_B-data',
                 'paint': {
+                    'line-color': 'rgb(65, 64, 66)', // Black outline for polygons
+                    'line-width': .25
+                }
+            });
+
+               // Add a GeoJSON source for polygons
+               map.addSource('PwP-data', {
+                'type': 'geojson',
+                'data': 'https://storage.googleapis.com/sitios_bucket/PwP.geojson' // Add your polygons GeoJSON file here
+            });
+
+              // Add a layer for polygons
+              map.addLayer({
+                'id': 'PwP-layer', 
+                'type': 'fill',
+                'source': 'PwP-data',
+                'paint': {
+                    'fill-color': '#000000', // Green fill color for polygons
+                }
+            });
+
+            // Optional outline for polygons
+            map.addLayer({
+                'id': 'PwP-layer-outline',
+                'type': 'line',
+                'source': 'PwP-data',
+                'paint': {
                     'line-color': '#000000', // Black outline for polygons
                     'line-width': .25
                 }
             });
 
-                 // Add a GeoJSON source for polygons
-                 map.addSource('E_S-data', {
-                'type': 'geojson',
-                'data': 'ASSETS/E_S.geojson' // Add your polygons GeoJSON file here
-            });
+              // Add a GeoJSON source for polygons 
+map.addSource('E_S-data', {
+    'type': 'geojson',
+    'data': 'https://storage.googleapis.com/sitios_bucket/SITE.geojson' // Add your polygons GeoJSON file here
+});
 
-            // Optional outline for polygons
-            map.addLayer({
-                'id': 'E_S-layer-outline',
-                'type': 'line',
-                'source': 'E_S-data',
-                'paint': {
-                    'line-color': '#ff0000', // Black outline for polygons
-                    'line-width': 1
-                }
-            });
+// Optional outline for polygons with a dashed line
+map.addLayer({
+    'id': 'E_S-layer-outline',
+    'type': 'line',
+    'source': 'E_S-data',
+    'paint': {
+        'line-color': '#ff0000', // Red outline for polygons
+        'line-width': 1,
+        'line-dasharray': [4,2, 0.5, 2] // Adjusts dash pattern; [2, 4] creates a thin dashed line
+    }
+});
+
 
 
 
              // Add a GeoJSON source for polygons
              map.addSource('E_U-data', {
                 'type': 'geojson',
-                'data': 'ASSETS/E_U.geojson' // Add your polygons GeoJSON file here
+                'data': 'https://storage.googleapis.com/sitios_bucket/E-U.geojson' // Add your polygons GeoJSON file here
             });
 
             // Optional outline for polygons
