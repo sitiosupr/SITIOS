@@ -517,6 +517,27 @@ map.addLayer({
 
 
 
+              // Add a GeoJSON source for polygons 
+              map.addSource('MP-data', {
+    'type': 'geojson',
+    'data': 'https://storage.googleapis.com/sitios_bucket/MP.geojson' // Add your polygons GeoJSON file here
+});
+
+// Optional outline for polygons with a dashed line
+map.addLayer({
+    'id': 'MP-layer-outline',
+    'type': 'line',
+    'source': 'MP-data',
+    'paint': {
+        'line-color': '#ff0000', // Red outline for polygons
+        'line-width': 1,
+        
+    }
+});
+
+
+
+
              // Add a GeoJSON source for polygons
              map.addSource('E_U-data', {
                 'type': 'geojson',
