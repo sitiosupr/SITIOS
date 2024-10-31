@@ -32,13 +32,14 @@
 
         #project-controls {
             position: absolute;
-            top: 10px; 
+            bottom: 18%;
+            top: 20px;
             left: 10px;
             z-index: 2;
-            background: rgba(105, 105, 105, 0.599);
+            background: rgba(165, 164, 164, 0.90);
             padding: 15px;
             border-radius: 5px;
-            max-height: 650px; 
+            
             max-width: 400px; /* Limit the width of the project box */
             overflow-y: auto;
            
@@ -54,7 +55,7 @@
             margin-bottom: 10px; /* Add space below */
             font-family: Helvetica, Arial, sans-serif; /* Font family */
             text-align: left; /* Center the text */
-            border-bottom: 2px solid #ccc; /* Bottom border */
+            border-bottom: 2px solid rgb(65, 64, 66, 0.90); /* Bottom border */
             padding-bottom: 5px; /* Padding below the heading */
             font-weight: bold;
         }
@@ -108,11 +109,11 @@
 
 .filter-controls {
     position: absolute;
-    top: 80px; /* Adjust as needed */
-    left: 1255px; /* Adjust as needed */
+    bottom:18%; /* Adjust as needed */
+    right: 20px; /* Adjust as needed */
     z-index: 2; /* Ensure it is above the map */
-    background: rgba(105, 105, 105, 0.304); /* Semi-transparent background */
-    padding: 20px;
+    background: rgba(165, 164, 164, 0.90); /* Semi-transparent background */
+    padding: 20px 30px 20px 20px;
     border-radius: 5px;
 }
 
@@ -126,20 +127,44 @@
     margin-bottom: 5px;
     font-size: 11px;
     font-family: Helvetica, Arial, sans-serif;
+    color: rgb(65, 64, 66); /* Title color */
 }
 
 select {
     margin-bottom: 10px;
     padding: 5px;
     font-size: 11px;
-    background: rgba(207, 207, 207, 0.549);
+    background: rgba(198,197,197, 0.90);
+    border: none; /* Removes black border */
+    outline: none; /* Removes focus outline */
+}
+.filter-controls .filter-title {
+    font-size: 14px; /* Title font size */
+    color: rgb(65, 64, 66); /* Title color */
+    font-family: Helvetica, Arial, sans-serif;
+    font-weight: bold;
+    border-bottom: 3px solid rgb(65, 64, 66, 0.90); /* Divider line */
+    margin-top: 0;
+    padding-bottom: 3px; /* Minimal space below text */
+    margin-bottom: 7px; /* Small space below divider */
 }
 
-#reset-filters {
+/* #reset-filters {
     margin-top: 1px;
     padding: 3px;
-    background-color: rgba(255, 255, 255, 0.549);
+    background-color: rgba(255, 255b(65, 64, 66, 0.90), 255, 0.549);
     color: rgb(255, 0, 0);
+    font-size: 11px;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+} */
+#reset-filters {
+    display: block; /* Forces the button to appear on a new line */
+    margin-top: 10px;
+    padding: 5px 10px;
+    background-color:rgb(65, 64, 66, 0.90); /* Black background */
+    color: #ffffff; /* White text */
     font-size: 11px;
     cursor: pointer;
     border: none;
@@ -156,45 +181,46 @@ select {
 /* Base button styling for both filter and polygon buttons */
 .toggle-button {
     position: absolute;
-    width: 40px;
-    height: 40px;
+    width: 30px; /* Scaled down width */
+    height: 30px; /* Scaled down height */
     background-color: rgb(255, 0, 0); /* Red background */
     color: rgb(255, 255, 255); /* White icon */
     border: none;
-    border-radius: 5px;
-    padding: 10px;
+    border-radius: 4px; /* Adjusted for smaller button */
+    padding: 6px; /* Scaled down padding */
     cursor: pointer;
     z-index: 3; /* Ensure it is above other elements */
+    font-size: 12px; /* Adjusted font size for icon clarity */
 }
 
 /* Specific styling for the filter button */
 .toggle-filter-button {
-    top: 80px; /* Adjust as needed */
-    right: 20px; /* Adjust for responsiveness */
+    top: 70px; /* Slightly lowered */
+    right: 20px; /* Moved further from the right */
 }
 
 /* Specific styling for the polygon button */
 .toggle-polygon-button {
-    top: 130px; /* Adjust as needed */
-    right: 20px; /* Adjust for responsiveness */
+    top: 110px; /* Slightly lowered */
+    right: 20px;
 }
 
 .toggle-polygon-button::before {
     content: '';
-    width: 10px;
-    height: 15px;
+    width: 8px; /* Scaled down width */
+    height: 12px; /* Scaled down height */
     background-color: #FF0000; /* Color of the parallelogram */
-    border: 2px solid white; /* White stroke */
+    border: 2px solid white; /* Scaled stroke */
     transform: skew(20deg);
     display: inline-block;
+    margin-left: -2px; /* Minor adjustment for alignment */
 }
 
-  /* New Toggle Project Controls Button */
-  .toggle-project-button {
-            top: 180px; /* Place it below the other buttons */
-            right: 20px;
-        }
-
+/* New Toggle Project Controls Button */
+.toggle-project-button {
+    top: 150px; /* Slightly lowered */
+    right: 20px;
+}
 
  /* Centered Rectangle Styling */
  #center-rectangle {
@@ -215,7 +241,7 @@ select {
 <body>
 
     
-    <div id="center-rectangle"></div> 
+    <!-- <div id="center-rectangle"></div>  -->
 
     <!-- Toggle Project Controls Button -->
     <button id="toggle-project" class="toggle-button toggle-project-button">
@@ -234,7 +260,8 @@ select {
 
     <!-- Filter Controls -->
     <div class="filter-controls hidden">
-        <label for="tipology-filter">Filter by Typology:</label>
+        <h3 class="filter-title">Filters:</h3>
+        <label for="tipology-filter">Typology:</label>
         <select id="tipology-filter">
             <option value="">All</option>
             <option value="Residential">Residential</option>
@@ -245,7 +272,7 @@ select {
             <option value="Religious">Religious</option>
         </select>
 
-        <label for="status-filter">Filter by Status:</label>
+        <label for="status-filter">Status:</label>
         <select id="status-filter">
             <option value="">All</option>
             <option value="Built">Built</option>
@@ -253,7 +280,7 @@ select {
             <option value="Demolished">Demolished</option>
         </select>
 
-        <label for="style-filter">Filter by Style:</label>
+        <label for="style-filter">Style:</label>
         <select id="style-filter">
             <option value="">All</option>
             <option value="Modern">Modern</option>
@@ -264,14 +291,14 @@ select {
             <option value="Contemporary">Contemporary</option>
         </select>
 
-        <label for="architect-filter">Filter by Architect:</label>
+        <label for="architect-filter">Architect:</label>
         <select id="architect-filter">
             <option value="">All</option>
             <option value="Henry Klum ">Henry Klumb</option>
             <option value="Robin Planas ">Robin Planas</option>
         </select>
 
-        <label for="decade-filter">Filter by Decade:</label>
+        <label for="decade-filter">Period:</label>
         <select id="decade-filter">
             <option value="">All</option>
             <option value="1940">1940-1949</option>
@@ -280,7 +307,7 @@ select {
             <option value="1970">1970-1979</option>
         </select>
 
-        <button id="reset-filters">Reset Filters</button>
+        <button id="reset-filters">Reset All Filters</button>
     </div>
 
 
@@ -524,7 +551,7 @@ map.addLayer({
     'paint': {
         'line-color': '#ff0000', // Red outline for polygons
         'line-width': 2,
-        'line-dasharray': [4,2, 0.5, 2] // Adjusts dash pattern; [2, 4] creates a thin dashed line
+        'line-dasharray': [8,4, 1, 8] // Adjusts dash pattern; [2, 4] creates a thin dashed line
     }
 });
 
