@@ -509,7 +509,7 @@ map.addLayer({
     'source': 'E_S-data',
     'paint': {
         'line-color': '#ff0000', // Red outline for polygons
-        'line-width': 1,
+        'line-width': 2,
         'line-dasharray': [4,2, 0.5, 2] // Adjusts dash pattern; [2, 4] creates a thin dashed line
     }
 });
@@ -517,23 +517,23 @@ map.addLayer({
 
 
 
-              // Add a GeoJSON source for polygons 
-              map.addSource('MP-data', {
+   // Add a GeoJSON source for polygons 
+map.addSource('MP-data', {
     'type': 'geojson',
     'data': 'https://storage.googleapis.com/sitios_bucket/MP.geojson' // Add your polygons GeoJSON file here
 });
 
-// Optional outline for polygons with a dashed line
+// Optional solid outline for polygons
 map.addLayer({
     'id': 'MP-layer-outline',
     'type': 'line',
     'source': 'MP-data',
     'paint': {
         'line-color': '#ff0000', // Red outline for polygons
-        'line-width': 1,
-        
+        'line-width': 1
     }
 });
+
 
 
 
