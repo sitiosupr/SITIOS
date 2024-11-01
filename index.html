@@ -446,7 +446,13 @@ select {
                     <div style="max-height: 200px; overflow-y: auto;">
                         <strong style="font-size:14px;">${projectName}</strong><br><br>
                         <strong style="color:#333;">Project Number:</strong> ${projectNumber}<br>
-                        <strong style="color:#333;">Description:</strong> ${projectDescription}<br>
+                        <strong style="color:#333;">Year:</strong> ${properties.Year}<br>
+                        <strong style="color:#333;">Architect:</strong> ${properties.Architect || 'N/A'}<br>
+                        <strong style="color:#333;">Style:</strong> ${properties.Style || 'N/A'}<br>
+                        <strong style="color:#333;">Typology:</strong> ${properties['Tipology '] || 'N/A'}<br>
+                         <strong style="color:#333;">Status:</strong> ${properties.Status || 'N/A'}<br>
+                      <strong style="color:#333;">Description:</strong> ${projectDescription}<br>
+                        <strong style="color:#333;">URL:</strong> <a href="${properties.URL || '#'}" target="_blank" style="color:#1a73e8;">${properties.URL || 'N/A'}</a>
                     </div>
                 `;
 
@@ -699,7 +705,7 @@ map.addLayer({
                 <strong style="color:#333;">Year:</strong> ${e.features[0].properties.Year}<br>
                   <strong style="color:#333;">Architect:</strong> ${e.features[0].properties.Architect}<br>
                    <strong style="color:#333;">Style:</strong> ${e.features[0].properties.Style}<br>
-                  <strong style="color:#333;">Tipology:</strong> ${e.features[0].properties["Tipology "]}<br>
+                  <strong style="color:#333;">Typology:</strong> ${e.features[0].properties["Tipology "]}<br>
                   <strong style="color:#333;">Status:</strong> ${e.features[0].properties.Status}<br>
                  
                    
@@ -708,8 +714,9 @@ map.addLayer({
                 
                     
                     <strong style="color:#333;">URL:</strong> <a href="${e.features[0].properties.URL}" target="_blank" style="color:#1a73e8;">${e.features[0].properties.URL}</a>
-                    <img src="${e.features[0].properties.ImageURL}" alt="${e.features[0].properties.Name}" style="width:100%;max-width:300px;height:auto;">
+                   
                 `;
+                // <img src="${e.features[0].properties.ImageURL}" alt="${e.features[0].properties.Name}" style="width:100%;max-width:300px;height:auto;"> NOTE: COPY ON TOP
 
                 while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
                     coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
