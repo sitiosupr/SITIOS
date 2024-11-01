@@ -4,14 +4,18 @@
     <meta charset="utf-8">
     <title>SITIOS: Mapa Arquitectónico de PR</title>
     <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+    
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+    <!-- Use the latest stable version of Mapbox GL JS -->
     <link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet">
     <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
+
+    <!-- Load the Mapbox Geocoder plugin -->
     <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.min.js"></script>
     <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.css" type="text/css">
 
     <style>
-        
         body {
             margin: 0;
             padding: 0;
@@ -31,8 +35,8 @@
             bottom: 18%;
             top: 20px;
             left: 10px;
-             z-index: 2;
-           background: rgba(165, 164, 164, 0.90);
+            z-index: 2;
+            background: rgba(165, 164, 164, 0.90);
             padding: 15px;
             border-radius: 5px;
             
@@ -235,16 +239,24 @@ select {
     </style>
 </head>
 <body>
-    <div id="map"></div>
-    <button id="toggle-filter" class="toggle-button toggle-filter-button">&#9776;</button>
-    <button id="toggle-polygon-layer" class="toggle-button toggle-polygon-button"></button>
-    <button id="toggle-project" class="toggle-button toggle-project-button">P</button>
 
-    <!-- Project Controls -->
-    <div id="project-controls" class="hidden">
-        <h3>Project List</h3>
-        <div id="project-list"></div>
-    </div>
+    
+    <!-- <div id="center-rectangle"></div>  -->
+
+    <!-- Toggle Project Controls Button -->
+    <button id="toggle-project" class="toggle-button toggle-project-button">
+        P <!-- 'P' for projects, customize as needed -->
+    </button>
+
+
+ <!-- Toggle Filter Button -->
+ <button id="toggle-filter" class="toggle-button toggle-filter-button">
+    &#9776; <!-- This is the HTML entity for the "three lines" icon -->
+</button>
+
+<!-- Toggle Polygon Layer Button -->
+<button id="toggle-polygon-layer" class="toggle-button toggle-polygon-button">
+</button>
 
     <!-- Filter Controls -->
     <div class="filter-controls hidden">
@@ -259,6 +271,7 @@ select {
             <option value="Commercial">Commercial</option>
             <option value="Religious">Religious</option>
         </select>
+
         <label for="status-filter">Status:</label>
         <select id="status-filter">
             <option value="">All</option>
@@ -297,22 +310,28 @@ select {
         <button id="reset-filters">Reset All Filters</button>
     </div>
 
+
+    <div id="map"></div>
+
     <div id="project-controls" class="hidden">
         <h3>Project List</h3>
         <div id="project-list"></div>
     </div>
 
+    
 
     <script>
-        // Initialize Mapbox map
+        // Replace with your actual Mapbox access token
         mapboxgl.accessToken = 'pk.eyJ1IjoiY3BlcmV6bSIsImEiOiJjbGo0b3lhZjIwM3R2M2treGMwc3Z2NDhoIn0.Py5P82ue0Klm3gJYJsrc2g';
+        
         var map = new mapboxgl.Map({
             container: 'map',
             style: 'mapbox://styles/mapbox/light-v11',
-            center: [-66.590149, 18.220833],
+            center: [-66.590149, 18.220833], // Starting position [lng, lat]
             zoom: 8
         });
 
+      
         var marker = null;
         var popup = null;
 
@@ -367,16 +386,9 @@ select {
                     // Create a popup with place details
                     var description = `
                         <div style="max-height: 200px; overflow-y: auto;">
-                    <strong style="font-size:14px;">${e.result.properties.Name || 'Unknown Project'}</strong><br><br>
-                    <strong style="color:#333;">Project Number:</strong> ${e.result.properties['Proyect Number'] || 'N/A'}<br>
-                    <strong style="color:#333;">Year:</strong> ${e.result.properties.Year || 'N/A'}<br>
-                    <strong style="color:#333;">Architect:</strong> ${e.result.properties.Architect || 'N/A'}<br>
-                    <strong style="color:#333;">Style:</strong> ${e.result.properties.Style || 'N/A'}<br>
-                    <strong style="color:#333;">Typology:</strong> ${e.result.properties['Tipology '] || 'N/A'}<br>
-                    <strong style="color:#333;">Status:</strong> ${e.result.properties.Status || 'N/A'}<br>
-                    <strong style="color:#333;">Description:</strong> ${e.result.properties.Description || 'No description available.'}<br>
-                    <strong style="color:#333;">URL:</strong> <a href="${e.result.properties.URL || '#'}" target="_blank" style="color:#1a73e8;">${e.result.properties.URL || 'N/A'}</a>
-                </div>
+                            <strong style="font-size:14px;">${e.result.properties.Name}</strong><br><br>
+                            <strong style="color:#333;">Description:</strong> ${e.result.properties.Description || 'No description available.'}<br>
+                        </div>
                     `;
 
                     popup = new mapboxgl.Popup()
@@ -457,190 +469,8 @@ select {
     .catch(error => console.error('Error fetching GeoJSON:', error));
 
 
-           // Add GeoJSON source with clustering
-           map.on('load', function () {
-            map.addSource('my-data', {
-                type: 'geojson',
-                data: 'https://storage.googleapis.com/sitios_bucket/SITIOS_ALL_POINTS.geojson',
-                cluster: true,
-                clusterMaxZoom: 14,
-                clusterRadius: 50
-            });
-
-            // Clustered layer
-            map.addLayer({
-                id: 'clusters',
-                type: 'circle',
-                source: 'my-data',
-                filter: ['has', 'point_count'],
-                paint: {
-                    'circle-color': '#ff0000',
-                    'circle-radius': ['step', ['get', 'point_count'], 15, 100, 20, 750, 30]
-                }
-            });
-
-            map.addLayer({
-                id: 'cluster-count',
-                type: 'symbol',
-                source: 'my-data',
-                filter: ['has', 'point_count'],
-                layout: {
-                    'text-field': '{point_count_abbreviated}',
-                    'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
-                    'text-size': 12
-                },
-                paint: {
-                    'text-color': '#ffffff'
-                }
-            });
-
-            // Unclustered layer for individual points
-            map.addLayer({
-                id: 'unclustered-point',
-                type: 'circle',
-                source: 'my-data',
-                filter: ['!', ['has', 'point_count']],
-                paint: {
-                    'circle-color': '#ff0000',
-                    'circle-radius': 6
-                }
-            });
-            // Separate unclustered source for filtering only
-            map.addSource('filter-data', {
-                type: 'geojson',
-                data: 'https://storage.googleapis.com/sitios_bucket/SITIOS_ALL_POINTS.geojson'
-            });
-
-            // Filter layer (initially hidden)
-            map.addLayer({
-                id: 'filter-layer',
-                type: 'circle',
-                source: 'filter-data',
-                layout: { visibility: 'none' },
-                paint: {
-                    'circle-color': '#ff0000',
-                    'circle-radius': 5
-                }
-            }); 
-            
-           // Add toggle functionality for the filter button
-document.getElementById('toggle-filter').addEventListener('click', function () {
-    var filterControls = document.querySelector('.filter-controls');
-    
-    // Toggle visibility of the filter-controls by adding/removing 'hidden' class
-    filterControls.classList.toggle('hidden');
-
-    // Check if filter controls are visible
-    var isVisible = !filterControls.classList.contains('hidden');
-
-    // Toggle cluster and filter layers based on filter controls visibility
-    map.setLayoutProperty('clusters', 'visibility', isVisible ? 'none' : 'visible');
-    map.setLayoutProperty('cluster-count', 'visibility', isVisible ? 'none' : 'visible');
-    map.setLayoutProperty('unclustered-point', 'visibility', isVisible ? 'none' : 'visible');
-    map.setLayoutProperty('filter-layer', 'visibility', isVisible ? 'visible' : 'none');
-});
-
-
-        // Filter function for the filter-layer
-        function filterMap() {
-            var selectedTipology = document.getElementById('tipology-filter').value;
-            var selectedStatus = document.getElementById('status-filter').value;
-            var selectedStyle = document.getElementById('style-filter').value;
-            var selectedArchitect = document.getElementById('architect-filter').value;
-            var selectedDecade = document.getElementById('decade-filter').value;
-
-            var filters = ['all'];
-
-            if (selectedTipology) filters.push(['==', ['get', 'Tipology '], selectedTipology]);
-            if (selectedStatus) filters.push(['==', ['get', 'Status'], selectedStatus]);
-            if (selectedStyle) filters.push(['==', ['get', 'Style'], selectedStyle]);
-            if (selectedArchitect) filters.push(['==', ['get', 'Architect'], selectedArchitect]);
-            if (selectedDecade) filters.push(['==', ['get', 'Decade'], parseInt(selectedDecade)]);
-
-            map.setFilter('filter-layer', filters.length > 1 ? filters : null);
-        }
-
-        // Attach filter event listeners
-        document.getElementById('tipology-filter').addEventListener('change', filterMap);
-        document.getElementById('status-filter').addEventListener('change', filterMap);
-        document.getElementById('style-filter').addEventListener('change', filterMap);
-        document.getElementById('architect-filter').addEventListener('change', filterMap);
-        document.getElementById('decade-filter').addEventListener('change', filterMap);
-
-        // Reset filters
-        document.getElementById('reset-filters').addEventListener('click', function () {
-            document.getElementById('tipology-filter').value = '';
-            document.getElementById('status-filter').value = '';
-            document.getElementById('style-filter').value = '';
-            document.getElementById('architect-filter').value = '';
-            document.getElementById('decade-filter').value = '';
-            map.setFilter('filter-layer', null);
-        });
-
-
-
-// Add a click event for unclustered points to show a popup
-map.on('click', 'unclustered-point', function (e) {
-    var coordinates = e.features[0].geometry.coordinates.slice();
-    var properties = e.features[0].properties;
-    
-    // Create a description with relevant properties for the popup
-    var description = `
-        <div style="max-height: 200px; overflow-y: auto;">
-            <strong style="font-size:14px;">${properties.Name || 'Unknown Project'}</strong><br><br>
-            <strong style="color:#333;">Project Number:</strong> ${properties['Proyect Number'] || 'N/A'}<br>
-            <strong style="color:#333;">Year:</strong> ${properties.Year || 'N/A'}<br>
-            <strong style="color:#333;">Architect:</strong> ${properties.Architect || 'N/A'}<br>
-            <strong style="color:#333;">Style:</strong> ${properties.Style || 'N/A'}<br>
-            <strong style="color:#333;">Typology:</strong> ${properties['Tipology '] || 'N/A'}<br>
-            <strong style="color:#333;">Status:</strong> ${properties.Status || 'N/A'}<br>
-            <strong style="color:#333;">Description:</strong> ${properties.Description || 'No description available.'}<br>
-            <strong style="color:#333;">URL:</strong> <a href="${properties.URL || '#'}" target="_blank" style="color:#1a73e8;">${properties.URL || 'N/A'}</a>
-        </div>
-    `;
-
-    // Ensure the popup is at the exact clicked point location
-    new mapboxgl.Popup()
-        .setLngLat(coordinates)
-        .setHTML(description)
-        .addTo(map);
-});
-
-// Change the cursor to a pointer when over clusters or points
-map.on('mouseenter', 'unclustered-point', () => map.getCanvas().style.cursor = 'pointer');
-map.on('mouseleave', 'unclustered-point', () => map.getCanvas().style.cursor = '');
-map.on('mouseenter', 'clusters', () => map.getCanvas().style.cursor = 'pointer');
-map.on('mouseleave', 'clusters', () => map.getCanvas().style.cursor = '');
-
-
-            // Add a GeoJSON source for polygons
-            map.addSource('polygon-data', {
-                'type': 'geojson',
-             
-                'data': 'ASSETS/polygons.geojson' // Add your polygons GeoJSON file here
-            });
-
-             // Add a layer for polygons
-             map.addLayer({
-                'id': 'polygon-layer',
-                'type': 'fill',
-                'source': 'polygon-data',
-                'paint': {
-                    'fill-color': '#ff0000', // Green fill color for polygons
-                    'fill-opacity': 0.2 // Set opacity for polygons
-                }
-            });
-
-            // Optional outline for polygons
-            map.addLayer({
-                'id': 'polygon-layer-outline',
-                'type': 'line',
-                'source': 'polygon-data',
-                'paint': {
-                    'line-color': '#ff0000', // Black outline for polygons
-                    'line-width': .25
-                }
-            });
+        map.on('load', function() {
+            // Map has loaded, additional map setup or layers can go here
 
             map.addSource('E_D-data', {
                     'type': 'geojson',
@@ -772,7 +602,120 @@ map.addLayer({
                     'line-dasharray': [4, 2]
                 }
             });
-            
+
+
+
+            // Add a GeoJSON source
+            map.addSource('my-data', {
+                'type': 'geojson',
+                'data': 'https://storage.googleapis.com/sitios_bucket/SITIOS_ALL_POINTS.geojson' // Replace with the URL to your GeoJSON file
+              
+            });
+
+    
+
+            // Add a layer for points
+            map.addLayer({
+                'id': 'points',
+                'type': 'circle',
+                'source': 'my-data',
+                'paint': {
+                    'circle-radius': 6,
+                    'circle-color': '#ff0000'
+                }
+            });
+
+            // Add a GeoJSON source for polygons
+            map.addSource('polygon-data', {
+                'type': 'geojson',
+             
+                'data': 'ASSETS/polygons.geojson' // Add your polygons GeoJSON file here
+            });
+
+             // Add a layer for polygons
+             map.addLayer({
+                'id': 'polygon-layer',
+                'type': 'fill',
+                'source': 'polygon-data',
+                'paint': {
+                    'fill-color': '#ff0000', // Green fill color for polygons
+                    'fill-opacity': 0.2 // Set opacity for polygons
+                }
+            });
+
+            // Optional outline for polygons
+            map.addLayer({
+                'id': 'polygon-layer-outline',
+                'type': 'line',
+                'source': 'polygon-data',
+                'paint': {
+                    'line-color': '#ff0000', // Black outline for polygons
+                    'line-width': .25
+                }
+            });
+
+            // Filtering function
+            function filterMap() {
+                var selectedTipology = document.getElementById('tipology-filter').value;
+                var selectedStatus = document.getElementById('status-filter').value;
+                var selectedStyle = document.getElementById('style-filter').value;
+                var selectedArchitect = document.getElementById('architect-filter').value;
+                var selectedDecade = document.getElementById('decade-filter').value;
+
+                var filters = ['all'];
+
+                if (selectedTipology) {
+                    filters.push(['==', ['get', 'Tipology '], selectedTipology]);
+                }
+
+                if (selectedStatus) {
+                    filters.push(['==', ['get', 'Status'], selectedStatus]);
+                }
+
+                if (selectedStyle) {
+                    filters.push(['==', ['get', 'Style'], selectedStyle]);
+                }
+
+                if (selectedArchitect) {
+                    filters.push(['==', ['get', 'Architect'], selectedArchitect]);
+                }
+
+                if (selectedDecade) {
+                    filters.push(['==', ['get', 'Decade'], parseInt(selectedDecade)]);
+                }
+
+                map.setFilter('points', filters.length > 1 ? filters : null);
+            }
+
+            // Event listeners for the dropdowns
+            document.getElementById('tipology-filter').addEventListener('change', filterMap);
+            document.getElementById('status-filter').addEventListener('change', filterMap);
+            document.getElementById('style-filter').addEventListener('change', filterMap);
+            document.getElementById('architect-filter').addEventListener('change', filterMap);
+            document.getElementById('decade-filter').addEventListener('change', filterMap);
+
+            // Add popup on click
+            map.on('click', 'points', function (e) {
+                var coordinates = e.features[0].geometry.coordinates.slice();
+                var description = `
+                <div style="max-height: 200px; overflow-y: auto;">
+                    
+                     <strong style="font-size:14px;">${e.features[0].properties.Name}</strong><br><br>
+                      <strong style="color:#333;">Project Number:</strong> ${e.features[0].properties['Proyect Number']}<br>
+                <strong style="color:#333;">Year:</strong> ${e.features[0].properties.Year}<br>
+                  <strong style="color:#333;">Architect:</strong> ${e.features[0].properties.Architect}<br>
+                   <strong style="color:#333;">Style:</strong> ${e.features[0].properties.Style}<br>
+                  <strong style="color:#333;">Typology:</strong> ${e.features[0].properties["Tipology "]}<br>
+                  <strong style="color:#333;">Status:</strong> ${e.features[0].properties.Status}<br>
+                 
+                   
+                   
+                     <strong style="color:#333;">Description:</strong> ${e.features[0].properties.Description}<br>
+                
+                    
+                    <strong style="color:#333;">URL:</strong> <a href="${e.features[0].properties.URL}" target="_blank" style="color:#1a73e8;">${e.features[0].properties.URL}</a>
+                   
+                `;
                 // <img src="${e.features[0].properties.ImageURL}" alt="${e.features[0].properties.Name}" style="width:100%;max-width:300px;height:auto;"> NOTE: COPY ON TOP
 
                 while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
@@ -784,15 +727,16 @@ map.addLayer({
                     .setHTML(description)
                     .addTo(map);
             });
- // Change the cursor to a pointer when the mouse is over the points layer
-//  map.on('mouseenter', 'points', function () {
-//                 map.getCanvas().style.cursor = 'pointer';
-//             });
+
+            // Change the cursor to a pointer when the mouse is over the points layer
+            map.on('mouseenter', 'points', function () {
+                map.getCanvas().style.cursor = 'pointer';
+            });
 
             // Change it back to default when it leaves
-            // map.on('mouseleave', 'points', function () {
-            //     map.getCanvas().style.cursor = '';
-            // });
+            map.on('mouseleave', 'points', function () {
+                map.getCanvas().style.cursor = '';
+            });
 
             // Reset filters
             document.getElementById('reset-filters').addEventListener('click', function () {
@@ -811,72 +755,46 @@ map.addLayer({
              // Add zoom control buttons
              map.addControl(new mapboxgl.NavigationControl(), 'bottom-right');
     
-
-        // Add a click event for filter-layer points to show a popup
-map.on('click', 'filter-layer', function (e) {
-    var coordinates = e.features[0].geometry.coordinates.slice();
-    var properties = e.features[0].properties;
-
-    // Create a description with relevant properties for the popup
-    var description = `
-        <div style="max-height: 200px; overflow-y: auto;">
-            <strong style="font-size:14px;">${properties.Name || 'Unknown Project'}</strong><br><br>
-            <strong style="color:#333;">Project Number:</strong> ${properties['Proyect Number'] || 'N/A'}<br>
-            <strong style="color:#333;">Year:</strong> ${properties.Year || 'N/A'}<br>
-            <strong style="color:#333;">Architect:</strong> ${properties.Architect || 'N/A'}<br>
-            <strong style="color:#333;">Style:</strong> ${properties.Style || 'N/A'}<br>
-            <strong style="color:#333;">Typology:</strong> ${properties['Tipology '] || 'N/A'}<br>
-            <strong style="color:#333;">Status:</strong> ${properties.Status || 'N/A'}<br>
-            <strong style="color:#333;">Description:</strong> ${properties.Description || 'No description available.'}<br>
-            <strong style="color:#333;">URL:</strong> <a href="${properties.URL || '#'}" target="_blank" style="color:#1a73e8;">${properties.URL || 'N/A'}</a>
-        </div>
-    `;
-
-    // Ensure the popup is at the exact clicked point location
-    new mapboxgl.Popup()
-        .setLngLat(coordinates)
-        .setHTML(description)
-        .addTo(map);
-});
-
-// Change the cursor to a pointer when over points in the filter layer
-map.on('mouseenter', 'filter-layer', () => map.getCanvas().style.cursor = 'pointer');
-map.on('mouseleave', 'filter-layer', () => map.getCanvas().style.cursor = '');
-
-// Handle filter toggle
-// document.addEventListener('DOMContentLoaded', function () {
-//    var toggleButton = document.getElementById('toggle-filter');
-//    var filterControls = document.querySelector('.filter-controls');
-
-//    toggleButton.addEventListener('click', function () {
-//        if (filterControls.classList.contains('hidden')) {
-//            filterControls.classList.remove('hidden');
-//        } else {
-//            filterControls.classList.add('hidden');
-//        }
-//    });
-// });
-
-
-document.getElementById('toggle-polygon-layer').addEventListener('click', function () {
-var visibility = map.getLayoutProperty('polygon-layer', 'visibility');
-
-if (visibility === 'visible') {
-map.setLayoutProperty('polygon-layer', 'visibility', 'none');
-map.setLayoutProperty('polygon-layer-outline', 'visibility', 'none');
-} else {
-map.setLayoutProperty('polygon-layer', 'visibility', 'visible');
-map.setLayoutProperty('polygon-layer-outline', 'visibility', 'visible');
-}
-});
-
-// Toggle Project Controls Button Functionality
-document.getElementById('toggle-project').addEventListener('click', function() {
-   var projectControls = document.getElementById('project-controls');
-   projectControls.classList.toggle('hidden');
-});
+        });
 
         
+         // Handle filter toggle
+         document.addEventListener('DOMContentLoaded', function () {
+            var toggleButton = document.getElementById('toggle-filter');
+            var filterControls = document.querySelector('.filter-controls');
+
+            toggleButton.addEventListener('click', function () {
+                if (filterControls.classList.contains('hidden')) {
+                    filterControls.classList.remove('hidden');
+                } else {
+                    filterControls.classList.add('hidden');
+                }
+            });
+        });
+
+        
+document.getElementById('toggle-polygon-layer').addEventListener('click', function () {
+    var visibility = map.getLayoutProperty('polygon-layer', 'visibility');
+    
+    if (visibility === 'visible') {
+        map.setLayoutProperty('polygon-layer', 'visibility', 'none');
+        map.setLayoutProperty('polygon-layer-outline', 'visibility', 'none');
+    } else {
+        map.setLayoutProperty('polygon-layer', 'visibility', 'visible');
+        map.setLayoutProperty('polygon-layer-outline', 'visibility', 'visible');
+    }
+});
+
+ // Toggle Project Controls Button Functionality
+ document.getElementById('toggle-project').addEventListener('click', function() {
+            var projectControls = document.getElementById('project-controls');
+            projectControls.classList.toggle('hidden');
+        });
+
+
+
+      
     </script>
+
 </body>
 </html>
