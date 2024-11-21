@@ -258,21 +258,12 @@ select {
         <label for="tipology-filter">Typology:</label>
         <select id="tipology-filter">
             <option value="">All</option>
-            <option value="Residential-Development">Residential-Development</option>
-            <option value="Residential-Private Home">Residential-Private Home</option>
-            <option value="Residential-Apartment">Residential-Apartment</option>
-            <option value="Hospitality">Hospitality</option>
-            <option value="Educational">Educational</option>
-            <option value="Religious">Religious</option>
-            <option value="Healthcare">Healthcare</option>
-            <option value="Commercial">Commercial</option>
+            <option value="Residential">Residential</option>
             <option value="Institutional">Institutional</option>
             <option value="Industrial">Industrial</option>
             <option value="Recreational">Recreational</option>
-            <option value="Master Plan">Master Plan</option>
-            <option value="Miscellaneous">Miscellaneous</option>
-            <option value="Unknown">Unknown</option>
-            
+            <option value="Commercial">Commercial</option>
+            <option value="Religious">Religious</option>
         </select>
         <label for="status-filter">Status:</label>
         <select id="status-filter">
@@ -280,7 +271,6 @@ select {
             <option value="Built">Built</option>
             <option value="unbuilt">Unbuilt</option>
             <option value="Demolished">Demolished</option>
-            <option value="Unknown">Unknown</option>
         </select>
 
         <label for="style-filter">Style:</label>
@@ -297,25 +287,17 @@ select {
         <label for="architect-filter">Architect:</label>
         <select id="architect-filter">
             <option value="">All</option>
-            <option value="Henry Klumb ">Henry Klumb</option>
-            
+            <option value="Henry Klum ">Henry Klumb</option>
+            <option value="Robin Planas ">Robin Planas</option>
         </select>
 
         <label for="decade-filter">Period:</label>
         <select id="decade-filter">
             <option value="">All</option>
-            <option value="1910">1910-1919</option>
-            <option value="1920">1920-1929</option>
-            <option value="1930">1930-1939</option>
             <option value="1940">1940-1949</option>
             <option value="1950">1950-1959</option>
             <option value="1960">1960-1969</option>
             <option value="1970">1970-1979</option>
-            <option value="1980">1980-1989</option>
-            <option value="1990">1990-1999</option>
-            <option value="2000">2000-2009</option>
-            <option value="2010">2010-2019</option>
-            <option value="2020">2020-Present</option>
         </select>
 
         <button id="reset-filters">Reset All Filters</button>
@@ -399,10 +381,7 @@ select {
                     <strong style="color:#333;">Typology:</strong> ${e.result.properties['Tipology '] || 'N/A'}<br>
                     <strong style="color:#333;">Status:</strong> ${e.result.properties.Status || 'N/A'}<br>
                    
-                    <strong style="color:#333;">More Information:</strong> 
-        <a href="${properties.URL || '#'}" target="_blank" style="color:#1a73e8; text-decoration: underline;">
-            Learn more about this project
-        </a>
+                    <strong style="color:#333;">URL:</strong> <a href="${e.result.properties.URL || '#'}" target="_blank" style="color:#1a73e8;">${e.result.properties.URL || 'N/A'}</a>
                 </div>
                     `;
 
@@ -467,10 +446,7 @@ select {
                         <strong style="color:#333;">Typology:</strong> ${properties['Tipology '] || 'N/A'}<br>
                          <strong style="color:#333;">Status:</strong> ${properties.Status || 'N/A'}<br>
                       
-                        <strong style="color:#333;">More Information:</strong> 
-        <a href="${properties.URL || '#'}" target="_blank" style="color:#1a73e8; text-decoration: underline;">
-            Learn more about this project
-        </a>
+                        <strong style="color:#333;">URL:</strong> <a href="${properties.URL || '#'}" target="_blank" style="color:#1a73e8;">${properties.URL || 'N/A'}</a>
                     </div>
                 `;
 
@@ -494,8 +470,160 @@ select {
 
            // Add GeoJSON source with clustering
            map.on('load', function () {
+            map.addSource('my-data', {
+                type: 'geojson',
+                data: 'https://storage.googleapis.com/sitios_bucket/SITIOS_ALL_POINTS.geojson',
+                cluster: true,
+                clusterMaxZoom: 14,
+                clusterRadius: 50
+            });
 
+            // Clustered layer
+            map.addLayer({
+                id: 'clusters',
+                type: 'circle',
+                source: 'my-data',
+                filter: ['has', 'point_count'],
+                paint: {
+                    'circle-color': '#ff0000',
+                    'circle-radius': ['step', ['get', 'point_count'], 15, 100, 20, 750, 30]
+                }
+            });
+
+            map.addLayer({
+                id: 'cluster-count',
+                type: 'symbol',
+                source: 'my-data',
+                filter: ['has', 'point_count'],
+                layout: {
+                    'text-field': '{point_count_abbreviated}',
+                    'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+                    'text-size': 12
+                },
+                paint: {
+                    'text-color': '#ffffff'
+                }
+            });
+
+            // Unclustered layer for individual points
+            map.addLayer({
+                id: 'unclustered-point',
+                type: 'circle',
+                source: 'my-data',
+                filter: ['!', ['has', 'point_count']],
+                paint: {
+                    'circle-color': '#ff0000',
+                    'circle-radius': 6
+                }
+            });
+            // Separate unclustered source for filtering only
+            map.addSource('filter-data', {
+                type: 'geojson',
+                data: 'https://storage.googleapis.com/sitios_bucket/SITIOS_ALL_POINTS.geojson'
+            });
+
+            // Filter layer (initially hidden)
+            map.addLayer({
+                id: 'filter-layer',
+                type: 'circle',
+                source: 'filter-data',
+                layout: { visibility: 'none' },
+                paint: {
+                    'circle-color': '#ff0000',
+                    'circle-radius': 5
+                }
+            }); 
             
+           // Add toggle functionality for the filter button
+document.getElementById('toggle-filter').addEventListener('click', function () {
+    var filterControls = document.querySelector('.filter-controls');
+    
+    // Toggle visibility of the filter-controls by adding/removing 'hidden' class
+    filterControls.classList.toggle('hidden');
+
+    // Check if filter controls are visible
+    var isVisible = !filterControls.classList.contains('hidden');
+
+    // Toggle cluster and filter layers based on filter controls visibility
+    map.setLayoutProperty('clusters', 'visibility', isVisible ? 'none' : 'visible');
+    map.setLayoutProperty('cluster-count', 'visibility', isVisible ? 'none' : 'visible');
+    map.setLayoutProperty('unclustered-point', 'visibility', isVisible ? 'none' : 'visible');
+    map.setLayoutProperty('filter-layer', 'visibility', isVisible ? 'visible' : 'none');
+});
+
+
+        // Filter function for the filter-layer
+        function filterMap() {
+            var selectedTipology = document.getElementById('tipology-filter').value;
+            var selectedStatus = document.getElementById('status-filter').value;
+            var selectedStyle = document.getElementById('style-filter').value;
+            var selectedArchitect = document.getElementById('architect-filter').value;
+            var selectedDecade = document.getElementById('decade-filter').value;
+
+            var filters = ['all'];
+
+            if (selectedTipology) filters.push(['==', ['get', 'Tipology '], selectedTipology]);
+            if (selectedStatus) filters.push(['==', ['get', 'Status'], selectedStatus]);
+            if (selectedStyle) filters.push(['==', ['get', 'Style'], selectedStyle]);
+            if (selectedArchitect) filters.push(['==', ['get', 'Architect'], selectedArchitect]);
+            if (selectedDecade) filters.push(['==', ['get', 'Decade'], parseInt(selectedDecade)]);
+
+            map.setFilter('filter-layer', filters.length > 1 ? filters : null);
+        }
+
+        // Attach filter event listeners
+        document.getElementById('tipology-filter').addEventListener('change', filterMap);
+        document.getElementById('status-filter').addEventListener('change', filterMap);
+        document.getElementById('style-filter').addEventListener('change', filterMap);
+        document.getElementById('architect-filter').addEventListener('change', filterMap);
+        document.getElementById('decade-filter').addEventListener('change', filterMap);
+
+        // Reset filters
+        document.getElementById('reset-filters').addEventListener('click', function () {
+            document.getElementById('tipology-filter').value = '';
+            document.getElementById('status-filter').value = '';
+            document.getElementById('style-filter').value = '';
+            document.getElementById('architect-filter').value = '';
+            document.getElementById('decade-filter').value = '';
+            map.setFilter('filter-layer', null);
+        });
+
+
+
+// Add a click event for unclustered points to show a popup
+map.on('click', 'unclustered-point', function (e) {
+    var coordinates = e.features[0].geometry.coordinates.slice();
+    var properties = e.features[0].properties;
+    
+    // Create a description with relevant properties for the popup
+    var description = `
+        <div style="max-height: 200px; overflow-y: auto;">
+            <strong style="font-size:14px;">${properties.Name || 'Unknown Project'}</strong><br><br>
+            <strong style="color:#333;">Project Number:</strong> ${properties['Proyect Number'] || 'N/A'}<br>
+            <strong style="color:#333;">Year:</strong> ${properties.Year || 'N/A'}<br>
+            <strong style="color:#333;">Architect:</strong> ${properties.Architect || 'N/A'}<br>
+            <strong style="color:#333;">Style:</strong> ${properties.Style || 'N/A'}<br>
+            <strong style="color:#333;">Typology:</strong> ${properties['Tipology '] || 'N/A'}<br>
+            <strong style="color:#333;">Status:</strong> ${properties.Status || 'N/A'}<br>
+            <strong style="color:#333;">Description:</strong> ${properties.Description || 'No description available.'}<br>
+            <strong style="color:#333;">URL:</strong> <a href="${properties.URL || '#'}" target="_blank" style="color:#1a73e8;">${properties.URL || 'N/A'}</a>
+        </div>
+    `;
+
+    // Ensure the popup is at the exact clicked point location
+    new mapboxgl.Popup()
+        .setLngLat(coordinates)
+        .setHTML(description)
+        .addTo(map);
+});
+
+// Change the cursor to a pointer when over clusters or points
+map.on('mouseenter', 'unclustered-point', () => map.getCanvas().style.cursor = 'pointer');
+map.on('mouseleave', 'unclustered-point', () => map.getCanvas().style.cursor = '');
+map.on('mouseenter', 'clusters', () => map.getCanvas().style.cursor = 'pointer');
+map.on('mouseleave', 'clusters', () => map.getCanvas().style.cursor = '');
+
+
             // Add a GeoJSON source for polygons
             map.addSource('polygon-data', {
                 'type': 'geojson',
@@ -656,187 +784,6 @@ map.addLayer({
                 }
             });
             
-            map.addSource('my-data', {
-                type: 'geojson',
-                data: 'https://storage.googleapis.com/sitios_bucket/SITIOS_ALL_POINTS.geojson',
-                cluster: true,
-                clusterMaxZoom: 14,
-                clusterRadius: 50
-            });
-
-            // Clustered layer
-            map.addLayer({
-                id: 'clusters',
-                type: 'circle',
-                source: 'my-data',
-                filter: ['has', 'point_count'],
-                paint: {
-                    'circle-color': '#ff0000',
-                    'circle-radius': ['step', ['get', 'point_count'],  
-                    8,    // Size for clusters with 1-5 points
-            5,     // Threshold for clusters with 6-10 points
-            15,    // Size for clusters with 6-10 points
-            16,    // Threshold for clusters with 11-15 points
-            18,    // Size for clusters with 11-15 points
-            20,    // Threshold for clusters with 16-25 points
-            23,    // Size for clusters with 16-25 points
-            25,    // Threshold for clusters with 26-35 points
-            28,    // Size for clusters with 26-35 points
-            30,    // Threshold for clusters with 36-45 points
-            32,    // Size for clusters with 36-45 points
-            34,    // Threshold for clusters with 46-60 points
-            36,    // Size for clusters with 46-60 points
-            38,    // Threshold for clusters with 61-80 points
-            40,    // Size for clusters with 61-80 points
-            42,    // Threshold for clusters with 81-100 points
-            46,    // Size for clusters with 81-100 points
-            50,   // Threshold for clusters with 101+ points
-            55     // Size for clusters with 101+ points
-        ]
-                }
-            });
-
-            map.addLayer({
-                id: 'cluster-count',
-                type: 'symbol',
-                source: 'my-data',
-                filter: ['has', 'point_count'],
-                layout: {
-                    'text-field': '{point_count_abbreviated}',
-                    'text-font': ['Arial Unicode MS Bold'],
-                    'text-size': 14
-                },
-                paint: {
-                    'text-color': '#ffffff', 
-                    'text-halo-color': '#ff0000', // Optional: Add a halo for better visibility
-                    'text-halo-width': 2 // Optional: Halo width
-                }
-            });
-
-            // Unclustered layer for individual points
-            map.addLayer({
-                id: 'unclustered-point',
-                type: 'circle',
-                source: 'my-data',
-                filter: ['!', ['has', 'point_count']],
-                paint: {
-                    'circle-color': '#ff0000',
-                    'circle-radius': 6
-                }
-            });
-            // Separate unclustered source for filtering only
-            map.addSource('filter-data', {
-                type: 'geojson',
-                data: 'https://storage.googleapis.com/sitios_bucket/SITIOS_ALL_POINTS.geojson'
-            });
-
-            // Filter layer (initially hidden)
-            map.addLayer({
-                id: 'filter-layer',
-                type: 'circle',
-                source: 'filter-data',
-                layout: { visibility: 'none' },
-                paint: {
-                    'circle-color': '#ff0000',
-                    'circle-radius': 5
-                }
-            }); 
-            
-           // Add toggle functionality for the filter button
-document.getElementById('toggle-filter').addEventListener('click', function () {
-    var filterControls = document.querySelector('.filter-controls');
-    
-    // Toggle visibility of the filter-controls by adding/removing 'hidden' class
-    filterControls.classList.toggle('hidden');
-
-    // Check if filter controls are visible
-    var isVisible = !filterControls.classList.contains('hidden');
-
-    // Toggle cluster and filter layers based on filter controls visibility
-    map.setLayoutProperty('clusters', 'visibility', isVisible ? 'none' : 'visible');
-    map.setLayoutProperty('cluster-count', 'visibility', isVisible ? 'none' : 'visible');
-    map.setLayoutProperty('unclustered-point', 'visibility', isVisible ? 'none' : 'visible');
-    map.setLayoutProperty('filter-layer', 'visibility', isVisible ? 'visible' : 'none');
-});
-
-
-        // Filter function for the filter-layer
-        function filterMap() {
-            var selectedTipology = document.getElementById('tipology-filter').value;
-            var selectedStatus = document.getElementById('status-filter').value;
-            var selectedStyle = document.getElementById('style-filter').value;
-            var selectedArchitect = document.getElementById('architect-filter').value;
-            var selectedDecade = document.getElementById('decade-filter').value;
-
-            var filters = ['all'];
-
-            if (selectedTipology) filters.push(['==', ['get', 'Tipology '], selectedTipology]);
-            if (selectedStatus) filters.push(['==', ['get', 'Status'], selectedStatus]);
-            if (selectedStyle) filters.push(['==', ['get', 'Style'], selectedStyle]);
-            if (selectedArchitect) filters.push(['==', ['get', 'Architect'], selectedArchitect]);
-            if (selectedDecade) filters.push(['==', ['get', 'Decade'], parseInt(selectedDecade)]);
-
-            map.setFilter('filter-layer', filters.length > 1 ? filters : null);
-        }
-
-        // Attach filter event listeners
-        document.getElementById('tipology-filter').addEventListener('change', filterMap);
-        document.getElementById('status-filter').addEventListener('change', filterMap);
-        document.getElementById('style-filter').addEventListener('change', filterMap);
-        document.getElementById('architect-filter').addEventListener('change', filterMap);
-        document.getElementById('decade-filter').addEventListener('change', filterMap);
-
-        // Reset filters
-        document.getElementById('reset-filters').addEventListener('click', function () {
-            document.getElementById('tipology-filter').value = '';
-            document.getElementById('status-filter').value = '';
-            document.getElementById('style-filter').value = '';
-            document.getElementById('architect-filter').value = '';
-            document.getElementById('decade-filter').value = '';
-            map.setFilter('filter-layer', null);
-        });
-
-
-
-// Add a click event for unclustered points to show a popup
-map.on('click', 'unclustered-point', function (e) {
-    var coordinates = e.features[0].geometry.coordinates.slice();
-    var properties = e.features[0].properties;
-    
-    // Create a description with relevant properties for the popup
-    var description = `
-        <div style="max-height: 200px; overflow-y: auto;">
-            <strong style="font-size:14px;">${properties.Name || 'Unknown Project'}</strong><br><br>
-            <strong style="color:#333;">Project Number:</strong> ${properties['Proyect Number'] || 'N/A'}<br>
-            <strong style="color:#333;">Year:</strong> ${properties.Year || 'N/A'}<br>
-            <strong style="color:#333;">Architect:</strong> ${properties.Architect || 'N/A'}<br>
-            <strong style="color:#333;">Style:</strong> ${properties.Style || 'N/A'}<br>
-            <strong style="color:#333;">Typology:</strong> ${properties['Tipology '] || 'N/A'}<br>
-            <strong style="color:#333;">Status:</strong> ${properties.Status || 'N/A'}<br>
-        
-
-          <strong style="color:#333;">More Information:</strong> 
-        <a href="${properties.URL || '#'}" target="_blank" style="color:#1a73e8; text-decoration: underline;">
-            Learn more about this project
-        </a>
-
-          </div>
-    `;
-
-    // Ensure the popup is at the exact clicked point location
-    new mapboxgl.Popup()
-        .setLngLat(coordinates)
-        .setHTML(description)
-        .addTo(map);
-});
-
-// Change the cursor to a pointer when over clusters or points
-map.on('mouseenter', 'unclustered-point', () => map.getCanvas().style.cursor = 'pointer');
-map.on('mouseleave', 'unclustered-point', () => map.getCanvas().style.cursor = '');
-map.on('mouseenter', 'clusters', () => map.getCanvas().style.cursor = 'pointer');
-map.on('mouseleave', 'clusters', () => map.getCanvas().style.cursor = '');
-
-
                 // <img src="${e.features[0].properties.ImageURL}" alt="${e.features[0].properties.Name}" style="width:100%;max-width:300px;height:auto;"> NOTE: COPY ON TOP
 
                 while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
@@ -891,11 +838,8 @@ map.on('click', 'filter-layer', function (e) {
             <strong style="color:#333;">Style:</strong> ${properties.Style || 'N/A'}<br>
             <strong style="color:#333;">Typology:</strong> ${properties['Tipology '] || 'N/A'}<br>
             <strong style="color:#333;">Status:</strong> ${properties.Status || 'N/A'}<br>
-
-            <strong style="color:#333;">More Information:</strong> 
-        <a href="${properties.URL || '#'}" target="_blank" style="color:#1a73e8; text-decoration: underline;">
-            Learn more about this project
-        </a>
+            <strong style="color:#333;">Description:</strong> ${properties.Description || 'No description available.'}<br>
+            <strong style="color:#333;">URL:</strong> <a href="${properties.URL || '#'}" target="_blank" style="color:#1a73e8;">${properties.URL || 'N/A'}</a>
         </div>
     `;
 
