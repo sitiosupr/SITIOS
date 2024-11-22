@@ -259,7 +259,7 @@ select {
         <select id="tipology-filter">
             <option value="">All</option>
             <option value="Residential-Development">Residential-Development</option>
-            <option value="Residential-Private Home">Residential-Private Home</option>
+            <option value="Residential-Single Family">Residential-Single Family</option>
             <option value="Residential-Apartment">Residential-Apartment</option>
             <option value="Hospitality">Hospitality</option>
             <option value="Educational">Educational</option>
@@ -333,8 +333,8 @@ select {
         var map = new mapboxgl.Map({
             container: 'map',
             style: 'mapbox://styles/mapbox/light-v11',
-            center: [-66.590149, 18.220833],
-            zoom: 8
+            center: [-66.400000, 18.220833],
+            zoom: 9
         });
 
         var marker = null;
@@ -685,13 +685,13 @@ map.addLayer({
             30,    // Threshold for clusters with 36-45 points
             32,    // Size for clusters with 36-45 points
             34,    // Threshold for clusters with 46-60 points
-            36,    // Size for clusters with 46-60 points
-            38,    // Threshold for clusters with 61-80 points
-            40,    // Size for clusters with 61-80 points
-            42,    // Threshold for clusters with 81-100 points
-            46,    // Size for clusters with 81-100 points
-            50,   // Threshold for clusters with 101+ points
-            55     // Size for clusters with 101+ points
+            35,    // Size for clusters with 46-60 points
+            36,    // Threshold for clusters with 61-80 points
+            37,    // Size for clusters with 61-80 points
+            38,    // Threshold for clusters with 81-100 points
+            39,    // Size for clusters with 81-100 points
+            40,   // Threshold for clusters with 101+ points
+            40     // Size for clusters with 101+ points
         ]
                 }
             });
@@ -707,9 +707,7 @@ map.addLayer({
                     'text-size': 14
                 },
                 paint: {
-                    'text-color': '#ffffff', 
-                    'text-halo-color': '#ff0000', // Optional: Add a halo for better visibility
-                    'text-halo-width': 2 // Optional: Halo width
+                    'text-color': '#ffffff',
                 }
             });
 
@@ -741,6 +739,8 @@ map.addLayer({
                     'circle-radius': 5
                 }
             }); 
+
+            
             
            // Add toggle functionality for the filter button
 document.getElementById('toggle-filter').addEventListener('click', function () {
