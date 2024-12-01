@@ -395,9 +395,11 @@ select {
                     <strong style="color:#333;">Project Number:</strong> ${e.result.properties['Proyect Number'] || 'N/A'}<br>
                     <strong style="color:#333;">Year:</strong> ${e.result.properties.Year || 'N/A'}<br>
                     <strong style="color:#333;">Architect:</strong> ${e.result.properties.Architect || 'N/A'}<br>
+                    <strong style="color:#333;">Client:</strong> ${e.result.properties.Client || 'N/A'}<br>
                     <strong style="color:#333;">Style:</strong> ${e.result.properties.Style || 'N/A'}<br>
                     <strong style="color:#333;">Typology:</strong> ${e.result.properties['Tipology '] || 'N/A'}<br>
                     <strong style="color:#333;">Status:</strong> ${e.result.properties.Status || 'N/A'}<br>
+                    
                    
                     <strong style="color:#333;">More Information:</strong> 
         <a href="${properties.URL || '#'}" target="_blank" style="color:#1a73e8; text-decoration: underline;">
@@ -463,6 +465,7 @@ select {
                         <strong style="color:#333;">Project Number:</strong> ${projectNumber}<br>
                         <strong style="color:#333;">Year:</strong> ${properties.Year}<br>
                         <strong style="color:#333;">Architect:</strong> ${properties.Architect || 'N/A'}<br>
+                         <strong style="color:#333;">Client:</strong> ${properties.Client || 'N/A'}<br>
                         <strong style="color:#333;">Style:</strong> ${properties.Style || 'N/A'}<br>
                         <strong style="color:#333;">Typology:</strong> ${properties['Tipology '] || 'N/A'}<br>
                          <strong style="color:#333;">Status:</strong> ${properties.Status || 'N/A'}<br>
@@ -810,6 +813,7 @@ map.on('click', 'unclustered-point', function (e) {
             <strong style="color:#333;">Project Number:</strong> ${properties['Proyect Number'] || 'N/A'}<br>
             <strong style="color:#333;">Year:</strong> ${properties.Year || 'N/A'}<br>
             <strong style="color:#333;">Architect:</strong> ${properties.Architect || 'N/A'}<br>
+            <strong style="color:#333;">Client:</strong> ${properties.Client || 'N/A'}<br>
             <strong style="color:#333;">Style:</strong> ${properties.Style || 'N/A'}<br>
             <strong style="color:#333;">Typology:</strong> ${properties['Tipology '] || 'N/A'}<br>
             <strong style="color:#333;">Status:</strong> ${properties.Status || 'N/A'}<br>
@@ -888,6 +892,7 @@ map.on('click', 'filter-layer', function (e) {
             <strong style="color:#333;">Project Number:</strong> ${properties['Proyect Number'] || 'N/A'}<br>
             <strong style="color:#333;">Year:</strong> ${properties.Year || 'N/A'}<br>
             <strong style="color:#333;">Architect:</strong> ${properties.Architect || 'N/A'}<br>
+             <strong style="color:#333;">Client:</strong> ${properties.Client || 'N/A'}<br>
             <strong style="color:#333;">Style:</strong> ${properties.Style || 'N/A'}<br>
             <strong style="color:#333;">Typology:</strong> ${properties['Tipology '] || 'N/A'}<br>
             <strong style="color:#333;">Status:</strong> ${properties.Status || 'N/A'}<br>
