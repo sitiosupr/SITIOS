@@ -24,24 +24,19 @@
             height: 100vh;
             position: relative;
             z-index: 1;
-    
         }
 
         #project-controls {
             position: absolute;
             bottom: 18%;
-            top: auto; /* Prevents conflict with bottom alignment */
-            /* top: 20px; */
-            /* left: 10px; */
-            left: 20px;
+            top: 20px;
+            left: 10px;
              z-index: 2;
            background: rgba(165, 164, 164, 0.90);
-            /* padding: 15px; */
-            padding: 20px 30px 20px 20px; /* Matches filter-controls padding */
+            padding: 15px;
             border-radius: 5px;
-            max-height: 380px; 
-            /* Set the height */
-            max-width: 300px; /* Limit the width of the project box */
+            
+            max-width: 400px; /* Limit the width of the project box */
             overflow-y: auto;
            
         }
@@ -51,23 +46,19 @@
 
            /* Style the h3 inside project-controls */
            #project-controls h3 {
-            font-size: 14px; /* Set font size */
-            color: rgb(65, 64, 66); /* Same color */
-            margin-top: 0; /* Same margin */
-            margin-bottom: 7px; /* Add space below */
+            font-size: 18px; /* Set font size */
+            color: #333; /* Text color */
+            margin-bottom: 10px; /* Add space below */
             font-family: Helvetica, Arial, sans-serif; /* Font family */
             text-align: left; /* Center the text */
-            border-bottom: 3px solid rgb(65, 64, 66, 0.90); /* Bottom border */
-            padding-bottom: 3px; /* Padding below the heading */
+            border-bottom: 2px solid rgb(65, 64, 66, 0.90); /* Bottom border */
+            padding-bottom: 5px; /* Padding below the heading */
             font-weight: bold;
         }
 .project-item label{ font-size: 11px;
     font-family: Helvetica, Arial, sans-serif;}
       
     .project-item {
-    font-family: Helvetica, Arial, sans-serif;
-    font-size: 11px;
-    color: rgb(65, 64, 66);
     display: flex;              /* Use flexbox layout */
     justify-content: space-between; /* Spread items to both sides */
     padding: 5px 0;
@@ -76,9 +67,6 @@
 }
 
 .project-number {
-    font-family: Helvetica, Arial, sans-serif;
-    font-size: 11px;
-    color: rgb(65, 64, 66);
     flex: 1;                    /* Let the project number take up 1 part */
     font-weight: bold;           /* Make the project number bold */
     border-right: .25px solid rgb(208, 208, 208); /* Add a white dividing line */
@@ -178,15 +166,13 @@ select {
     border: none;
     border-radius: 5px;
 }
+
 /* Style for the geocoder control */
 .mapboxgl-ctrl-geocoder {
     position: absolute;
     top: 15px; /* Adjust as needed */
     right: 10px; /* Adjust as needed */
-    transform: scale(0.85); /* Scale the entire search bar to 80% of its size */
-    transform-origin: top right; /* Anchor scaling to the top-right corner */
     z-index: 2; /* Ensure it is above the map */
-    
 }
 /* Base button styling for both filter and polygon buttons */
 .toggle-button {
@@ -261,42 +247,27 @@ select {
 
 #map-overlay-bottom-right {
     position: absolute;
-    bottom: 6px; /* Adjust the position as needed */
-    right: 77px; /* Adjust the position as needed */
+    bottom: 20px; /* Adjust the position as needed */
+    right: 50px; /* Adjust the position as needed */
     z-index: 4; /* Ensure it's above the map and other elements */
 }
 
 #map-overlay-bottom-right img {
-    width: 160px; /* Set the desired width */
+    width: 100px; /* Set the desired width */
     height: auto; /* Maintain aspect ratio */
 
 }
 
-
-
     </style>
 </head>
 <body>
-    
 
    <!-- Add this inside the <body> tag -->
-<div id="coordinates" 
-style="
-position: absolute; 
-bottom: 8px; 
-left: 50%; 
-transform: translateX(-50%);
-color: #333; 
-font-size: 11px; 
-z-index: 3;
-font-family: Helvetica, Arial, sans-serif;
-">Lat / Lon: </div>
+<div id="coordinates" style="position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); background: rgba(0, 0, 0, 0.7); color: white; padding: 5px 10px; border-radius: 5px; font-size: 14px; z-index: 3;">Coordinates: </div>
 
-
-
-<!-- <div id="map-overlay">
+<div id="map-overlay">
     <img src="ASSETS\Prueba_Logo.png" alt="Overlay Image">
-</div> -->
+</div>
 
 <div id="map-overlay-bottom-right">
     <img src="ASSETS\legend.png" alt="Second Overlay Image">
@@ -316,7 +287,7 @@ font-family: Helvetica, Arial, sans-serif;
 
     <!-- Filter Controls -->
     <div class="filter-controls hidden">
-        <h3 class="filter-title">Filters</h3>
+        <h3 class="filter-title">Filters:</h3>
         <label for="tipology-filter">Typology:</label>
         <select id="tipology-filter">
             <option value="">All</option>
@@ -434,53 +405,6 @@ font-family: Helvetica, Arial, sans-serif;
 
                 map.addControl(geocoder, 'top-right');
 
-
-// Add event listeners for hiding and showing buttons
-const buttons = document.querySelectorAll('.toggle-button');
-
-function hideButtons() {
-    buttons.forEach(button => button.style.display = 'none');
-}
-
-function showButtons() {
-    buttons.forEach(button => button.style.display = 'block');
-}
-
-// Monitor when suggestions are visible
-const suggestionsContainer = document.querySelector('.mapboxgl-ctrl-geocoder .suggestions');
-
-// Mutation observer to watch for changes in the suggestions container
-const observer = new MutationObserver(() => {
-    if (suggestionsContainer && suggestionsContainer.childElementCount > 0) {
-        // Hide buttons when suggestions appear
-        hideButtons();
-    } else {
-        // Show buttons when suggestions disappear
-        showButtons();
-    }
-});
-
-// Start observing the suggestions container for changes
-if (suggestionsContainer) {
-    observer.observe(suggestionsContainer, { childList: true });
-}
-
-// Ensure buttons are shown when the search result is selected or cleared
-geocoder.on('result', function () {
-    showButtons(); // Re-show buttons after selecting a result
-});
-
-geocoder.on('clear', function () {
-    showButtons(); // Re-show buttons after clearing the search
-});
-
-
-// Fallback for focusing on the geocoder input
-const geocoderInput = document.querySelector('.mapboxgl-ctrl-geocoder input');
-if (geocoderInput) {
-    geocoderInput.addEventListener('blur', showButtons); // Show buttons when the input loses focus
-}
-
                 // Add geocoder results to the map
                 geocoder.on('result', function (e) {
                     if (marker) {
@@ -488,31 +412,20 @@ if (geocoderInput) {
                     }
                     if (popup) popup.remove(); // Remove any existing marker/popup
 
-                    const properties = e.result.properties || {}; // Handle missing properties
-                    const coordinates = e.result.geometry.coordinates;
-
-                    marker = new mapboxgl.Marker({ color: 'red' })
-        .setLngLat(coordinates)
-        .addTo(map);
                     // Add a custom red marker at the search result location
-                    // marker = new mapboxgl.Marker({ color: 'red' })
-                    //     .setLngLat(e.result.geometry.coordinates)
-                    //     .addTo(map);
-
-                    // map.flyTo({
-                    //     center: e.result.geometry.coordinates,
-                    //     zoom: 14
-                    // });
+                    marker = new mapboxgl.Marker({ color: 'red' })
+                        .setLngLat(e.result.geometry.coordinates)
+                        .addTo(map);
 
                     map.flyTo({
-                center: coordinates,
-                zoom: 18
-            });
+                        center: e.result.geometry.coordinates,
+                        zoom: 14
+                    });
+
                     // Create a popup with place details
                     var description = `
-                        <div id="popup-content" style="max-height: 200px; overflow-y: auto;font-size: 11px">
-                    <strong style="font-size:14px; display: block; padding-bottom: 2px; border-bottom: 3px solid #333;">${e.result.properties.Name || 'Unknown Project'}</strong><br>
-                     <div style="margin-top: .5px;">
+                        <div style="max-height: 200px; overflow-y: auto;">
+                    <strong style="font-size:14px;">${e.result.properties.Name || 'Unknown Project'}</strong><br><br>
                     <strong style="color:#333;">Project Number:</strong> ${e.result.properties['Proyect Number'] || 'N/A'}<br>
                     <strong style="color:#333;">Year:</strong> ${e.result.properties.Year || 'N/A'}<br>
                     <strong style="color:#333;">Architect:</strong> ${e.result.properties.Architect || 'N/A'}<br>
@@ -529,28 +442,10 @@ if (geocoderInput) {
                 </div>
                     `;
 
-                    // popup = new mapboxgl.Popup()
-                    //     .setLngLat(e.result.geometry.coordinates)
-                    //     .setHTML(description)
-                    //     .addTo(map);
-
                     popup = new mapboxgl.Popup()
-                .setLngLat(coordinates)
-                .setHTML(description)
-                .addTo(map);
-
-                
-
-                      
-        const popupContent = document.querySelector('.mapboxgl-popup-content #popup-content');
-        if (popupContent) {
-            popupContent.scrollTop = 0; // Reset scroll to the top
-        }
-   
- // Update coordinates display
- document.getElementById('coordinates').textContent = `Lat / Lon: ${coordinates[1].toFixed(6)}, ${coordinates[0].toFixed(6)}`;
-
-
+                        .setLngLat(e.result.geometry.coordinates)
+                        .setHTML(description)
+                        .addTo(map);
                 });
 
                 // Remove the marker when the search bar is cleared
@@ -559,26 +454,9 @@ if (geocoderInput) {
                         marker.remove();
                         marker = null; // Reset the marker variable
                     }
-
-                    if (popup) {
-                popup.remove();
-                popup = null; // Reset the popup variable
-            }
-
-
-            document.getElementById('coordinates').textContent = 'Coordinates: ';
-
                 });
             })
-
-
-
-
             .catch(error => console.error('Error fetching GeoJSON:', error));
-
-
-
-
             fetch('https://storage.googleapis.com/sitios_bucket/SITIOS_ALL_POINTS.geojson')
     .then(response => response.json())
     .then(data => {
@@ -603,9 +481,6 @@ if (geocoderInput) {
             `;
 
             div.onclick = function() {
-
-                // Close any existing popup
-   
                 if (marker) marker.remove();
                 if (popup) popup.remove(); // Remove any existing marker/popup
 
@@ -615,13 +490,12 @@ if (geocoderInput) {
                     .addTo(map);
 
                 // Fly to the coordinates
-                map.flyTo({ center: coordinates, zoom: 18 });
+                map.flyTo({ center: coordinates, zoom: 14 });
 
                 // Create a popup with project details
                 var description = `
-                    <div id="popup-content" style="max-height: 200px; overflow-y: auto; font-size: 11px">
-                        <strong style="font-size:14px; display: block; padding-bottom: 2px; border-bottom: 3px solid #333;">${projectName}</strong><br>
-                        <div style="margin-top: .5px;">
+                    <div style="max-height: 200px; overflow-y: auto;">
+                        <strong style="font-size:14px;">${projectName}</strong><br><br>
                         <strong style="color:#333;">Project Number:</strong> ${projectNumber}<br>
                         <strong style="color:#333;">Year:</strong> ${properties.Year}<br>
                         <strong style="color:#333;">Architect:</strong> ${properties.Architect || 'N/A'}<br>
@@ -639,22 +513,11 @@ if (geocoderInput) {
 
                 // Add the popup to the map
                 popup = new mapboxgl.Popup()
-                
                     .setLngLat(coordinates)
                     .setHTML(description)
                     .addTo(map);
 
-                      // Add a 'close' event listener to the popup to remove the marker
-
-
-                  
-        const popupContent = document.querySelector('.mapboxgl-popup-content #popup-content');
-        if (popupContent) {
-            popupContent.scrollTop = 0; // Reset scroll to the top
-        }
-  
-
-                    document.getElementById('coordinates').textContent = `Lat / Lon: ${coordinates[1].toFixed(6)}, ${coordinates[0].toFixed(6)}`;
+                    document.getElementById('coordinates').textContent = `Coordinates: ${coordinates[1].toFixed(6)}, ${coordinates[0].toFixed(6)}`;
             };
 
             projectList.appendChild(div);
@@ -664,9 +527,6 @@ if (geocoderInput) {
     
     })
     .catch(error => console.error('Error fetching GeoJSON:', error));
-
-
-
 
 
            // Add GeoJSON source with clustering
@@ -977,18 +837,13 @@ document.getElementById('toggle-filter').addEventListener('click', function () {
 
 // Add a click event for unclustered points to show a popup
 map.on('click', 'unclustered-point', function (e) {
-
-    if (popup) popup.remove(); // Remove any existing marker/popup
-
-    
     var coordinates = e.features[0].geometry.coordinates.slice();
     var properties = e.features[0].properties;
     
     // Create a description with relevant properties for the popup
     var description = `
-        <div id="popup-content" style="max-height: 200px; overflow-y: auto; font-size: 11px">
-            <strong style="font-size:14px; display: block; padding-bottom: 2px; border-bottom: 3px solid #333;">${properties.Name || 'Unknown Project'}</strong><br>
-            <div style="margin-top: .5px;">
+        <div style="max-height: 200px; overflow-y: auto;">
+            <strong style="font-size:14px;">${properties.Name || 'Unknown Project'}</strong><br><br>
             <strong style="color:#333;">Project Number:</strong> ${properties['Proyect Number'] || 'N/A'}<br>
             <strong style="color:#333;">Year:</strong> ${properties.Year || 'N/A'}<br>
             <strong style="color:#333;">Architect:</strong> ${properties.Architect || 'N/A'}<br>
@@ -1006,27 +861,12 @@ map.on('click', 'unclustered-point', function (e) {
           </div>
     `;
 
-     // Create the popup
-    //  activePopup = new mapboxgl.Popup()
-    //     .setLngLat(coordinates)
-    //     .setHTML(description)
-    //     .addTo(map);
-
-
     // Ensure the popup is at the exact clicked point location
     new mapboxgl.Popup()
         .setLngLat(coordinates)
         .setHTML(description)
         .addTo(map);
-
-        // Ensure the scroll position is reset to the top
-    
-        const popupContent = document.querySelector('.mapboxgl-popup-content #popup-content');
-        if (popupContent) {
-            popupContent.scrollTop = 0; // Reset scroll to the top
-        }
-    });
-
+});
 
 // Change the cursor to a pointer when over clusters or points
 map.on('mouseenter', 'unclustered-point', () => map.getCanvas().style.cursor = 'pointer');
@@ -1045,8 +885,7 @@ map.on('mouseleave', 'clusters', () => map.getCanvas().style.cursor = '');
                     .setLngLat(coordinates)
                     .setHTML(description)
                     .addTo(map);
-
-      });
+            });
  // Change the cursor to a pointer when the mouse is over the points layer
 //  map.on('mouseenter', 'points', function () {
 //                 map.getCanvas().style.cursor = 'pointer';
@@ -1082,9 +921,8 @@ map.on('click', 'filter-layer', function (e) {
 
     // Create a description with relevant properties for the popup
     var description = `
-        <div id="popup-content" style="max-height: 200px; overflow-y: auto; font-size: 11px">
-            <strong style="font-size:14px;display: block; padding-bottom: 2px; border-bottom: 3px solid #333;">${properties.Name || 'Unknown Project'}</strong><br>
-            <div style="margin-top: .5px;">
+        <div style="max-height: 200px; overflow-y: auto;">
+            <strong style="font-size:14px;">${properties.Name || 'Unknown Project'}</strong><br><br>
             <strong style="color:#333;">Project Number:</strong> ${properties['Proyect Number'] || 'N/A'}<br>
             <strong style="color:#333;">Year:</strong> ${properties.Year || 'N/A'}<br>
             <strong style="color:#333;">Architect:</strong> ${properties.Architect || 'N/A'}<br>
@@ -1105,23 +943,11 @@ map.on('click', 'filter-layer', function (e) {
         .setLngLat(coordinates)
         .setHTML(description)
         .addTo(map);
-
-     // Ensure the scroll position is reset to the top
-  
-        const popupContent = document.querySelector('.mapboxgl-popup-content #popup-content');
-        if (popupContent) {
-            popupContent.scrollTop = 0; // Reset scroll to the top
-        }
-   
 });
 
 // Change the cursor to a pointer when over points in the filter layer
 map.on('mouseenter', 'filter-layer', () => map.getCanvas().style.cursor = 'pointer');
 map.on('mouseleave', 'filter-layer', () => map.getCanvas().style.cursor = '');
-
-
-
-
 
 // Handle filter toggle
 // document.addEventListener('DOMContentLoaded', function () {
@@ -1136,7 +962,6 @@ map.on('mouseleave', 'filter-layer', () => map.getCanvas().style.cursor = '');
 //        }
 //    });
 // });
-
 
 
 document.getElementById('toggle-polygon-layer').addEventListener('click', function () {
@@ -1155,18 +980,6 @@ map.setLayoutProperty('polygon-layer-outline', 'visibility', 'visible');
 document.getElementById('toggle-project').addEventListener('click', function() {
    var projectControls = document.getElementById('project-controls');
    projectControls.classList.toggle('hidden');
-
-    // Remove the marker if the project list is hidden
-    if (projectControls.classList.contains('hidden') && marker) {
-        marker.remove(); // Remove the marker
-        marker = null; // Reset the marker variable
-    }
-
-    // Also remove the popup if it exists
-    if (projectControls.classList.contains('hidden') && popup) {
-        popup.remove(); // Remove the popup
-        popup = null; // Reset the popup variable
-    }
 });
 
         

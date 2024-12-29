@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>SITIOS: Mapa Arquitectónico de PR</title>
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet">
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
+    <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.min.js"></script>
+    <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.css" type="text/css">
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            height: 100vh;
+        }
+
+        #map {
+            flex-grow: 1;
+            height: 100vh;
+            position: relative;
+            z-index: 1;
+        }
+
+        #center-me {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 3;
+            background-color: rgba(65, 64, 66, 0.90);
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: Helvetica, Arial, sans-serif;
+        }
+
+        #coordinates {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            z-index: 3;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 5px;
+            border-radius: 5px;
+            font-family: Helvetica, Arial, sans-serif;
+            font-size: 12px;
+        }
+
+        /* Beacon animation styles */
+        .beacon-marker {
+            position: relative;
+            width: 20px;
+            height: 20px;
+            background-color: #FFDB58;
+            border-radius: 50%;
+        }
+
+        .beacon-marker:before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 40px;
+            height: 40px;
+            margin-left: -20px;
+            margin-top: -20px;
+            background-color: rgba(255, 219, 88, 0.3);
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(2);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="map"></div>
+    <button id="center-me">Center on Me</button>
+    <div id="coordinates">Lat / Lon: N/A | Accuracy: N/A</div>
+
+    <script>
+        // Initialize Mapbox map
+        mapboxgl.accessToken = 'pk.eyJ1IjoiY3BlcmV6bSIsImEiOiJjbGo0b3lhZjIwM3R2M2treGMwc3Z2NDhoIn0.Py5P82ue0Klm3gJYJsrc2g';
+        var map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/mapbox/light-v11',
+            center: [-66.400000, 18.220833],
+            zoom: 9,
+            attributionControl: false // Disable the Mapbox watermark
+        });
+
+        let liveMarker = null; // Initialize a marker for live location
+        let lastPosition = null; // Store the last position to avoid unnecessary updates
+
+        // Function to update the live location marker
+        function updateLiveLocation(position) {
+            const { latitude, longitude, accuracy } = position.coords;
+
+            console.log(`Latitude: ${latitude}, Longitude: ${longitude}, Accuracy: ${accuracy} meters`);
+
+            // Only update if the accuracy is reasonable
+            if (accuracy > 50) {
+                document.getElementById('coordinates').textContent = `Lat: ${latitude.toFixed(6)}, Lon: ${longitude.toFixed(6)} | Accuracy: Low (${accuracy} meters)`;
+                return;
+            }
+
+            // Avoid frequent updates if the position hasn’t changed significantly
+            if (lastPosition) {
+                const distance = Math.sqrt(
+                    Math.pow(latitude - lastPosition.latitude, 2) +
+                    Math.pow(longitude - lastPosition.longitude, 2)
+                );
+
+                // Only update if the distance is greater than 0.0001 degrees (~11 meters)
+                if (distance < 0.0001) return;
+            }
+
+            lastPosition = { latitude, longitude };
+
+            if (!liveMarker) {
+                // Create a custom HTML element for the marker
+                const el = document.createElement('div');
+                el.className = 'beacon-marker';
+
+                // Create a new marker for the first time
+                liveMarker = new mapboxgl.Marker(el)
+                    .setLngLat([longitude, latitude])
+                    .addTo(map);
+            } else {
+                // Update the position of the existing marker
+                liveMarker.setLngLat([longitude, latitude]);
+            }
+
+            // Show updated accuracy details
+            document.getElementById('coordinates').textContent = `Lat: ${latitude.toFixed(6)}, Lon: ${longitude.toFixed(6)} | Accuracy: ${accuracy} meters`;
+
+            // Center the map on the user's location
+            map.flyTo({
+                center: [longitude, latitude],
+                zoom: 14,
+            });
+        }
+
+        function handleLocationError(error) {
+            console.error("Error fetching location:", error.message);
+            alert("Unable to retrieve your location. Ensure location services are enabled and try again.");
+        }
+
+        // Request live location updates
+        if (navigator.geolocation) {
+            navigator.geolocation.watchPosition(updateLiveLocation, handleLocationError, {
+                enableHighAccuracy: true, // Force high GPS accuracy
+                maximumAge: 0, // No caching of old data
+                timeout: 10000, // Timeout after 10 seconds
+            });
+        } else {
+            alert("Geolocation is not supported by your browser.");
+        }
+
+        // Add a "Center on Me" button functionality
+        document.getElementById('center-me').addEventListener('click', () => {
+            if (liveMarker) {
+                const lngLat = liveMarker.getLngLat();
+                map.flyTo({
+                    center: [lngLat.lng, lngLat.lat],
+                    zoom: 14,
+                });
+            } else {
+                alert("Unable to locate you.");
+            }
+        });
+
+        // Add zoom control buttons
+        map.addControl(new mapboxgl.NavigationControl(), 'bottom-right');
+    </script>
+</body>
+</html>
