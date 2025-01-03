@@ -42,15 +42,15 @@
             max-height: 380px; 
             /* Set the height */
             max-width: 300px; /* Limit the width of the project box */
-            overflow-y: auto; 
+            overflow-y: auto;
+           
         }
-
         #project-controls.hidden {
             display: none; /* Hide project controls when the hidden class is applied */
         }
 
            /* Style the h3 inside project-controls */
-        #project-controls h3 {
+           #project-controls h3 {
             font-size: 14px; /* Set font size */
             color: rgb(65, 64, 66); /* Same color */
             margin-top: 0; /* Same margin */
@@ -61,20 +61,19 @@
             padding-bottom: 3px; /* Padding below the heading */
             font-weight: bold;
         }
-
-        .project-item label{ font-size: 11px;
-            font-family: Helvetica, Arial, sans-serif;
-        }
-            
-        .project-item {
-            font-family: Helvetica, Arial, sans-serif;
-            font-size: 11px;
-            color: rgb(65, 64, 66);
-            display: flex;              /* Use flexbox layout */
-            justify-content: space-between; /* Spread items to both sides */
-            padding: 5px 0;
-            border-bottom: 1px solid rgb(207, 207, 207, 0.549);  
-        }
+.project-item label{ font-size: 11px;
+    font-family: Helvetica, Arial, sans-serif;}
+      
+    .project-item {
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 11px;
+    color: rgb(65, 64, 66);
+    display: flex;              /* Use flexbox layout */
+    justify-content: space-between; /* Spread items to both sides */
+    padding: 5px 0;
+    border-bottom: 1px solid rgb(207, 207, 207, 0.549);
+    
+}
 
 .project-number {
     font-family: Helvetica, Arial, sans-serif;
@@ -272,128 +271,6 @@ select {
     height: auto; /* Maintain aspect ratio */
 
 }
-
-@media screen and (max-width: 768px) {
-    body {
-        margin: 0;
-        padding: 0;
-        display: block; /* Ensure normal block-level flow for all elements */
-        height: auto; /* Allow the body to grow with content */
-    }
-
-    #map {
-        height: 90vh; /* Map takes the full viewport height */
-        width: 100%; /* Full width of the screen */
-        position: relative; /* Normal stacking order */
-    }
-
-    .toggle-filter-button {
-        top: 90px; /* Move it lower */
-    }
-
-    .toggle-polygon-button {
-        top: 130px; /* Adjust further down */
-    }
-
-    .toggle-project-button {
-        top: 170px; /* Keep consistent spacing */
-    }
-
-    #map-overlay-bottom-right {
-        bottom: 0px; /* Move it slightly higher from the bottom */
-        right: 50px; /* Adjust it closer to the right edge */
-    }
-
-    #map-overlay-bottom-right img {
-        width: 150px; /* Reduce the size for mobile */
-        height: auto; /* Maintain aspect ratio */
-    }
-
-    #coordinates {
-        display: none; /* Hide the coordinates display on mobile */
-    }
-    
-    .filter-controls {
-        position: relative; /* Position it below the map in document flow */
-        width: 100%; /* Full width of the container */
-        left: 0px;
-        background: rgba(255, 255, 255, 0.95); /* White background with slight transparency */
-        padding: 20px; /* Add padding around the content */
-        margin-top: 20px; /* Add space between map and filters */
-        border-radius: 0; /* Remove rounded corners */
-        overflow-y: auto; /* Allow scrolling if the content exceeds */
-    }
-
-    .filter-controls label,
-    .filter-controls select,
-    #reset-filters {
-        font-size: 16px; /* Larger font for readability */
-        margin-bottom: 15px; /* Add spacing between form elements */
-    }
-
-    .filter-controls .filter-title {
-        font-size: 18px; /* Larger font for the title */
-        text-align: left; /* Align text to the left */
-        margin-bottom: 20px; /* Add spacing below the title */
-    }
-
-    #reset-filters {
-        width: 100%; /* Full-width button */
-        padding: 10px; /* Add padding for easier interaction */
-        font-size: 16px;
-    }
-
-
-
-    #project-controls {
-        position: relative; /* Ensure it's in the document flow */
-        width: 100vw; /* Take up full width on mobile */
-        background: rgba(255, 255, 255, 0.95); /* White background */
-        left: 0px;
-        padding: 20px; /* Padding for content */
-        margin: 0px; /* Add space between the map and project controls */
-        border-radius: 0; /* Remove rounded corners */
-        overflow-y: auto; /* Allow scrolling for long content */
-    }
-
-    #project-controls h3 {
-        font-size: 18px; /* Larger font size for better readability */
-        margin-bottom: 15px; /* Space below the title */
-        text-align: left; /* Align text to the left */
-    }
-
-    .project-item {
-        font-size: 16px; /* Increase font size for mobile */
-        padding: 10px 0; /* Add padding between items */
-        border-bottom: 1px solid rgba(207, 207, 207, 0.8); /* Add subtle dividers */
-        display: flex; /* Align items horizontally */
-        justify-content: space-between; /* Space between project number and name */
-
-    }
-
-    .project-number, .project-name {
-        font-size: 16px; /* Consistent font size */
-        font-family: Arial, sans-serif; /* Consistent font family */
-        text-align: left; /* Align text */
-    }
-
-    .project-number {
-        flex: 1; /* Adjust spacing for project number */
-    }
-
-    .project-name {
-        flex: 2; /* Adjust spacing for project name */
-        padding-left: 10px; /* Add spacing */
-    }
-
-    .project-item:hover {
-        background-color: #e6e6e6; /* Subtle hover effect for mobile */
-    }
-
-}
-
-
-
 
 
 
@@ -1057,12 +934,6 @@ document.getElementById('toggle-filter').addEventListener('click', function () {
     map.setLayoutProperty('cluster-count', 'visibility', isVisible ? 'none' : 'visible');
     map.setLayoutProperty('unclustered-point', 'visibility', isVisible ? 'none' : 'visible');
     map.setLayoutProperty('filter-layer', 'visibility', isVisible ? 'visible' : 'none');
-
-// Scroll to the filter controls
-filterControls.scrollIntoView({
-    behavior: 'smooth', // Smooth scrolling effect
-    block: 'start'      // Align to the top of the viewport
-});
 });
 
 
@@ -1295,14 +1166,6 @@ document.getElementById('toggle-project').addEventListener('click', function() {
     if (projectControls.classList.contains('hidden') && popup) {
         popup.remove(); // Remove the popup
         popup = null; // Reset the popup variable
-    }
-
-      // Scroll to the project controls when made visible
-      if (!projectControls.classList.contains('hidden') && window.innerWidth <= 768) {
-        projectControls.scrollIntoView({
-            behavior: 'smooth', // Smooth scrolling effect
-            block: 'start',     // Align to the top of the viewport
-        });
     }
 });
 

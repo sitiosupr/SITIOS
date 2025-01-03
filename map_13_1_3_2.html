@@ -526,6 +526,30 @@ font-family: Helvetica, Arial, sans-serif;
         var marker = null;
         var popup = null;
 
+
+        function resetPopupScroll() {
+    // Wait for the popup content to be available
+    const popupContent = document.querySelector('.mapboxgl-popup-content #popup-content');
+    if (popupContent) {
+        popupContent.scrollTop = 0; // Reset scroll to the top
+    } else {
+        // Use a MutationObserver to ensure this works for mobile devices
+        const observer = new MutationObserver(() => {
+            const updatedPopupContent = document.querySelector('.mapboxgl-popup-content #popup-content');
+            if (updatedPopupContent) {
+                updatedPopupContent.scrollTop = 0; // Reset scroll to the top
+                observer.disconnect(); // Stop observing once content is found
+            }
+        });
+
+        // Observe the popup container for changes
+        const popupContainer = document.querySelector('.mapboxgl-popup-content');
+        if (popupContainer) {
+            observer.observe(popupContainer, { childList: true, subtree: true });
+        }
+    }
+}
+
          // Fetch the GeoJSON file with the locations
          fetch('https://storage.googleapis.com/sitios_bucket/SITIOS_ALL_POINTS.geojson') // Replace with the actual path to your GeoJSON file
             .then(response => response.json())
@@ -662,13 +686,9 @@ if (geocoderInput) {
                 .setHTML(description)
                 .addTo(map);
 
+                // Call the scroll reset function
+resetPopupScroll();
                 
-
-                      
-        const popupContent = document.querySelector('.mapboxgl-popup-content #popup-content');
-        if (popupContent) {
-            popupContent.scrollTop = 0; // Reset scroll to the top
-        }
    
  // Update coordinates display
  document.getElementById('coordinates').textContent = `Lat / Lon: ${coordinates[1].toFixed(6)}, ${coordinates[0].toFixed(6)}`;
@@ -769,13 +789,8 @@ if (geocoderInput) {
 
                       // Add a 'close' event listener to the popup to remove the marker
 
-
-                  
-        const popupContent = document.querySelector('.mapboxgl-popup-content #popup-content');
-        if (popupContent) {
-            popupContent.scrollTop = 0; // Reset scroll to the top
-        }
-  
+                      // Call the scroll reset function
+resetPopupScroll();
 
                     document.getElementById('coordinates').textContent = `Lat / Lon: ${coordinates[1].toFixed(6)}, ${coordinates[0].toFixed(6)}`;
             };
@@ -1149,11 +1164,8 @@ map.on('click', 'unclustered-point', function (e) {
         .addTo(map);
 
         // Ensure the scroll position is reset to the top
-    
-        const popupContent = document.querySelector('.mapboxgl-popup-content #popup-content');
-        if (popupContent) {
-            popupContent.scrollTop = 0; // Reset scroll to the top
-        }
+    // Call the scroll reset function
+resetPopupScroll();
     });
 
 
@@ -1235,12 +1247,10 @@ map.on('click', 'filter-layer', function (e) {
         .setHTML(description)
         .addTo(map);
 
-     // Ensure the scroll position is reset to the top
+     // Call the scroll reset function
+resetPopupScroll();
   
-        const popupContent = document.querySelector('.mapboxgl-popup-content #popup-content');
-        if (popupContent) {
-            popupContent.scrollTop = 0; // Reset scroll to the top
-        }
+
    
 });
 

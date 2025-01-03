@@ -271,7 +271,27 @@ select {
     height: auto; /* Maintain aspect ratio */
 
 }
+@media only screen and (max-width: 768px) {
+    #map {
+        height: 50vh; /* Map takes up half the screen */
+        width: 100%; /* Full width */
+    }
 
+    .filter-controls {
+        position: relative; /* Ensure it's part of the flow, not overlapping */
+        width: 100%; /* Full width of the screen */
+        height: auto; /* Let content determine height */
+        background: rgba(165, 164, 164, 0.9); /* Same background as before */
+        margin-top: 0; /* Optional: add spacing if needed */
+        padding: 20px; /* Adjust padding for readability */
+        border-top: 2px solid #333; /* Optional: add a top border for separation */
+        z-index: 1; /* Make sure it's above default background */
+    }
+
+    .hidden {
+        display: none; /* Hide the filter controls */
+    }
+}
 
 
     </style>
@@ -1169,7 +1189,40 @@ document.getElementById('toggle-project').addEventListener('click', function() {
     }
 });
 
-        
+// Helper function to check if the current screen width is mobile
+function isMobile() {
+    return window.matchMedia("(max-width: 768px)").matches;
+}
+
+// Toggle Filter Controls (Mobile Only)
+document.getElementById('toggle-filter').addEventListener('click', function () {
+    if (isMobile()) {
+        const filterControls = document.querySelector('.filter-controls');
+        filterControls.classList.toggle('hidden');
+
+        if (!filterControls.classList.contains('hidden')) {
+            // Scroll the filter controls into view for mobile
+            filterControls.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    } else {
+        // Add any desktop-specific functionality here if needed
+    }
+});
+
+document.getElementById('toggle-filter').addEventListener('click', function () {
+    const filterControls = document.querySelector('.filter-controls');
+    
+    // Toggle visibility
+    filterControls.classList.toggle('hidden');
+    
+    if (!filterControls.classList.contains('hidden') && isMobile()) {
+        // Scroll to filter-controls
+        filterControls.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+});
+
+
+
     </script>
 </body>
 </html>
