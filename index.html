@@ -30,7 +30,7 @@
         #project-controls {
             position: absolute;
             bottom: 5%;
-            top: auto; /* Prevents conflict with bottom alignment */
+            top: 3.5%; /* Prevents conflict with bottom alignment */
             /* top: 20px; */
             /* left: 10px; */
             left: 20px;
@@ -633,7 +633,7 @@ if (geocoderInput) {
             });
                     // Create a popup with place details
                     var description = `
-                        <div id="popup-content" style="max-height: auto; font-size: 11px">
+                        <div id="popup-content" style="max-height: auto; max-width: 200px; font-size: 11px">
                     <strong style="font-size:14px; display: block; padding-bottom: 2px; border-bottom: 3px solid #333;">${e.result.properties.Name || 'Unknown Project'}</strong><br>
                      <div style="margin-top: .5px;">
                     <strong style="color:#333;">Project Number:</strong> ${e.result.properties['Proyect Number'] || 'N/A'}<br>
@@ -742,7 +742,7 @@ if (geocoderInput) {
 
                 // Create a popup with project details
                 var description = `
-                    <div id="popup-content" style="max-height: auto; font-size: 11px">
+                    <div id="popup-content" style="max-height: auto; max-width: 200px; font-size: 11px">
                         <strong style="font-size:14px; display: block; padding-bottom: 2px; border-bottom: 3px solid #333;">${projectName}</strong><br>
                         <div style="margin-top: .5px;">
                         <strong style="color:#333;">Project Number:</strong> ${projectNumber}<br>
@@ -1120,7 +1120,7 @@ map.on('click', 'unclustered-point', function (e) {
     
     // Create a description with relevant properties for the popup
     var description = `
-        <div id="popup-content" style="max-height: auto; font-size: 11px">
+        <div id="popup-content" style="max-height: auto; max-width: 200px; font-size: 11px">
             <strong style="font-size:14px; display: block; padding-bottom: 2px; border-bottom: 3px solid #333;">${properties.Name || 'Unknown Project'}</strong><br>
             <div style="margin-top: .5px;">
             <strong style="color:#333;">Project Number:</strong> ${properties['Proyect Number'] || 'N/A'}<br>
@@ -1216,7 +1216,7 @@ map.on('click', 'filter-layer', function (e) {
 
     // Create a description with relevant properties for the popup
     var description = `
-        <div id="popup-content" style="max-height: auto; font-size: 11px">
+        <div id="popup-content" style="max-height: auto; max-width: 200px; font-size: 11px">
             <strong style="font-size:14px;display: block; padding-bottom: 2px; border-bottom: 3px solid #333;">${properties.Name || 'Unknown Project'}</strong><br>
             <div style="margin-top: .5px;">
             <strong style="color:#333;">Project Number:</strong> ${properties['Proyect Number'] || 'N/A'}<br>
