@@ -29,7 +29,7 @@
 
         #project-controls {
             position: absolute;
-            bottom: 18%;
+            bottom: 5%;
             top: auto; /* Prevents conflict with bottom alignment */
             /* top: 20px; */
             /* left: 10px; */
@@ -39,7 +39,7 @@
             /* padding: 15px; */
             padding: 20px 30px 20px 20px; /* Matches filter-controls padding */
             border-radius: 5px;
-            max-height: 380px; 
+            max-height: 645px; 
             /* Set the height */
             max-width: 300px; /* Limit the width of the project box */
             overflow-y: auto; 
@@ -633,7 +633,7 @@ if (geocoderInput) {
             });
                     // Create a popup with place details
                     var description = `
-                        <div id="popup-content" style="max-height: 200px; overflow-y: auto;font-size: 11px">
+                        <div id="popup-content" style="max-height: auto; font-size: 11px">
                     <strong style="font-size:14px; display: block; padding-bottom: 2px; border-bottom: 3px solid #333;">${e.result.properties.Name || 'Unknown Project'}</strong><br>
                      <div style="margin-top: .5px;">
                     <strong style="color:#333;">Project Number:</strong> ${e.result.properties['Proyect Number'] || 'N/A'}<br>
@@ -647,7 +647,7 @@ if (geocoderInput) {
                    
                     <strong style="color:#333;">More Information:</strong> 
         <a href="${properties.URL || '#'}" target="_blank" style="color:#1a73e8; text-decoration: underline;">
-            Learn more about this project
+            Learn more
         </a>
                 </div>
                     `;
@@ -742,7 +742,7 @@ if (geocoderInput) {
 
                 // Create a popup with project details
                 var description = `
-                    <div id="popup-content" style="max-height: 200px; overflow-y: auto; font-size: 11px">
+                    <div id="popup-content" style="max-height: auto; font-size: 11px">
                         <strong style="font-size:14px; display: block; padding-bottom: 2px; border-bottom: 3px solid #333;">${projectName}</strong><br>
                         <div style="margin-top: .5px;">
                         <strong style="color:#333;">Project Number:</strong> ${projectNumber}<br>
@@ -755,7 +755,7 @@ if (geocoderInput) {
                       
                         <strong style="color:#333;">More Information:</strong> 
         <a href="${properties.URL || '#'}" target="_blank" style="color:#1a73e8; text-decoration: underline;">
-            Learn more about this project
+            Learn more
         </a>
                     </div>
                 `;
@@ -885,14 +885,19 @@ if (geocoderInput) {
                 }
             });
 
-            // Optional outline for polygons
-            map.addLayer({
-                'id': 'PwP-layer-outline',
-                'type': 'line',
-                'source': 'PwP-data',
+              // Add a GeoJSON source for polygons
+              map.addSource('E_H-data', {
+                'type': 'geojson',
+                'data': 'https://storage.googleapis.com/sitios_bucket/E-H.geojson' // Add your polygons GeoJSON file here
+            });
+
+              // Add a layer for polygons
+              map.addLayer({
+                'id': 'E_H-layer', 
+                'type': 'fill',
+                'source': 'E_H-data',
                 'paint': {
-                    'line-color': '#000000', // Black outline for polygons
-                    'line-width': .25
+                    'fill-color': 'rgb (247, 247, 247)', // Light Grey fill color for polygons para los "huecos" (patios interiores jardines, etc...)
                 }
             });
 
@@ -1115,7 +1120,7 @@ map.on('click', 'unclustered-point', function (e) {
     
     // Create a description with relevant properties for the popup
     var description = `
-        <div id="popup-content" style="max-height: 200px; overflow-y: auto; font-size: 11px">
+        <div id="popup-content" style="max-height: auto; font-size: 11px">
             <strong style="font-size:14px; display: block; padding-bottom: 2px; border-bottom: 3px solid #333;">${properties.Name || 'Unknown Project'}</strong><br>
             <div style="margin-top: .5px;">
             <strong style="color:#333;">Project Number:</strong> ${properties['Proyect Number'] || 'N/A'}<br>
@@ -1129,7 +1134,7 @@ map.on('click', 'unclustered-point', function (e) {
 
           <strong style="color:#333;">More Information:</strong> 
         <a href="${properties.URL || '#'}" target="_blank" style="color:#1a73e8; text-decoration: underline;">
-            Learn more about this project
+            Learn more
         </a>
 
           </div>
@@ -1211,7 +1216,7 @@ map.on('click', 'filter-layer', function (e) {
 
     // Create a description with relevant properties for the popup
     var description = `
-        <div id="popup-content" style="max-height: 200px; overflow-y: auto; font-size: 11px">
+        <div id="popup-content" style="max-height: auto; font-size: 11px">
             <strong style="font-size:14px;display: block; padding-bottom: 2px; border-bottom: 3px solid #333;">${properties.Name || 'Unknown Project'}</strong><br>
             <div style="margin-top: .5px;">
             <strong style="color:#333;">Project Number:</strong> ${properties['Proyect Number'] || 'N/A'}<br>
@@ -1224,7 +1229,7 @@ map.on('click', 'filter-layer', function (e) {
 
             <strong style="color:#333;">More Information:</strong> 
         <a href="${properties.URL || '#'}" target="_blank" style="color:#1a73e8; text-decoration: underline;">
-            Learn more about this project
+            Learn more
         </a>
         </div>
     `;
