@@ -878,10 +878,12 @@ if (geocoderInput) {
               // Add a layer for polygons
               map.addLayer({
                 'id': 'PwP-layer', 
-                'type': 'fill',
+                'type': 'line',
                 'source': 'PwP-data',
                 'paint': {
-                    'fill-color': 'rgb(194, 181, 155)', // Green fill color for polygons
+                    'line-color': '#ffffff', // Black outline for polygons
+                    'line-width': 1,
+                
                 }
             });
 
