@@ -641,7 +641,7 @@ if (geocoderInput) {
                     <strong style="color:#333;">Architect:</strong> ${e.result.properties.Architect || 'N/A'}<br>
                     <strong style="color:#333;">Client:</strong> ${e.result.properties.Client || 'N/A'}<br>
                     <strong style="color:#333;">Style:</strong> ${e.result.properties.Style || 'N/A'}<br>
-                    <strong style="color:#333;">Typology:</strong> ${e.result.properties['Tipology '] || 'N/A'}<br>
+                    <strong style="color:#333;">Buildling Type:</strong> ${e.result.properties['Tipology '] || 'N/A'}<br>
                     <strong style="color:#333;">Status:</strong> ${e.result.properties.Status || 'N/A'}<br>
                     
                    
@@ -750,7 +750,7 @@ if (geocoderInput) {
                         <strong style="color:#333;">Architect:</strong> ${properties.Architect || 'N/A'}<br>
                          <strong style="color:#333;">Client:</strong> ${properties.Client || 'N/A'}<br>
                         <strong style="color:#333;">Style:</strong> ${properties.Style || 'N/A'}<br>
-                        <strong style="color:#333;">Typology:</strong> ${properties['Tipology '] || 'N/A'}<br>
+                        <strong style="color:#333;">Buildling Type:</strong> ${properties['Tipology '] || 'N/A'}<br>
                          <strong style="color:#333;">Status:</strong> ${properties.Status || 'N/A'}<br>
                       
                         <strong style="color:#333;"></strong> 
@@ -759,7 +759,6 @@ if (geocoderInput) {
         </a>
                     </div>
                 `;
-
                 // Add the popup to the map
                 popup = new mapboxgl.Popup()
                 
@@ -1130,7 +1129,7 @@ map.on('click', 'unclustered-point', function (e) {
             <strong style="color:#333;">Architect:</strong> ${properties.Architect || 'N/A'}<br>
             <strong style="color:#333;">Client:</strong> ${properties.Client || 'N/A'}<br>
             <strong style="color:#333;">Style:</strong> ${properties.Style || 'N/A'}<br>
-            <strong style="color:#333;">Typology:</strong> ${properties['Tipology '] || 'N/A'}<br>
+            <strong style="color:#333;">Buildling Type:</strong> ${properties['Tipology '] || 'N/A'}<br>
             <strong style="color:#333;">Status:</strong> ${properties.Status || 'N/A'}<br>
         
 
@@ -1226,7 +1225,7 @@ map.on('click', 'filter-layer', function (e) {
             <strong style="color:#333;">Architect:</strong> ${properties.Architect || 'N/A'}<br>
              <strong style="color:#333;">Client:</strong> ${properties.Client || 'N/A'}<br>
             <strong style="color:#333;">Style:</strong> ${properties.Style || 'N/A'}<br>
-            <strong style="color:#333;">Typology:</strong> ${properties['Tipology '] || 'N/A'}<br>
+            <strong style="color:#333;">Buildling Type:</strong> ${properties['Tipology '] || 'N/A'}<br>
             <strong style="color:#333;">Status:</strong> ${properties.Status || 'N/A'}<br>
 
             <strong style="color:#333;"></strong> 
