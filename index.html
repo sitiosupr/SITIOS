@@ -443,19 +443,19 @@ font-family: Helvetica, Arial, sans-serif;
         <label for="tipology-filter">Building Types:</label>
         <select id="tipology-filter">
             <option value="">All</option>
-            <option value="Residential-Development">Residential-Planned Developments</option>
-            <option value="Residential-Single Family">Residential-Single-Family Dwellings</option>
-            <option value="Residential-Apartment">Residential-Apartment Houses</option>
-            <option value="Hospitality">Hotels</option>
-            <option value="Educational">Educational Buildings</option>
-            <option value="Religious">Religious Buildings</option>
-            <option value="Healthcare">Healthcare and Welfare Buildings</option>
-            <option value="Commercial">Commercial Buildings</option>
-            <option value="Institutional">Public Buildings</option>
-            <option value="Industrial">Industrial Buildings</option>
-            <option value="Recreational">Recreation Areas</option>
+            <option value="Commercial Building">Commercial Buildings</option>
+            <option value="Educational Building">Educational Buildings</option>
+            <option value="Healthcare and Welfare Building">Healthcare and Welfare Buildings</option>
+            <option value="Hotel">Hotels</option>
+            <option value="Industrial Building">Industrial Buildings</option>
             <option value="Master Plan">Master Plans</option>
             <option value="Miscellaneous">Miscellaneous</option>
+            <option value="Public Building">Public Buildings</option>
+            <option value="Recreation Area">Recreation Areas</option>
+            <option value="Religious Building">Religious Buildings</option>
+            <option value="Residential-Apartment House">Residential-Apartment Houses</option>
+            <option value="Residential-Planned Development">Residential-Planned Developments</option>
+            <option value="Residential-Single-Family Dwelling">Residential-Single-Family Dwellings</option>
             <option value="Unknown">Unknown</option>
             
         </select>
@@ -489,17 +489,28 @@ font-family: Helvetica, Arial, sans-serif;
         <label for="decade-filter">Periods:</label>
         <select id="decade-filter">
             <option value="">All</option>
-            <option value="1910">1910-1919</option>
-            <option value="1920">1920-1929</option>
-            <option value="1930">1930-1939</option>
-            <option value="1940">1940-1949</option>
-            <option value="1950">1950-1959</option>
-            <option value="1960">1960-1969</option>
-            <option value="1970">1970-1979</option>
-            <option value="1980">1980-1989</option>
-            <option value="1990">1990-1999</option>
-            <option value="2000">2000-2009</option>
-            <option value="2010">2010-2019</option>
+            <option value="1910">1910-1914</option>
+            <option value="1915">1915-1919</option>
+            <option value="1920">1920-1924</option>
+            <option value="1925">1925-1929</option>
+            <option value="1930">1930-1934</option>
+            <option value="1935">1935-1939</option>
+            <option value="1940">1940-1944</option>
+            <option value="1945">1945-1949</option>
+            <option value="1950">1950-1954</option>
+            <option value="1955">1955-1959</option>
+            <option value="1960">1960-1964</option>
+            <option value="1965">1965-1969</option>
+            <option value="1970">1970-1974</option>
+            <option value="1975">1975-1979</option>
+            <option value="1980">1980-1984</option>
+            <option value="1985">1985-1989</option>
+            <option value="1990">1990-1994</option>
+            <option value="1995">1995-1999</option>
+            <option value="2000">2000-2004</option>
+            <option value="2005">2005-2009</option>
+            <option value="2010">2010-2014</option>
+            <option value="2015">2015-2019</option>
             <option value="2020">2020-Present</option>
         </select>
 
@@ -643,12 +654,19 @@ if (geocoderInput) {
                     <strong style="color:#333;">Style:</strong> ${e.result.properties.Style || 'N/A'}<br>
                     <strong style="color:#333;">Buildling Type:</strong> ${e.result.properties['Tipology '] || 'N/A'}<br>
                     <strong style="color:#333;">Status:</strong> ${e.result.properties.Status || 'N/A'}<br>
-                    
+                
                    
-                    <strong style="color:#333;"></strong> 
-        <a href="${properties.URL || '#'}" target="_blank" style="color:#1a73e8; text-decoration: underline;">
-            Learn more about this project
-        </a>
+   <strong 
+    style="background-color: red; color: white; padding: 4px;"
+    onmouseover="this.style.backgroundColor='#cc0000';" 
+    onmouseout="this.style.backgroundColor='red';"
+>
+    <a href="${properties.URL || '#'}" target="_blank" style="color: white; text-decoration: none;">
+        Learn More
+    </a>
+</strong>
+
+
                 </div>
                     `;
 
@@ -753,10 +771,15 @@ if (geocoderInput) {
                         <strong style="color:#333;">Buildling Type:</strong> ${properties['Tipology '] || 'N/A'}<br>
                          <strong style="color:#333;">Status:</strong> ${properties.Status || 'N/A'}<br>
                       
-                        <strong style="color:#333;"></strong> 
-        <a href="${properties.URL || '#'}" target="_blank" style="color:#1a73e8; text-decoration: underline;">
-            Learn more about this project.
-        </a>
+                      <strong 
+    style="background-color: red; color: white; padding: 4px;"
+    onmouseover="this.style.backgroundColor='#cc0000';" 
+    onmouseout="this.style.backgroundColor='red';"
+>
+    <a href="${properties.URL || '#'}" target="_blank" style="color: white; text-decoration: none;">
+        Learn More
+    </a>
+</strong>
                     </div>
                 `;
                 // Add the popup to the map
@@ -1133,10 +1156,15 @@ map.on('click', 'unclustered-point', function (e) {
             <strong style="color:#333;">Status:</strong> ${properties.Status || 'N/A'}<br>
         
 
-          <strong style="color:#333;"></strong> 
-        <a href="${properties.URL || '#'}" target="_blank" style="color:#1a73e8; text-decoration: underline;">
-            Learn more about this project. 
-        </a>
+         <strong 
+    style="background-color: red; color: white; padding: 4px;"
+    onmouseover="this.style.backgroundColor='#cc0000';" 
+    onmouseout="this.style.backgroundColor='red';"
+>
+    <a href="${properties.URL || '#'}" target="_blank" style="color: white; text-decoration: none;">
+        Learn More
+    </a>
+</strong>
 
           </div>
     `;
@@ -1228,10 +1256,15 @@ map.on('click', 'filter-layer', function (e) {
             <strong style="color:#333;">Buildling Type:</strong> ${properties['Tipology '] || 'N/A'}<br>
             <strong style="color:#333;">Status:</strong> ${properties.Status || 'N/A'}<br>
 
-            <strong style="color:#333;"></strong> 
-        <a href="${properties.URL || '#'}" target="_blank" style="color:#1a73e8; text-decoration: underline;">
-            Learn more about this proejct.
-        </a>
+            <strong 
+    style="background-color: red; color: white; padding: 4px;"
+    onmouseover="this.style.backgroundColor='#cc0000';" 
+    onmouseout="this.style.backgroundColor='red';"
+>
+    <a href="${properties.URL || '#'}" target="_blank" style="color: white; text-decoration: none;">
+        Learn More
+    </a>
+</strong>
         </div>
     `;
 
