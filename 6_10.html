@@ -24,49 +24,62 @@
             height: 100vh;
             position: relative;
             z-index: 1;
+    
         }
 
         #project-controls {
             position: absolute;
-            bottom: 18%;
-            top: 20px;
-            left: 10px;
+            bottom: 5%;
+            top: 3.5%; /* Prevents conflict with bottom alignment */
+            /* top: 20px; */
+            /* left: 10px; */
+            left: 20px;
              z-index: 2;
            background: rgba(165, 164, 164, 0.90);
-            padding: 15px;
+            /* padding: 15px; */
+            padding: 20px 30px 20px 20px; /* Matches filter-controls padding */
             border-radius: 5px;
-            
-            max-width: 400px; /* Limit the width of the project box */
-            overflow-y: auto;
-           
+            max-height: auto; 
+            /* Set the height */
+            max-width: 300px; /* Limit the width of the project box */
+            overflow-y: auto; 
         }
+
         #project-controls.hidden {
             display: none; /* Hide project controls when the hidden class is applied */
         }
 
            /* Style the h3 inside project-controls */
-           #project-controls h3 {
-            font-size: 18px; /* Set font size */
-            color: #333; /* Text color */
-            margin-bottom: 10px; /* Add space below */
+        #project-controls h3 {
+            font-size: 14px; /* Set font size */
+            color: rgb(65, 64, 66); /* Same color */
+            margin-top: 0; /* Same margin */
+            margin-bottom: 7px; /* Add space below */
             font-family: Helvetica, Arial, sans-serif; /* Font family */
             text-align: left; /* Center the text */
-            border-bottom: 2px solid rgb(65, 64, 66, 0.90); /* Bottom border */
-            padding-bottom: 5px; /* Padding below the heading */
+            border-bottom: 3px solid rgb(65, 64, 66, 0.90); /* Bottom border */
+            padding-bottom: 3px; /* Padding below the heading */
             font-weight: bold;
         }
-.project-item label{ font-size: 11px;
-    font-family: Helvetica, Arial, sans-serif;}
-      
-    .project-item {
-    display: flex;              /* Use flexbox layout */
-    justify-content: space-between; /* Spread items to both sides */
-    padding: 5px 0;
-    border-bottom: 1px solid rgb(207, 207, 207, 0.549);
-    
-}
+
+        .project-item label{ font-size: 11px;
+            font-family: Helvetica, Arial, sans-serif;
+        }
+            
+        .project-item {
+            font-family: Helvetica, Arial, sans-serif;
+            font-size: 11px;
+            color: rgb(65, 64, 66);
+            display: flex;              /* Use flexbox layout */
+            justify-content: space-between; /* Spread items to both sides */
+            padding: 5px 0;
+            border-bottom: 1px solid rgb(207, 207, 207, 0.549);  
+        }
 
 .project-number {
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 11px;
+    color: rgb(65, 64, 66);
     flex: 1;                    /* Let the project number take up 1 part */
     font-weight: bold;           /* Make the project number bold */
     border-right: .25px solid rgb(208, 208, 208); /* Add a white dividing line */
@@ -166,13 +179,15 @@ select {
     border: none;
     border-radius: 5px;
 }
-
 /* Style for the geocoder control */
 .mapboxgl-ctrl-geocoder {
     position: absolute;
     top: 15px; /* Adjust as needed */
     right: 10px; /* Adjust as needed */
+    transform: scale(0.85); /* Scale the entire search bar to 80% of its size */
+    transform-origin: top right; /* Anchor scaling to the top-right corner */
     z-index: 2; /* Ensure it is above the map */
+    
 }
 /* Base button styling for both filter and polygon buttons */
 .toggle-button {
@@ -247,27 +262,261 @@ select {
 
 #map-overlay-bottom-right {
     position: absolute;
-    bottom: 20px; /* Adjust the position as needed */
-    right: 50px; /* Adjust the position as needed */
+    bottom: 6px; /* Adjust the position as needed */
+    right: 77px; /* Adjust the position as needed */
     z-index: 4; /* Ensure it's above the map and other elements */
 }
 
 #map-overlay-bottom-right img {
-    width: 100px; /* Set the desired width */
+    width: 160px; /* Set the desired width */
     height: auto; /* Maintain aspect ratio */
 
+}
+
+@media screen and (max-width: 768px) {
+    body {
+        margin: 0;
+        padding: 0;
+        display: block; /* Ensure normal block-level flow for all elements */
+        height: auto; /* Allow the body to grow with content */
+    }
+
+    #map {
+        height: 90vh; /* Map takes the full viewport height */
+        width: 100%; /* Full width of the screen */
+        position: relative; /* Normal stacking order */
+    }
+
+    .toggle-filter-button {
+        top: 90px; /* Move it lower */
+    }
+
+    .toggle-polygon-button {
+        top: 130px; /* Adjust further down */
+    }
+
+    .toggle-project-button {
+        top: 170px; /* Keep consistent spacing */
+    }
+
+    #map-overlay-bottom-right {
+        bottom: 0px; /* Move it slightly higher from the bottom */
+        right: 50px; /* Adjust it closer to the right edge */
+    }
+
+    #map-overlay-bottom-right img {
+        width: 150px; /* Reduce the size for mobile */
+        height: auto; /* Maintain aspect ratio */
+    }
+
+    #coordinates {
+        display: none; /* Hide the coordinates display on mobile */
+    }
+    
+    .filter-controls {
+        position: relative; /* Position it below the map in document flow */
+        width: 100%; /* Full width of the container */
+        left: 0px;
+        background: rgba(255, 255, 255, 0.95); /* White background with slight transparency */
+        padding: 20px; /* Add padding around the content */
+        margin-top: 20px; /* Add space between map and filters */
+        border-radius: 0; /* Remove rounded corners */
+        overflow-y: auto; /* Allow scrolling if the content exceeds */
+    }
+
+    .filter-controls label,
+    .filter-controls select,
+    #reset-filters {
+        font-size: 16px; /* Larger font for readability */
+        margin-bottom: 15px; /* Add spacing between form elements */
+    }
+
+    .filter-controls .filter-title {
+        font-size: 18px; /* Larger font for the title */
+        text-align: left; /* Align text to the left */
+        margin-bottom: 20px; /* Add spacing below the title */
+    }
+
+    #reset-filters {
+        width: 100%; /* Full-width button */
+        padding: 10px; /* Add padding for easier interaction */
+        font-size: 16px;
+    }
+
+
+
+    #project-controls {
+        position: relative; /* Ensure it's in the document flow */
+        width: 100vw; /* Take up full width on mobile */
+        background: rgba(255, 255, 255, 0.95); /* White background */
+        left: 0px;
+        padding: 20px; /* Padding for content */
+        margin: 0px; /* Add space between the map and project controls */
+        border-radius: 0; /* Remove rounded corners */
+        overflow-y: auto; /* Allow scrolling for long content */
+    }
+
+    #project-controls h3 {
+        font-size: 18px; /* Larger font size for better readability */
+        margin-bottom: 15px; /* Space below the title */
+        text-align: left; /* Align text to the left */
+    }
+
+    .project-item {
+        font-size: 16px; /* Increase font size for mobile */
+        padding: 10px 0; /* Add padding between items */
+        border-bottom: 1px solid rgba(207, 207, 207, 0.8); /* Add subtle dividers */
+        display: flex; /* Align items horizontally */
+        justify-content: space-between; /* Space between project number and name */
+
+    }
+
+    .project-number, .project-name {
+        font-size: 16px; /* Consistent font size */
+        font-family: Arial, sans-serif; /* Consistent font family */
+        text-align: left; /* Align text */
+    }
+
+    .project-number {
+        flex: 1; /* Adjust spacing for project number */
+    }
+
+    .project-name {
+        flex: 2; /* Adjust spacing for project name */
+        padding-left: 10px; /* Add spacing */
+    }
+
+    .project-item:hover {
+        background-color: #e6e6e6; /* Subtle hover effect for mobile */
+    }
+
+}
+/* Custom dropdown button - match native select */
+/* .dropbtn {
+    background: rgba(198,197,197, 0.90);
+    color: rgb(65, 64, 66);
+    padding: 5px;
+    font-size: 11px;
+    font-family: Helvetica, Arial, sans-serif;
+    border: none;
+    outline: none;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+    margin-bottom: 10px;
+} */
+
+.dropbtn {
+    background: rgba(198,197,197, 0.90);
+    color: rgb(65, 64, 66);
+    padding: 5px 30px 5px 5px; /* match select padding + space for arrow */
+    font-size: 11px;
+    font-family: Helvetica, Arial, sans-serif;
+    border: none;
+    outline: none;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+    margin-bottom: 10px;
+    height: 26px; /* Force height to match select box visually */
+    line-height: 1.2; /* Vertical centering of text */
+    position: relative;
+    border-radius: 0; /* Match select (you can add radius if your selects have it) */
+}
+.dropbtn::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    width: 6px;
+    height: 6px;
+    border: solid rgb(65, 64, 66);
+    border-width: 0 2px 2px 0;
+    display: inline-block;
+    padding: 3px;
+    transform: translateY(-50%) rotate(45deg);
+    pointer-events: none; /* Let clicks go through */
+}
+/* Dropdown content box - match select background */
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background: rgba(198,197,197, 0.90);
+    box-shadow: none;
+    border: none;
+    border-radius: 0;
+    padding: 0;
+     border-radius: 5px;
+}
+
+/* Show dropdown on hover */
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+/* Dropdown items - match select item style */
+.dropdown-content a {
+    color: rgb(65, 64, 66);
+    padding: 5px;
+    font-size: 11px;
+    font-family: Helvetica, Arial, sans-serif;
+    text-decoration: none;
+    display: block;
+    border-bottom: 1px solid rgb(207, 207, 207, 0.549);
+     border-radius: 5px;
+}
+
+/* Hover effect - exact match to .project-item:hover */
+.dropdown-content a:hover {
+    background-color:rgb(65, 64, 66,.70);
+    color: rgb(219, 219, 219);
+}
+
+/* Submenu same style */
+.dropdown-submenu {
+    position: relative;
+}
+
+.dropdown-submenu .submenu-content {
+    display: none;
+    position: absolute;
+    left: 100%;
+    top: 0;
+    background: rgba(198,197,197, 0.90);
+    min-width: 180px;
+    box-shadow: none;
+    border: none;
+    border-radius: 5px;
+    padding: 0;
+}
+
+.dropdown-submenu:hover .submenu-content {
+    display: block;
 }
 
     </style>
 </head>
 <body>
+    
 
    <!-- Add this inside the <body> tag -->
-<div id="coordinates" style="position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); background: rgba(0, 0, 0, 0.7); color: white; padding: 5px 10px; border-radius: 5px; font-size: 14px; z-index: 3;">Coordinates: </div>
+<div id="coordinates" 
+style="
+position: absolute; 
+bottom: 8px; 
+left: 50%; 
+transform: translateX(-50%);
+color: #333; 
+font-size: 11px; 
+z-index: 3;
+font-family: Helvetica, Arial, sans-serif;
+">Lat / Lon: </div>
 
-<div id="map-overlay">
+
+
+<!-- <div id="map-overlay">
     <img src="ASSETS\Prueba_Logo.png" alt="Overlay Image">
-</div>
+</div> -->
 
 <div id="map-overlay-bottom-right">
     <img src="ASSETS\legend.png" alt="Second Overlay Image">
@@ -287,41 +536,40 @@ select {
 
     <!-- Filter Controls -->
     <div class="filter-controls hidden">
-        <h3 class="filter-title">Filters:</h3>
-        <label for="tipology-filter">Typology:</label>
-        <select id="tipology-filter">
-            <option value="">All</option>
-            <option value="Residential-Development">Residential-Development</option>
-            <option value="Residential-Single Family">Residential-Single Family</option>
-            <option value="Residential-Apartment">Residential-Apartment</option>
-            <option value="Hospitality">Hospitality</option>
-            <option value="Educational">Educational</option>
-           <!-- <option value="Religious">Religious</option> -->
-             <optgroup label="Religious Buildings">
-        <option value="Religious Building - Church">Church</option>
-        <option value="Religious Building - Mosque">Mosque</option>
-        <option value="Religious Building - Synagogue">Synagogue</option>
-    </optgroup>
-            <option value="Healthcare">Healthcare</option>
-            <option value="Commercial">Commercial</option>
-            <option value="Institutional">Institutional</option>
-            <option value="Industrial">Industrial</option>
-            <option value="Recreational">Recreational</option>
-            <option value="Master Plan">Master Plan</option>
-            <option value="Miscellaneous">Miscellaneous</option>
-            <option value="Unknown">Unknown</option>
-            
-        </select>
+        <h3 class="filter-title">Filters</h3>
+
+   <label for="status-filter">Building Type:</label>
+<div class="dropdown">
+    <button class="dropbtn">All</button>
+    <div class="dropdown-content">
+        <a href="#" data-value="Commercial Building">Commercial Buildings</a>
+        <a href="#" data-value="Educational Building">Educational Buildings</a>
+        
+        <!-- Parent clickable with submenu -->
+        <div class="dropdown-submenu">
+            <a href="#" data-value="Religious Building">Religious Buildings ▸</a>
+            <div class="submenu-content">
+                <a href="#" data-value="Religious Building - Church">Church</a>
+                <a href="#" data-value="Religious Building - Mosque">Mosque</a>
+                <a href="#" data-value="Religious Building - Synagogue">Synagogue</a>
+            </div>
+        </div>
+
+        <a href="#" data-value="Residential-Apartment House">Residential-Apartment Houses</a>
+        <a href="#" data-value="Residential-Planned Development">Residential-Planned Developments</a>
+    </div>
+</div>
+
         <label for="status-filter">Status:</label>
         <select id="status-filter">
             <option value="">All</option>
             <option value="Built">Built</option>
-            <option value="unbuilt">Unbuilt</option>
+            <option value="Unbuilt">Unbuilt</option>
             <option value="Demolished">Demolished</option>
             <option value="Unknown">Unknown</option>
         </select>
 
-        <label for="style-filter">Style:</label>
+        <label for="style-filter">Styles:</label>
         <select id="style-filter">
             <option value="">All</option>
             <option value="Modern">Modern</option>
@@ -332,27 +580,38 @@ select {
             <option value="Contemporary">Contemporary</option>
         </select>
 
-        <label for="architect-filter">Architect:</label>
+        <label for="architect-filter">Architects:</label>
         <select id="architect-filter">
             <option value="">All</option>
             <option value="Henry Klumb ">Henry Klumb</option>
             
         </select>
 
-        <label for="decade-filter">Period:</label>
+        <label for="decade-filter">Periods:</label>
         <select id="decade-filter">
             <option value="">All</option>
-            <option value="1910">1910-1919</option>
-            <option value="1920">1920-1929</option>
-            <option value="1930">1930-1939</option>
-            <option value="1940">1940-1949</option>
-            <option value="1950">1950-1959</option>
-            <option value="1960">1960-1969</option>
-            <option value="1970">1970-1979</option>
-            <option value="1980">1980-1989</option>
-            <option value="1990">1990-1999</option>
-            <option value="2000">2000-2009</option>
-            <option value="2010">2010-2019</option>
+            <option value="1910">1910-1914</option>
+            <option value="1915">1915-1919</option>
+            <option value="1920">1920-1924</option>
+            <option value="1925">1925-1929</option>
+            <option value="1930">1930-1934</option>
+            <option value="1935">1935-1939</option>
+            <option value="1940">1940-1944</option>
+            <option value="1945">1945-1949</option>
+            <option value="1950">1950-1954</option>
+            <option value="1955">1955-1959</option>
+            <option value="1960">1960-1964</option>
+            <option value="1965">1965-1969</option>
+            <option value="1970">1970-1974</option>
+            <option value="1975">1975-1979</option>
+            <option value="1980">1980-1984</option>
+            <option value="1985">1985-1989</option>
+            <option value="1990">1990-1994</option>
+            <option value="1995">1995-1999</option>
+            <option value="2000">2000-2004</option>
+            <option value="2005">2005-2009</option>
+            <option value="2010">2010-2014</option>
+            <option value="2015">2015-2019</option>
             <option value="2020">2020-Present</option>
         </select>
 
@@ -367,10 +626,10 @@ select {
 
     <script>
         // Initialize Mapbox map
-        mapboxgl.accessToken = 'pk.eyJ1IjoiY3BlcmV6bSIsImEiOiJjbGo0b3lhZjIwM3R2M2treGMwc3Z2NDhoIn0.Py5P82ue0Klm3gJYJsrc2g';
+        mapboxgl.accessToken = 'pk.eyJ1IjoiY3BlcmV6bSIsImEiOiJjbGlsejM5ZWcwZ2t0M3NtcGJicWw0NmxwIn0.mh73FxbqH2Zl-5fRbuZB_w';
         var map = new mapboxgl.Map({
             container: 'map',
-            style: 'mapbox://styles/mapbox/light-v11',
+            style: 'mapbox://styles/cperezm/cm7nmnq2f018m01qoh0nbfxvm',
             center: [-66.400000, 18.220833],
             zoom: 9,
             attributionControl: false // Disable the Mapbox watermark
@@ -410,6 +669,53 @@ select {
 
                 map.addControl(geocoder, 'top-right');
 
+
+// Add event listeners for hiding and showing buttons
+const buttons = document.querySelectorAll('.toggle-button');
+
+function hideButtons() {
+    buttons.forEach(button => button.style.display = 'none');
+}
+
+function showButtons() {
+    buttons.forEach(button => button.style.display = 'block');
+}
+
+// Monitor when suggestions are visible
+const suggestionsContainer = document.querySelector('.mapboxgl-ctrl-geocoder .suggestions');
+
+// Mutation observer to watch for changes in the suggestions container
+const observer = new MutationObserver(() => {
+    if (suggestionsContainer && suggestionsContainer.childElementCount > 0) {
+        // Hide buttons when suggestions appear
+        hideButtons();
+    } else {
+        // Show buttons when suggestions disappear
+        showButtons();
+    }
+});
+
+// Start observing the suggestions container for changes
+if (suggestionsContainer) {
+    observer.observe(suggestionsContainer, { childList: true });
+}
+
+// Ensure buttons are shown when the search result is selected or cleared
+geocoder.on('result', function () {
+    showButtons(); // Re-show buttons after selecting a result
+});
+
+geocoder.on('clear', function () {
+    showButtons(); // Re-show buttons after clearing the search
+});
+
+
+// Fallback for focusing on the geocoder input
+const geocoderInput = document.querySelector('.mapboxgl-ctrl-geocoder input');
+if (geocoderInput) {
+    geocoderInput.addEventListener('blur', showButtons); // Show buttons when the input loses focus
+}
+
                 // Add geocoder results to the map
                 geocoder.on('result', function (e) {
                     if (marker) {
@@ -417,40 +723,76 @@ select {
                     }
                     if (popup) popup.remove(); // Remove any existing marker/popup
 
-                    // Add a custom red marker at the search result location
+                    const properties = e.result.properties || {}; // Handle missing properties
+                    const coordinates = e.result.geometry.coordinates;
+
                     marker = new mapboxgl.Marker({ color: 'red' })
-                        .setLngLat(e.result.geometry.coordinates)
-                        .addTo(map);
+        .setLngLat(coordinates)
+        .addTo(map);
+                    // Add a custom red marker at the search result location
+                    // marker = new mapboxgl.Marker({ color: 'red' })
+                    //     .setLngLat(e.result.geometry.coordinates)
+                    //     .addTo(map);
+
+                    // map.flyTo({
+                    //     center: e.result.geometry.coordinates,
+                    //     zoom: 14
+                    // });
 
                     map.flyTo({
-                        center: e.result.geometry.coordinates,
-                        zoom: 14
-                    });
-
+                center: coordinates,
+                zoom: 18
+            });
                     // Create a popup with place details
                     var description = `
-                        <div style="max-height: 200px; overflow-y: auto;">
-                    <strong style="font-size:14px;">${e.result.properties.Name || 'Unknown Project'}</strong><br><br>
+                        <div id="popup-content" style="max-height: auto; max-width: 200px; font-size: 11px">
+                    <strong style="font-size:14px; display: block; padding-bottom: 2px; border-bottom: 3px solid #333;">${e.result.properties.Name || 'Unknown Project'}</strong><br>
+                     <div style="margin-top: .5px;">
                     <strong style="color:#333;">Project Number:</strong> ${e.result.properties['Proyect Number'] || 'N/A'}<br>
                     <strong style="color:#333;">Year:</strong> ${e.result.properties.Year || 'N/A'}<br>
                     <strong style="color:#333;">Architect:</strong> ${e.result.properties.Architect || 'N/A'}<br>
                     <strong style="color:#333;">Client:</strong> ${e.result.properties.Client || 'N/A'}<br>
                     <strong style="color:#333;">Style:</strong> ${e.result.properties.Style || 'N/A'}<br>
-                    <strong style="color:#333;">Typology:</strong> ${e.result.properties['Tipology '] || 'N/A'}<br>
+                    <strong style="color:#333;">Buildling Type:</strong> ${e.result.properties['Tipology '] || 'N/A'}<br>
                     <strong style="color:#333;">Status:</strong> ${e.result.properties.Status || 'N/A'}<br>
-                    
+                
                    
-                    <strong style="color:#333;">More Information:</strong> 
-        <a href="${properties.URL || '#'}" target="_blank" style="color:#1a73e8; text-decoration: underline;">
-            Learn more about this project
-        </a>
+   <strong 
+    style="background-color: grey; color: white; padding: 4px; display: block; width: 100%; text-align: center; margin-top: 12px; border-radius: 4px;"
+    onmouseover="this.style.backgroundColor='#555555';" 
+    onmouseout="this.style.backgroundColor='grey';" 
+>
+    <a href="${properties.URL || '#'}" target="_blank" style="color: white; text-decoration: none;">
+        Learn More
+    </a>
+</strong>
+
+
                 </div>
                     `;
 
+                    // popup = new mapboxgl.Popup()
+                    //     .setLngLat(e.result.geometry.coordinates)
+                    //     .setHTML(description)
+                    //     .addTo(map);
+
                     popup = new mapboxgl.Popup()
-                        .setLngLat(e.result.geometry.coordinates)
-                        .setHTML(description)
-                        .addTo(map);
+                .setLngLat(coordinates)
+                .setHTML(description)
+                .addTo(map);
+
+                
+
+                      
+        const popupContent = document.querySelector('.mapboxgl-popup-content #popup-content');
+        if (popupContent) {
+            popupContent.scrollTop = 0; // Reset scroll to the top
+        }
+   
+ // Update coordinates display
+ document.getElementById('coordinates').textContent = `Lat / Lon: ${coordinates[1].toFixed(6)}, ${coordinates[0].toFixed(6)}`;
+
+
                 });
 
                 // Remove the marker when the search bar is cleared
@@ -459,9 +801,26 @@ select {
                         marker.remove();
                         marker = null; // Reset the marker variable
                     }
+
+                    if (popup) {
+                popup.remove();
+                popup = null; // Reset the popup variable
+            }
+
+
+            document.getElementById('coordinates').textContent = 'Coordinates: ';
+
                 });
             })
+
+
+
+
             .catch(error => console.error('Error fetching GeoJSON:', error));
+
+
+
+
             fetch('https://storage.googleapis.com/sitios_bucket/SITIOS_ALL_POINTS.geojson')
     .then(response => response.json())
     .then(data => {
@@ -486,6 +845,9 @@ select {
             `;
 
             div.onclick = function() {
+
+                // Close any existing popup
+   
                 if (marker) marker.remove();
                 if (popup) popup.remove(); // Remove any existing marker/popup
 
@@ -495,34 +857,49 @@ select {
                     .addTo(map);
 
                 // Fly to the coordinates
-                map.flyTo({ center: coordinates, zoom: 14 });
+                map.flyTo({ center: coordinates, zoom: 18 });
 
                 // Create a popup with project details
                 var description = `
-                    <div style="max-height: 200px; overflow-y: auto;">
-                        <strong style="font-size:14px;">${projectName}</strong><br><br>
+                    <div id="popup-content" style="max-height: auto; max-width: 200px; font-size: 11px">
+                        <strong style="font-size:14px; display: block; padding-bottom: 2px; border-bottom: 3px solid #333;">${projectName}</strong><br>
+                        <div style="margin-top: .5px;">
                         <strong style="color:#333;">Project Number:</strong> ${projectNumber}<br>
                         <strong style="color:#333;">Year:</strong> ${properties.Year}<br>
                         <strong style="color:#333;">Architect:</strong> ${properties.Architect || 'N/A'}<br>
                          <strong style="color:#333;">Client:</strong> ${properties.Client || 'N/A'}<br>
                         <strong style="color:#333;">Style:</strong> ${properties.Style || 'N/A'}<br>
-                        <strong style="color:#333;">Typology:</strong> ${properties['Tipology '] || 'N/A'}<br>
+                        <strong style="color:#333;">Buildling Type:</strong> ${properties['Tipology '] || 'N/A'}<br>
                          <strong style="color:#333;">Status:</strong> ${properties.Status || 'N/A'}<br>
-                      
-                        <strong style="color:#333;">More Information:</strong> 
-        <a href="${properties.URL || '#'}" target="_blank" style="color:#1a73e8; text-decoration: underline;">
-            Learn more about this project
-        </a>
+                   <strong 
+    style="background-color: grey; color: white; padding: 4px; display: block; width: 100%; text-align: center; margin-top: 12px; border-radius: 4px;"
+    onmouseover="this.style.backgroundColor='#555555';" 
+    onmouseout="this.style.backgroundColor='grey';" 
+>
+    <a href="${properties.URL || '#'}" target="_blank" style="color: white; text-decoration: none;">
+        Learn More
+    </a>
+</strong>
                     </div>
                 `;
-
                 // Add the popup to the map
                 popup = new mapboxgl.Popup()
+                
                     .setLngLat(coordinates)
                     .setHTML(description)
                     .addTo(map);
 
-                    document.getElementById('coordinates').textContent = `Coordinates: ${coordinates[1].toFixed(6)}, ${coordinates[0].toFixed(6)}`;
+                      // Add a 'close' event listener to the popup to remove the marker
+
+
+                  
+        const popupContent = document.querySelector('.mapboxgl-popup-content #popup-content');
+        if (popupContent) {
+            popupContent.scrollTop = 0; // Reset scroll to the top
+        }
+  
+
+                    document.getElementById('coordinates').textContent = `Lat / Lon: ${coordinates[1].toFixed(6)}, ${coordinates[0].toFixed(6)}`;
             };
 
             projectList.appendChild(div);
@@ -532,6 +909,9 @@ select {
     
     })
     .catch(error => console.error('Error fetching GeoJSON:', error));
+
+
+
 
 
            // Add GeoJSON source with clustering
@@ -620,21 +1000,28 @@ select {
               // Add a layer for polygons
               map.addLayer({
                 'id': 'PwP-layer', 
-                'type': 'fill',
-                'source': 'PwP-data',
-                'paint': {
-                    'fill-color': 'rgb(194, 181, 155)', // Green fill color for polygons
-                }
-            });
-
-            // Optional outline for polygons
-            map.addLayer({
-                'id': 'PwP-layer-outline',
                 'type': 'line',
                 'source': 'PwP-data',
                 'paint': {
-                    'line-color': '#000000', // Black outline for polygons
-                    'line-width': .25
+                    'line-color': '#ffffff', // Black outline for polygons
+                    'line-width': 1,
+                
+                }
+            });
+
+              // Add a GeoJSON source for polygons
+              map.addSource('E_H-data', {
+                'type': 'geojson',
+                'data': 'https://storage.googleapis.com/sitios_bucket/E-H.geojson' // Add your polygons GeoJSON file here
+            });
+
+              // Add a layer for polygons
+              map.addLayer({
+                'id': 'E_H-layer', 
+                'type': 'fill',
+                'source': 'E_H-data',
+                'paint': {
+                    'fill-color': 'rgb (247, 247, 247)', // Light Grey fill color for polygons para los "huecos" (patios interiores jardines, etc...)
                 }
             });
 
@@ -799,6 +1186,12 @@ document.getElementById('toggle-filter').addEventListener('click', function () {
     map.setLayoutProperty('cluster-count', 'visibility', isVisible ? 'none' : 'visible');
     map.setLayoutProperty('unclustered-point', 'visibility', isVisible ? 'none' : 'visible');
     map.setLayoutProperty('filter-layer', 'visibility', isVisible ? 'visible' : 'none');
+
+// Scroll to the filter controls
+filterControls.scrollIntoView({
+    behavior: 'smooth', // Smooth scrolling effect
+    block: 'start'      // Align to the top of the viewport
+});
 });
 
 
@@ -842,36 +1235,61 @@ document.getElementById('toggle-filter').addEventListener('click', function () {
 
 // Add a click event for unclustered points to show a popup
 map.on('click', 'unclustered-point', function (e) {
+
+    if (popup) popup.remove(); // Remove any existing marker/popup
+
+    
     var coordinates = e.features[0].geometry.coordinates.slice();
     var properties = e.features[0].properties;
     
     // Create a description with relevant properties for the popup
     var description = `
-        <div style="max-height: 200px; overflow-y: auto;">
-            <strong style="font-size:14px;">${properties.Name || 'Unknown Project'}</strong><br><br>
+        <div id="popup-content" style="max-height: auto; max-width: 200px; font-size: 11px">
+            <strong style="font-size:14px; display: block; padding-bottom: 2px; border-bottom: 3px solid #333;">${properties.Name || 'Unknown Project'}</strong><br>
+            <div style="margin-top: .5px;">
             <strong style="color:#333;">Project Number:</strong> ${properties['Proyect Number'] || 'N/A'}<br>
             <strong style="color:#333;">Year:</strong> ${properties.Year || 'N/A'}<br>
             <strong style="color:#333;">Architect:</strong> ${properties.Architect || 'N/A'}<br>
             <strong style="color:#333;">Client:</strong> ${properties.Client || 'N/A'}<br>
             <strong style="color:#333;">Style:</strong> ${properties.Style || 'N/A'}<br>
-            <strong style="color:#333;">Typology:</strong> ${properties['Tipology '] || 'N/A'}<br>
+            <strong style="color:#333;">Buildling Type:</strong> ${properties['Tipology '] || 'N/A'}<br>
             <strong style="color:#333;">Status:</strong> ${properties.Status || 'N/A'}<br>
         
 
-          <strong style="color:#333;">More Information:</strong> 
-        <a href="${properties.URL || '#'}" target="_blank" style="color:#1a73e8; text-decoration: underline;">
-            Learn more about this project
-        </a>
+        <strong 
+    style="background-color: grey; color: white; padding: 4px; display: block; width: 100%; text-align: center; margin-top: 12px; border-radius: 4px;"
+    onmouseover="this.style.backgroundColor='#555555';" 
+    onmouseout="this.style.backgroundColor='grey';" 
+>
+    <a href="${properties.URL || '#'}" target="_blank" style="color: white; text-decoration: none;">
+        Learn More
+    </a>
+</strong>
 
           </div>
     `;
+
+     // Create the popup
+    //  activePopup = new mapboxgl.Popup()
+    //     .setLngLat(coordinates)
+    //     .setHTML(description)
+    //     .addTo(map);
+
 
     // Ensure the popup is at the exact clicked point location
     new mapboxgl.Popup()
         .setLngLat(coordinates)
         .setHTML(description)
         .addTo(map);
-});
+
+        // Ensure the scroll position is reset to the top
+    
+        const popupContent = document.querySelector('.mapboxgl-popup-content #popup-content');
+        if (popupContent) {
+            popupContent.scrollTop = 0; // Reset scroll to the top
+        }
+    });
+
 
 // Change the cursor to a pointer when over clusters or points
 map.on('mouseenter', 'unclustered-point', () => map.getCanvas().style.cursor = 'pointer');
@@ -890,7 +1308,8 @@ map.on('mouseleave', 'clusters', () => map.getCanvas().style.cursor = '');
                     .setLngLat(coordinates)
                     .setHTML(description)
                     .addTo(map);
-            });
+
+      });
  // Change the cursor to a pointer when the mouse is over the points layer
 //  map.on('mouseenter', 'points', function () {
 //                 map.getCanvas().style.cursor = 'pointer';
@@ -926,20 +1345,26 @@ map.on('click', 'filter-layer', function (e) {
 
     // Create a description with relevant properties for the popup
     var description = `
-        <div style="max-height: 200px; overflow-y: auto;">
-            <strong style="font-size:14px;">${properties.Name || 'Unknown Project'}</strong><br><br>
+        <div id="popup-content" style="max-height: auto; max-width: 200px; font-size: 11px">
+            <strong style="font-size:14px;display: block; padding-bottom: 2px; border-bottom: 3px solid #333;">${properties.Name || 'Unknown Project'}</strong><br>
+            <div style="margin-top: .5px;">
             <strong style="color:#333;">Project Number:</strong> ${properties['Proyect Number'] || 'N/A'}<br>
             <strong style="color:#333;">Year:</strong> ${properties.Year || 'N/A'}<br>
             <strong style="color:#333;">Architect:</strong> ${properties.Architect || 'N/A'}<br>
              <strong style="color:#333;">Client:</strong> ${properties.Client || 'N/A'}<br>
             <strong style="color:#333;">Style:</strong> ${properties.Style || 'N/A'}<br>
-            <strong style="color:#333;">Typology:</strong> ${properties['Tipology '] || 'N/A'}<br>
+            <strong style="color:#333;">Buildling Type:</strong> ${properties['Tipology '] || 'N/A'}<br>
             <strong style="color:#333;">Status:</strong> ${properties.Status || 'N/A'}<br>
 
-            <strong style="color:#333;">More Information:</strong> 
-        <a href="${properties.URL || '#'}" target="_blank" style="color:#1a73e8; text-decoration: underline;">
-            Learn more about this project
-        </a>
+         <strong 
+    style="background-color: grey; color: white; padding: 4px; display: block; width: 100%; text-align: center; margin-top: 12px; border-radius: 4px;"
+    onmouseover="this.style.backgroundColor='#555555';" 
+    onmouseout="this.style.backgroundColor='grey';" 
+>
+    <a href="${properties.URL || '#'}" target="_blank" style="color: white; text-decoration: none;">
+        Learn More
+    </a>
+</strong>
         </div>
     `;
 
@@ -948,11 +1373,23 @@ map.on('click', 'filter-layer', function (e) {
         .setLngLat(coordinates)
         .setHTML(description)
         .addTo(map);
+
+     // Ensure the scroll position is reset to the top
+  
+        const popupContent = document.querySelector('.mapboxgl-popup-content #popup-content');
+        if (popupContent) {
+            popupContent.scrollTop = 0; // Reset scroll to the top
+        }
+   
 });
 
 // Change the cursor to a pointer when over points in the filter layer
 map.on('mouseenter', 'filter-layer', () => map.getCanvas().style.cursor = 'pointer');
 map.on('mouseleave', 'filter-layer', () => map.getCanvas().style.cursor = '');
+
+
+
+
 
 // Handle filter toggle
 // document.addEventListener('DOMContentLoaded', function () {
@@ -967,6 +1404,7 @@ map.on('mouseleave', 'filter-layer', () => map.getCanvas().style.cursor = '');
 //        }
 //    });
 // });
+
 
 
 document.getElementById('toggle-polygon-layer').addEventListener('click', function () {
@@ -985,7 +1423,56 @@ map.setLayoutProperty('polygon-layer-outline', 'visibility', 'visible');
 document.getElementById('toggle-project').addEventListener('click', function() {
    var projectControls = document.getElementById('project-controls');
    projectControls.classList.toggle('hidden');
+
+    // Remove the marker if the project list is hidden
+    if (projectControls.classList.contains('hidden') && marker) {
+        marker.remove(); // Remove the marker
+        marker = null; // Reset the marker variable
+    }
+
+    // Also remove the popup if it exists
+    if (projectControls.classList.contains('hidden') && popup) {
+        popup.remove(); // Remove the popup
+        popup = null; // Reset the popup variable
+    }
+
+      // Scroll to the project controls when made visible
+      if (!projectControls.classList.contains('hidden') && window.innerWidth <= 768) {
+        projectControls.scrollIntoView({
+            behavior: 'smooth', // Smooth scrolling effect
+            block: 'start',     // Align to the top of the viewport
+        });
+    }
 });
+
+document.querySelectorAll('.dropdown-content a').forEach(function(el) {
+    el.addEventListener('click', function(e) {
+        e.preventDefault(); // prevent link behavior
+        var selectedTipology = this.getAttribute('data-value');
+        console.log('Selected Tipology:', selectedTipology); // Debug
+        
+        // Now update your map filter:
+        filterMap(selectedTipology);
+    });
+});
+
+function filterMap(selectedTipology) {
+    var filters = ['all'];
+
+    if (selectedTipology === 'Religious Building') {
+        filters.push(['in', ['get', 'Tipology '],
+            'Religious Building',
+            'Religious Building - Church',
+            'Religious Building - Mosque',
+            'Religious Building - Synagogue'
+        ]);
+    } else if (selectedTipology) {
+        filters.push(['==', ['get', 'Tipology '], selectedTipology]);
+    }
+
+    map.setFilter('filter-layer', filters.length > 1 ? filters : null);
+}
+
 
         
     </script>
