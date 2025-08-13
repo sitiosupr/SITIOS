@@ -206,30 +206,20 @@ select {
 
 /* Specific styling for the filter button */
 .toggle-filter-button {
-    top: 70px; /* Slightly lowered */
+    top: 110px; /* Slightly lowered */
     right: 20px; /* Moved further from the right */
 }
 
 /* Specific styling for the polygon button */
 .toggle-polygon-button {
-    top: 110px; /* Slightly lowered */
+    top: 150px; /* Slightly lowered */
     right: 20px;
 }
 
-.toggle-polygon-button::before {
-    content: '';
-    width: 8px; /* Scaled down width */
-    height: 12px; /* Scaled down height */
-    background-color: #FF0000; /* Color of the parallelogram */
-    border: 2px solid white; /* Scaled stroke */
-    transform: skew(20deg);
-    display: inline-block;
-    margin-left: -2px; /* Minor adjustment for alignment */
-}
 
 /* New Toggle Project Controls Button */
 .toggle-project-button {
-    top: 150px; /* Slightly lowered */
+    top: 70px; /* Slightly lowered */
     right: 20px;
 }
 
@@ -288,24 +278,24 @@ select {
     }
 
     .toggle-filter-button {
-        top: 90px; /* Move it lower */
+        top: 130px; /* Move it lower */
     }
 
     .toggle-polygon-button {
-        top: 130px; /* Adjust further down */
+        top: 170px; /* Adjust further down */
     }
 
     .toggle-project-button {
-        top: 170px; /* Keep consistent spacing */
+        top: 90px; /* Keep consistent spacing */
     }
 
     #map-overlay-bottom-right {
         bottom: 0px; /* Move it slightly higher from the bottom */
-        right: 50px; /* Adjust it closer to the right edge */
+        right: 40px; /* Adjust it closer to the right edge */
     }
 
     #map-overlay-bottom-right img {
-        width: 150px; /* Reduce the size for mobile */
+        width: 250px; /* Reduce the size for mobile */
         height: auto; /* Maintain aspect ratio */
     }
 
@@ -428,8 +418,10 @@ font-family: Helvetica, Arial, sans-serif;
 
     <div id="map"></div>
     <button id="toggle-project" class="toggle-button toggle-project-button">&#9776;</button>
-    <button id="toggle-polygon-layer" class="toggle-button toggle-polygon-button"></button>
-    <button id="toggle-filter" class="toggle-button toggle-filter-button">F</button>
+     <button id="toggle-filter" class="toggle-button toggle-filter-button">F</button>
+    <button id="toggle-polygon-layer" class="toggle-button toggle-polygon-button" title="Toggle Legend"><i><b>i</b></i></button>
+   
+
 
     <!-- Project Controls -->
     <div id="project-controls" class="hidden">
@@ -841,7 +833,7 @@ if (geocoderInput) {
             map.addSource('polygon-data', {
                 'type': 'geojson',
              
-                'data': 'ASSETS/polygons.geojson' // Add your polygons GeoJSON file here
+                'data': '' // Add your polygons GeoJSON file here
             });
 
              // Add a layer for polygons
@@ -1325,17 +1317,25 @@ map.on('mouseleave', 'filter-layer', () => map.getCanvas().style.cursor = '');
 
 
 
-document.getElementById('toggle-polygon-layer').addEventListener('click', function () {
-var visibility = map.getLayoutProperty('polygon-layer', 'visibility');
+// document.getElementById('toggle-polygon-layer').addEventListener('click', function () {
+// var visibility = map.getLayoutProperty('polygon-layer', 'visibility');
 
-if (visibility === 'visible') {
-map.setLayoutProperty('polygon-layer', 'visibility', 'none');
-map.setLayoutProperty('polygon-layer-outline', 'visibility', 'none');
-} else {
-map.setLayoutProperty('polygon-layer', 'visibility', 'visible');
-map.setLayoutProperty('polygon-layer-outline', 'visibility', 'visible');
-}
+// if (visibility === 'visible') {
+// map.setLayoutProperty('polygon-layer', 'visibility', 'none');
+// map.setLayoutProperty('polygon-layer-outline', 'visibility', 'none');
+// } else {
+// map.setLayoutProperty('polygon-layer', 'visibility', 'visible');
+// map.setLayoutProperty('polygon-layer-outline', 'visibility', 'visible');
+// }
+// });
+
+// Toggle Legend (image overlay) with the polygon button
+const legendEl = document.getElementById('map-overlay-bottom-right');
+document.getElementById('toggle-polygon-layer').addEventListener('click', function () {
+  const isHidden = window.getComputedStyle(legendEl).display === 'none';
+  legendEl.style.display = isHidden ? 'block' : 'none';
 });
+
 
 // Toggle Project Controls Button Functionality
 document.getElementById('toggle-project').addEventListener('click', function() {
