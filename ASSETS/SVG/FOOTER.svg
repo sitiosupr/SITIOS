@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1910 41.89">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #b3b3b5;
+      }
+
+      .cls-1, .cls-2 {
+        stroke-width: 0px;
+      }
+
+      .cls-2 {
+        fill: #212121;
+      }
+    </style>
+  </defs>
+  <g id="b_g_footer" data-name="b&amp;amp;g_footer">
+    <g>
+      <rect class="cls-2" width="1638.74" height="41.89"/>
+      <rect class="cls-1" x="1638.74" width="271.26" height="41.89"/>
+    </g>
+  </g>
+</svg>
