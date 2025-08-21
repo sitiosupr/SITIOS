@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>SITIOS: Mapa Arquitectónico de PR</title>
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet">
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
+    <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.min.js"></script>
+    <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.css" type="text/css">
+    <link rel="preload" as="image" href="ASSETS\SVG\GREY_HEADER.svg">
+<link rel="preload" as="image" href="ASSETS\SVG\FOOTER.svg">
+
+    <style>
+        
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            height: 100vh;
+        }
+
+        #map {
+            flex-grow: 1;
+            height: 100vh;
+            position: relative;
+            z-index: 1;
+    
+        }
+
+        #project-controls {
+            position: absolute;
+            bottom: 5%;
+            top: 8%; /* Prevents conflict with bottom alignment */
+            /* top: 20px; */
+            /* left: 10px; */
+            left: 20px;
+             z-index: 2;
+           background: rgba(165, 164, 164, 0.90);
+            /* padding: 15px; */
+            padding: 20px 30px 20px 20px; /* Matches filter-controls padding */
+            border-radius: 5px;
+            max-height: auto; 
+            /* Set the height */
+            max-width: 300px; /* Limit the width of the project box */
+            overflow-y: auto; 
+        }
+
+        #project-controls.hidden {
+            display: none; /* Hide project controls when the hidden class is applied */
+        }
+
+           /* Style the h3 inside project-controls */
+        #project-controls h3 {
+            font-size: 14px; /* Set font size */
+            color: rgb(65, 64, 66); /* Same color */
+            margin-top: 0; /* Same margin */
+            margin-bottom: 7px; /* Add space below */
+            font-family: Helvetica, Arial, sans-serif; /* Font family */
+            text-align: left; /* Center the text */
+            border-bottom: 3px solid rgb(65, 64, 66, 0.90); /* Bottom border */
+            padding-bottom: 3px; /* Padding below the heading */
+            font-weight: bold;
+        }
+
+        .project-item label{ font-size: 11px;
+            font-family: Helvetica, Arial, sans-serif;
+        }
+            
+        .project-item {
+            font-family: Helvetica, Arial, sans-serif;
+            font-size: 11px;
+            color: rgb(65, 64, 66);
+            display: flex;              /* Use flexbox layout */
+            justify-content: space-between; /* Spread items to both sides */
+            padding: 5px 0;
+            border-bottom: 1px solid rgb(207, 207, 207, 0.549);  
+        }
+
+.project-number {
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 11px;
+    color: rgb(65, 64, 66);
+    flex: 1;                    /* Let the project number take up 1 part */
+    font-weight: bold;           /* Make the project number bold */
+    border-right: .25px solid rgb(208, 208, 208); /* Add a white dividing line */
+    padding-right: 10px;  
+}
+
+.project-name {
+    flex: 2;                    /* Let the project name take up 2 parts */
+    text-align: left;            /* Align text to the left */
+    padding-left: 10px;          /* Add a little space between the number and name */
+}
+
+.project-item:hover {
+    background-color: #a4a4a4;
+    color: rgb(219, 219, 219);
+}
+
+        #project-controls::-webkit-scrollbar {
+    width: 10px; /* Set the width of the scrollbar */
+}
+
+#project-controls::-webkit-scrollbar-track {
+    background: #f1f1f1; /* Color of the track (scrollbar background) */
+}
+
+#project-controls::-webkit-scrollbar-thumb {
+    background-color: #888; /* Color of the scrollbar handle */
+    border-radius: 10px; /* Rounded corners for the scrollbar */
+    border: 2px solid #f1f1f1; /* Padding around the handle */
+}
+
+#project-controls::-webkit-scrollbar-thumb:hover {
+    background: #555; /* Darken on hover */
+}
+        
+
+.filter-controls {
+    position: absolute;
+    bottom:30%; /* Adjust as needed */
+    right: 20px; /* Adjust as needed */
+    z-index: 2; /* Ensure it is above the map */
+    background: rgba(165, 164, 164, 0.90); /* Semi-transparent background */
+    padding: 20px 30px 20px 20px;
+    border-radius: 5px;
+}
+
+.filter-controls.hidden {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.filter-controls label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 11px;
+    font-family: Helvetica, Arial, sans-serif;
+    color: rgb(65, 64, 66); /* Title color */
+}
+
+select {
+    margin-bottom: 10px;
+    padding: 5px;
+    font-size: 11px;
+    background: rgba(198,197,197, 0.90);
+    border: none; /* Removes black border */
+    outline: none; /* Removes focus outline */
+}
+.filter-controls .filter-title {
+    font-size: 14px; /* Title font size */
+    color: rgb(65, 64, 66); /* Title color */
+    font-family: Helvetica, Arial, sans-serif;
+    font-weight: bold;
+    border-bottom: 3px solid rgb(65, 64, 66, 0.90); /* Divider line */
+    margin-top: 0;
+    padding-bottom: 3px; /* Minimal space below text */
+    margin-bottom: 7px; /* Small space below divider */
+}
+
+/* #reset-filters {
+    margin-top: 1px;
+    padding: 3px;
+    background-color: rgba(255, 255b(65, 64, 66, 0.90), 255, 0.549);
+    color: rgb(255, 0, 0);
+    font-size: 11px;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+} */
+#reset-filters {
+    display: block; /* Forces the button to appear on a new line */
+    margin-top: 10px;
+    padding: 5px 10px;
+    background-color:rgb(65, 64, 66, 0.90); /* Black background */
+    color: #ffffff; /* White text */
+    font-size: 11px;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+}
+/* Style for the geocoder control */
+.mapboxgl-ctrl-geocoder {
+    position: absolute;
+    top: 15px; /* Adjust as needed */
+    right: 10px; /* Adjust as needed */
+    transform: scale(0.85); /* Scale the entire search bar to 80% of its size */
+    transform-origin: top right; /* Anchor scaling to the top-right corner */
+    z-index: 2; /* Ensure it is above the map */
+    
+}
+/* Base button styling for both filter and polygon buttons */
+.toggle-button {
+    position: absolute;
+    width: 30px; /* Scaled down width */
+    height: 30px; /* Scaled down height */
+    background-color: rgb(255, 0, 0); /* Red background */
+    color: rgb(255, 255, 255); /* White icon */
+    border: none;
+    border-radius: 4px; /* Adjusted for smaller button */
+    padding: 6px; /* Scaled down padding */
+    cursor: pointer;
+    z-index: 3; /* Ensure it is above other elements */
+    font-size: 12px; /* Adjusted font size for icon clarity */
+}
+
+/* Specific styling for the filter button */
+.toggle-filter-button {
+    top: 160px; /* Slightly lowered */
+    right: 20px; /* Moved further from the right */
+}
+
+/* Specific styling for the polygon button */
+.toggle-polygon-button {
+    top: 200px; /* Slightly lowered */
+    right: 20px;
+}
+
+
+/* New Toggle Project Controls Button */
+.toggle-project-button {
+    top: 120px; /* Slightly lowered */
+    right: 20px;
+}
+
+ /* Centered Rectangle Styling */
+ #center-rectangle {
+        width: 500px;           /* Rectangle width */
+        height: 400px;          /* Rectangle height */
+        background-color: transparent; /* No fill color */
+        border: 2px solid black; /* Black border */
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 999;           /* Make sure it's on top */
+    
+    
+    }
+
+    #map-overlay {
+    position: absolute;
+    top: 10px; /* Adjust the position as needed */
+    left: 10px; /* Adjust the position as needed */
+    z-index: 4; /* Ensure it's above the map and other elements */
+}
+
+#map-overlay img {
+    width: 100px; /* Set the desired width */
+    height: auto; /* Maintain aspect ratio */
+}
+
+#map-overlay-bottom-right {
+    position: absolute;
+    bottom: 7px; /* Adjust the position as needed */
+    right: 50px; /* Adjust the position as needed */
+    z-index: 4; /* Ensure it's above the map and other elements */
+}
+
+#map-overlay-bottom-right img {
+    width: 300px; /* Set the desired width */
+    height: auto; /* Maintain aspect ratio */
+
+}
+
+:root{
+  --ctrl-gap: 60px;        /* space above the footer for RIGHT controls */
+  --logo-gap: 0px;         /* space above the footer for the Mapbox logo */
+}
+
+/* lift ONLY the controls on the bottom-right */
+.mapboxgl-ctrl-bottom-right .mapboxgl-ctrl{
+  margin-bottom: calc(var(--footer-h) + var(--ctrl-gap));
+  margin-right: 20px; /* optional */
+}
+
+/* lift ONLY the Mapbox wordmark (bottom-left) */
+.mapboxgl-ctrl-bottom-left > .mapboxgl-ctrl-logo{
+  margin-bottom: calc(var(--footer-h) + var(--logo-gap));
+  margin-left: 10px; /* optional */
+}
+
+/* (If you ever add the attribution control and want a different offset) */
+/* .mapboxgl-ctrl-bottom-left > .mapboxgl-ctrl-attrib{
+     margin-bottom: calc(var(--footer-h) + 8px);
+   } */
+
+:root{
+  /* The logo controls the header height */
+  --logo-h: 50px;  /* adjust if you want it a bit bigger/smaller */
+  --pad-x: clamp(12px, 2.4vw, 32px);
+  --gap: 12px;
+    --brand-gap: clamp(30px, 1.2vw, 14px); 
+      --right-shift: -6px;  /* tweak this: how much farther right you want */
+      --brand-text-scale: 0.88;   /* try 0.85–1.05 */
+       --brand-text-shift-y: -5px;   /* try -1 to -4px for crisp alignment */
+       --terms-scale: 1.0;   /* try 0.80–1.00 until it looks right */
+         --terms-shift-y: -9px;   /* try -1 to -4px; use whole px for crisp edges */
+           --aac-scale: 0.8;     /* 0.80–1.05; changes ONLY the AAC logo size */
+  --aac-shift-y: -2px;   /* –up / +down     (use whole px) */
+}
+
+/* HEADER FRAME — no fixed height here */
+.sitios-header{
+  position: fixed; inset: 0 0 auto 0; z-index: 1000;
+  background: #eaebee;
+  border-bottom: 1px solid var(--rule-bottom);
+  overflow: hidden;  /* hide any stray 1px from SVG bounds */
+}
+
+/* Grey sweep fills whatever height the content creates */
+.header-bg{
+  position:absolute; inset:0; pointer-events:none;
+  background: url("ASSETS/SVG/GREY_HEADER.svg") no-repeat left bottom / 100% 100%;
+  opacity: .98;
+}
+
+/* Layout: brand | divider | tagline | right */
+.h-inner{
+  position:relative;
+  max-width: 1400px; margin:0 auto; padding:0 var(--pad-x);
+  display:grid; align-items:center;
+  grid-template-columns: auto 1px 1fr auto;
+  column-gap: 0;     /* flush brand to divider */
+}
+
+/* LEFT: logo sets the header height */
+.brand{
+  display:flex; align-items:center; gap:10;      /* no gap between red block and text */
+  text-decoration:none; color:inherit;
+  line-height: 0;                                /* kill inline image line-box height */
+ gap: var(--brand-gap);
+ margin-left: calc(-1 * ((100vw - min(100vw, 1400px)) / 2 + var(--pad-x)));
+}
+.brand-icon{ height: var(--logo-h); width:auto; display:block; }
+
+/* 2. make the wordmark height = logo-h * scale */
+.brand-text{
+     position: relative;
+  top: var(--brand-text-shift-y);  
+  height: calc(var(--logo-h) * var(--brand-text-scale));
+  width: auto;
+  display: block;
+  margin-left: 0;             /* ensure no previous nudge is fighting this */
+}
+
+/* optional micro-nudges if the SVG artboard has padding */
+.brand-text.trim-left  { transform: translateX(-1px); }   /* add 'trim-left' class if needed */
+.brand-text.trim-top   { margin-top: -1px; }              /* tiny vertical
+
+
+
+/* CENTER: tagline SVG must never be taller than logo */
+.tagline-wrap{ display:flex; align-items:center; margin-left: 14px; }
+.tagline-svg{
+  height: calc(var(--logo-h) - 10px);
+  width:auto; display:block; max-width: min(72vw, 900px);
+}
+
+/* RIGHT cluster scales under logo height */
+.right-side{
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: nowrap;       /* prevent stacking/wrapping */
+  white-space: nowrap;     /* keep “TERMS OF USE” with the logo */
+  transform: translateX(
+    calc(
+      (100vw - min(100vw, 1400px)) / 2  /* the outer margin of your centered container */
+      - var(--pad-x)                     /* remove the inner padding you set */
+      + var(--right-shift)               /* your extra nudge */
+    )
+  );
+}
+.aac-logo img{
+  height: calc(var(--logo-h) * var(--aac-scale));
+  width: auto;
+  display: block;
+  transform: translateY(var(--aac-shift-y)); /* vertical-only shift */
+  /* If you prefer without transforms:
+     position: relative; top: var(--aac-shift-y); */
+}
+.right-side > .v-sep{ height: calc(var(--logo-h) * .62); }
+/* the anchor already wraps the SVG: .terms > img */
+.terms img{
+   position: relative;
+  top: var(--terms-shift-y); 
+    height: calc(var(--logo-h) * var(--terms-scale));
+  width: auto;
+  display: block;
+  line-height: 0;         /* removes stray baseline space in some browsers */
+}
+
+
+/* Map inset uses the measured header height (set by JS below) */
+#map{ position: fixed; inset: var(--h, var(--logo-h)) 0 0 0; }
+
+/* Responsive */
+@media (max-width: 900px){
+  :root{ --logo-h: clamp(52px, 7vh, 72px); }
+}
+@media (max-width: 680px){
+  :root{ --logo-h: 48px; }
+  .tagline-wrap{ display:none; }
+  .h-inner{ grid-template-columns: auto 1fr auto; }
+}
+
+
+
+/* 1) Never allow horizontal scrolling (prevents the bar overlaying the footer) */
+html, body {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: clip;   /* modern, better than hidden; fallback added below */
+}
+@supports not (overflow-x: clip) {
+  html, body { overflow-x: hidden; }
+}
+
+/* 2) Make sure the inner containers can’t exceed the viewport width */
+.h-inner, .f-inner { max-width: min(1400px, 100vw); }
+
+/* ===== FOOTER (with COPYRIGHT on the left) ===== */
+:root{
+  --footer-h: 39px;                 /* footer band height */
+  --footer-pad-x: var(--pad-x);     /* match header padding */
+  --footer-shift-y:-2px;
+
+  /* left-side COPYRIGHT controls */
+  --cpyrt-scale: 0.22;              /* size of COPYRIGHT.svg (0.80–1.05) */
+  --cpyrt-shift-y: -1px;            /* vertical nudge; negative = up */
+  --foot-left-gutter: 14px;          /* distance from screen edge */
+}
+
+.sitios-footer{
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  height: var(--footer-h);            /* e.g. 48px */
+  background-color: transparent;          /* solid black base */
+  border-top: 0;                      /* let the SVG carry the look */
+  overflow: hidden;
+  z-index: 1000;
+}
+/* Draw the FOOTER.svg only DOWNWARD by ~2px (no overdraw on top) */
+.sitios-footer .footer-bg{
+  position: absolute;
+  left: 0; right: 0;
+  top: 0;                 /* keep the top edge aligned with the band */
+  bottom: -2px;           /* extend only below the band to kill the bottom seam */
+  background: url("ASSETS/SVG/FOOTER.svg") left bottom / 100% 100% no-repeat;
+  pointer-events: none;
+}
+.sitios-footer .f-inner{
+  position: relative; height:100%;
+  max-width:1400px; margin:0 auto; padding:0 var(--footer-pad-x);
+  display:grid; grid-template-columns: 1fr auto 1fr; align-items:center;
+}
+.f-left, .f-center, .f-right{ display:flex; align-items:center; gap:12px; }
+
+/* align COPYRIGHT near the left edge (like header brand) */
+.f-left.flush-left{
+  margin-left: calc(
+    -1 * (
+      (100vw - min(100vw, 1400px)) / 2 + var(--footer-pad-x) - var(--foot-left-gutter)
+    )
+  );
+}
+
+/* scale + vertical nudge for COPYRIGHT.svg */
+.foot-copyright{
+  height: calc(var(--footer-h) * var(--cpyrt-scale));
+  width: auto; display:block;
+  position: relative; top: var(--cpyrt-shift-y);
+}
+
+#map{
+  position: fixed;
+  inset: var(--h, var(--logo-h)) 0 var(--footer-h) 0;
+}
+
+
+
+@media screen and (max-width: 768px) {
+    body {
+        margin: 0;
+        padding: 0;
+        display: block; /* Ensure normal block-level flow for all elements */
+        height: auto; /* Allow the body to grow with content */
+    }
+
+    #map {
+        height: 90vh; /* Map takes the full viewport height */
+        width: 100%; /* Full width of the screen */
+        position: relative; /* Normal stacking order */
+    }
+
+    .toggle-filter-button {
+        top: 130px; /* Move it lower */
+    }
+
+    .toggle-polygon-button {
+        top: 170px; /* Adjust further down */
+    }
+
+    .toggle-project-button {
+        top: 90px; /* Keep consistent spacing */
+    }
+
+    #map-overlay-bottom-right {
+        bottom: 0px; /* Move it slightly higher from the bottom */
+        right: 40px; /* Adjust it closer to the right edge */
+    }
+
+    #map-overlay-bottom-right img {
+        width: 250px; /* Reduce the size for mobile */
+        height: auto; /* Maintain aspect ratio */
+    }
+
+    #coordinates {
+        display: none; /* Hide the coordinates display on mobile */
+    }
+    
+    .filter-controls {
+        position: relative; /* Position it below the map in document flow */
+        width: 100%; /* Full width of the container */
+        left: 0px;
+        background: rgba(255, 255, 255, 0.95); /* White background with slight transparency */
+        padding: 20px; /* Add padding around the content */
+        margin-top: 20px; /* Add space between map and filters */
+        border-radius: 0; /* Remove rounded corners */
+        overflow-y: auto; /* Allow scrolling if the content exceeds */
+    }
+
+    .filter-controls label,
+    .filter-controls select,
+    #reset-filters {
+        font-size: 16px; /* Larger font for readability */
+        margin-bottom: 15px; /* Add spacing between form elements */
+    }
+
+    .filter-controls .filter-title {
+        font-size: 18px; /* Larger font for the title */
+        text-align: left; /* Align text to the left */
+        margin-bottom: 20px; /* Add spacing below the title */
+    }
+
+    #reset-filters {
+        width: 100%; /* Full-width button */
+        padding: 10px; /* Add padding for easier interaction */
+        font-size: 16px;
+    }
+
+
+    #project-controls {
+        position: relative; /* Ensure it's in the document flow */
+        width: 100vw; /* Take up full width on mobile */
+        background: rgba(255, 255, 255, 0.95); /* White background */
+        left: 0px;
+        padding: 20px; /* Padding for content */
+        margin: 0px; /* Add space between the map and project controls */
+        border-radius: 0; /* Remove rounded corners */
+        overflow-y: auto; /* Allow scrolling for long content */
+    }
+
+    #project-controls h3 {
+        font-size: 18px; /* Larger font size for better readability */
+        margin-bottom: 15px; /* Space below the title */
+        text-align: left; /* Align text to the left */
+    }
+
+    .project-item {
+        font-size: 16px; /* Increase font size for mobile */
+        padding: 10px 0; /* Add padding between items */
+        border-bottom: 1px solid rgba(207, 207, 207, 0.8); /* Add subtle dividers */
+        display: flex; /* Align items horizontally */
+        justify-content: space-between; /* Space between project number and name */
+
+    }
+
+    .project-number, .project-name {
+        font-size: 16px; /* Consistent font size */
+        font-family: Arial, sans-serif; /* Consistent font family */
+        text-align: left; /* Align text */
+    }
+
+    .project-number {
+        flex: 1; /* Adjust spacing for project number */
+    }
+
+    .project-name {
+        flex: 2; /* Adjust spacing for project name */
+        padding-left: 10px; /* Add spacing */
+    }
+
+    .project-item:hover {
+        background-color: #e6e6e6; /* Subtle hover effect for mobile */
+    }
+
+}
+
+/* === TERMS: make columns wider + move them right === */
+:root{
+  --terms-max: 1500px;                 /* overall page width */
+  --terms-measure: 62ch;               /* width of EACH text column (58–68ch) */
+  --terms-gap: 64px;                   /* space between title|col1|col2 */
+  --terms-title-col: 320px;            /* make the left title column wider -> pushes both text cols right */
+  --terms-side-pad: clamp(20px, 4vw, 80px); /* page side padding */
+}
+
+/* container (centered) */
+main.page-content.terms .content-wrap{
+  max-width: var(--terms-max);
+  margin: 0 auto;
+  padding: 0 var(--terms-side-pad);
+}
+
+/* grid: [title/date] | [left text] | [right text] */
+main.page-content.terms .terms-grid{
+  display: grid;
+  column-gap: var(--terms-gap);
+  grid-template-columns:
+    minmax(240px, var(--terms-title-col))  /* TITLE column (wider = pushes text cols right) */
+    minmax(40ch, var(--terms-measure))     /* LEFT text column (wider)  */
+    minmax(40ch, var(--terms-measure));    /* RIGHT text column (wider) */
+  align-items: start;
+}
+
+.page-content.terms{
+  color:#000000;
+  padding: calc(var(--h, var(--logo-h)) + 24px) var(--pad-x) calc(var(--footer-h) + 24px);
+  min-height: calc(100vh - var(--h, var(--logo-h)) - var(--footer-h));
+   font-family: Helvetica, Arial, sans-serif;  
+}
+
+.terms .content-wrap{
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.terms-grid{
+  display: grid;
+  grid-template-columns: minmax(220px, 50ch) 1fr 1fr; /* title | col1 | col2 */
+  gap: 32px 48px;
+  align-items: start;
+}
+
+.terms h1{
+  font-size: clamp(14px, 3vw, 14px);
+  line-height: 1.1;
+  margin: 0 0 8px 0;
+}
+
+.terms .effective-date{
+  margin: 6px 0 0 0;
+  font-size: 11px;
+  font-style: italic;
+  color:#6a6a6a;
+}
+
+.terms h3{
+  font-size: 11px;
+  margin: 18px 0 8px;
+}
+
+.terms p{
+  margin: 0 0 11px;
+  line-height: 1.6;
+  font-size: 11px;
+}
+
+.terms ul{
+  margin: 6px 0 11px 1.1rem;
+  padding: 0;
+  font-size: 11px;
+}
+.terms li{ margin: 4px 0; font-size: 11px;}
+
+
+/* Stack on small screens */
+@media (max-width: 980px){
+  .terms-grid{ grid-template-columns: 1fr; gap: 18px; }
+  .terms h1{ margin-bottom: 0; }
+}
+
+/* Justify body text in the Terms columns */
+.page-content.terms p,
+.page-content.terms li {
+  text-align: justify;
+  text-justify: inter-word;     /* nicer spacing where supported */
+  hyphens: auto;                /* better line breaks */
+  -webkit-hyphens: auto;
+  -ms-hyphens: auto;
+  overflow-wrap: break-word;
+}
+
+/* keep the final line left-aligned (optional) */
+.page-content.terms p { text-align-last: left; }
+
+/* on small screens, left-align for readability (optional) */
+@media (max-width: 640px){
+  .page-content.terms p,
+  .page-content.terms li { text-align: left; }
+}
+
+/* line above “Terms of Use” */
+.terms-grid > aside:first-child{
+  border-top: 2px solid #222;   /* line color/thickness */
+  padding-top: 12px;            /* space between line and the title */
+  padding-right:20px;
+}
+
+
+
+    </style>
+</head>
+
+
+
+
+
+<body>
+
+<footer class="sitios-footer" role="contentinfo" aria-label="Footer">
+  <div class="footer-bg" aria-hidden="true"></div>
+  <div class="f-inner">
+    <div class="f-left flush-left">
+      <img class="foot-copyright" src="ASSETS/SVG/COPYRIGHT.svg" alt="Copyright">
+    </div>
+
+    <div class="f-center"><!-- optional center content --></div>
+
+    <div class="f-right"><!-- optional right content --></div>
+  </div>
+</footer>
+    
+<header class="sitios-header" role="banner" aria-label="Main">
+  <!-- background sweep -->
+  <div class="header-bg" aria-hidden="true"></div>
+
+  <div class="h-inner">
+    <!-- LEFT: SITIOS logo + text (SVGs) -->
+    <a class="brand" href="/" aria-label="SITIOS home">
+      <img class="brand-icon" src="ASSETS/SVG/LOGO_SITIOS.svg" alt="index.html">
+
+      <img class="brand-text" src="ASSETS/SVG/SITIOS_TEXT.svg" alt="SITIOS">
+    </a>
+
+    <!-- divider between brand and tagline -->
+    <span class="v-sep left-sep" aria-hidden="true"></span>
+
+    <!-- CENTER: tagline as SVG -->
+    <div class="tagline-wrap">
+      <!-- export your tagline as an SVG: HEADER_TAGLINE.svg -->
+      <img class="tagline-svg" src="ASSETS/SVG/HEADER_TAGLINE.svg" alt="">
+    </div>
+
+    <!-- RIGHT: AACUPR + divider + TERMS (all SVGs) -->
+    <div class="right-side">
+      <a class="aac-logo" href="https://aac.uprrp.edu/" target="_blank" rel="noopener" aria-label="AACUPR">
+        <img src="ASSETS/SVG/LOGO_AACUPR.svg" alt="AAC UPR">
+      </a>
+      <span class="v-sep" aria-hidden="true"></span>
+       <a class="terms" href="termsofuse.html" aria-label="Terms of Use">
+  <img src="ASSETS/SVG/TERMS_OF_USE.svg" alt="Terms of Use">
+</a>
+    </div>
+  </div>
+</header>
+
+
+<main class="page-content terms" role="main">
+  <div class="content-wrap">
+    <div class="terms-grid">
+      <!-- Left title column -->
+      <aside>
+        <h1><b>Terms of Use</b></h1>
+        <p class="effective-date">Effective date: August 2025</p>
+      </aside>
+
+      <!-- Column 1 -->
+      <section>
+        <p>
+          SITIOS is an interactive platform documenting Puerto Rico’s modern
+          architectural heritage. By accessing or using this website, you
+          agree to its Terms of Use. If you do not agree, please do not use
+          the platform.
+        </p>
+
+        <h3><b>Purpose</b></h3>
+        <p>
+          The SITIOS Map is a non-commercial, educational, and research-based
+          tool that georeferences notable works of architecture in Puerto Rico.
+          It aims to improve public access to historical and archival
+          information preserved at the Archive of Architecture and Construction
+          of the University of Puerto Rico (AACUPR) and other verified sources.
+        </p>
+
+        <h3><b>You agree to</b></h3>
+        <ul>
+          <li>Use the platform solely for lawful, educational, research, and personal reference purposes.</li>
+          <li>Respect the integrity of the data by not altering, misrepresenting, or redistributing it without proper attribution.</li>
+          <li>Refrain from using SITIOS content for any commercial purposes without prior authorization from the copyright owner.</li>
+        </ul>
+
+        <h3><b>Intellectual Property</b></h3>
+        <ul>
+          <li>
+            All textual, photographic, cartographic content, and design elements
+            on the SITIOS Map and website are protected by copyright and
+            intellectual property laws. Most of the images displayed on this
+            platform have been digitized and reproduced with prior authorization
+            from the Architecture and Construction Archive of the School of
+            Architecture (AACUPR). Additionally, images from other cited sources
+            have been used exclusively for academic purposes under the “Fair Use
+            Act,” with proper credit given to their original repository.
+          </li>
+          <li>
+            Reproduction of any image on this platform is not permitted without
+            prior authorization. Anyone interested in reproducing the
+            information or images used on this platform should first verify the
+            copyright status of the documents or images they intend to publish
+            or use.
+          </li>
+          <li>
+            You may share or cite the map’s content only if you provide full and
+            clear attribution to “SITIOS – A Spatial Story of Puerto Rico’s
+            Modernization” and link back to the project site.
+          </li>
+        </ul>
+      </section>
+
+      <!-- Column 2 -->
+      <section>
+        <h3><b>Accuracy of Information</b></h3>
+        <p>
+          The research team of SITIOS strives to ensure that all information is
+          accurate and sourced from reputable archival and research materials.
+          The resulting map is intended only as a research and educational
+          resource and should not be used as the sole basis for legal,
+          architectural, or preservation decisions.
+        </p>
+
+        <h3><b>Third-Party Content and Links</b></h3>
+        <p>
+          The SITIOS Map and website may include external links or third-party
+          resources. These are provided for informational purposes only, and the
+          SITIOS team is not responsible for the content, policies, or
+          practices of third-party sites.
+        </p>
+
+        <h3><b>Limitation of Liability</b></h3>
+        <p>
+          The SITIOS team, AACUPR, and its collaborators shall not be held liable
+          for any damage or losses arising from the use or inability to use the
+          platform, including reliance on its content. All the material presented
+          is intended solely for academic purposes and the dissemination of
+          knowledge.
+        </p>
+
+        <h3><b>Changes to the Terms</b></h3>
+        <p>
+          We reserve the right to modify or update these Terms of Use at any time
+          without prior notice. Updated terms will be posted on this page with a
+          revised effective date. The “Effective date” above reflects the latest
+          version. Continued use after changes means you accept the updated Terms.
+        </p>
+
+        <h3><b>Contact</b></h3>
+        <p>
+          For questions or permission requests regarding the SITIOS Map, please
+          contact:<br>
+          Robin Planas: <a href="mailto:robin.planas@upr.edu">robin.planas@upr.edu</a><br>
+          School of Architecture, University of Puerto Rico, Río Piedras
+        </p>
+      </section>
+
+      
+    </div>
+  </div>
+</main>
+
+
+
+
+<script>
+
+  function syncHFVars(){
+    const h = document.querySelector('.sitios-header')?.clientHeight || 0;
+    document.documentElement.style.setProperty('--h', h + 'px');
+    if (window.map && map.resize) map.resize();
+  }
+  window.addEventListener('load', syncHFVars);
+  window.addEventListener('resize', syncHFVars);
+
+        
+    </script>
+</body>
+</html>
