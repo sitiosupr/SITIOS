@@ -17,36 +17,35 @@
         body {
             margin: 0;
             padding: 0;
-            height: auto;
-            min-height:100vh
+            display: flex;
+            height: 100vh;
         }
 
-        /* 2) Use ONE #map rule that reserves space for header + footer */
-#map{
-  position: fixed;
-  /* top = measured header height (set by your JS syncHFVars), bottom = footer height */
-  inset: var(--h, var(--logo-h)) 0 var(--footer-h) 0;
-  z-index: 0;        /* keep it behind header/footer */
-  /* remove older conflicting styles like flex-grow, height:100vh, position:relative */
-}
+        #map {
+            flex-grow: 1;
+            height: 100vh;
+            position: relative;
+            z-index: 1;
+    
+        }
 
-        /* Project list pinned between header and footer */
-#project-controls{
-  position: fixed;                 /* was absolute */
-  top:    calc(var(--h) + 12px);   /* sit below header height measured by syncHFVars() */
-  bottom: calc(var(--footer-h) + 12px); /* always clear the responsive footer */
-  left: 20px;
-  z-index: 2;
-
-  background: rgba(165, 164, 164, 0.90);
-  padding: 20px 30px 20px 20px;
-  border-radius: 5px;
-  max-width: 300px;
-  height: auto;                    /* let top/bottom define the height */
-  max-height: none;                /* don’t cap it; overflow handles the rest */
-  overflow-y: auto;
-}
-#project-controls.hidden{ display:none; }
+        #project-controls {
+            position: absolute;
+            bottom: 5%;
+            top: 8%; /* Prevents conflict with bottom alignment */
+            /* top: 20px; */
+            /* left: 10px; */
+            left: 20px;
+             z-index: 2;
+           background: rgba(165, 164, 164, 0.90);
+            /* padding: 15px; */
+            padding: 20px 30px 20px 20px; /* Matches filter-controls padding */
+            border-radius: 5px;
+            max-height: auto; 
+            /* Set the height */
+            max-width: 300px; /* Limit the width of the project box */
+            overflow-y: auto; 
+        }
 
         #project-controls.hidden {
             display: none; /* Hide project controls when the hidden class is applied */
@@ -253,12 +252,11 @@ select {
     height: auto; /* Maintain aspect ratio */
 }
 
-/* 3) Make sure overlays/controls don’t collide with the footer */
-#map-overlay-bottom-right{
-  position: fixed;   /* was absolute, which attached to <body> unpredictably */
-  right: 50px;
-  bottom: calc(var(--footer-h) + 6px); /* sit just above footer band */
-  z-index: 4;
+#map-overlay-bottom-right {
+    position: absolute;
+    bottom: 45px; /* Adjust the position as needed */
+    right: 50px; /* Adjust the position as needed */
+    z-index: 4; /* Ensure it's above the map and other elements */
 }
 
 #map-overlay-bottom-right img {
@@ -274,6 +272,7 @@ select {
 
 /* lift ONLY the controls on the bottom-right */
 .mapboxgl-ctrl-bottom-right .mapboxgl-ctrl{
+  margin-bottom: calc(var(--footer-h) + var(--ctrl-gap));
   margin-right: 20px; /* optional */
 }
 
@@ -400,9 +399,7 @@ select {
 
 /* Responsive */
 @media (max-width: 900px){
-  :root{ --logo-h: clamp(52px, 7vh, 72px);   --brand-text-scale: 0.66;/* shrink the SITIOS text a bit */
-  --brand-gap: 6px; 
-}
+  :root{ --logo-h: clamp(52px, 7vh, 72px); }
 }
 @media (max-width: 680px){
   :root{ --logo-h: 48px; }
@@ -410,33 +407,7 @@ select {
   .h-inner{ grid-template-columns: auto 1fr auto; }
 }
 
-/* Phone only: hide AACUPR + Terms, remove the divider, and collapse spacing */
-@media (max-width: 680px){
-  .right-side .aac-logo,
-  .right-side .terms,
-  .right-side > .v-sep{
-    display: none !important;
-  }
 
-  /* keep the right cluster from reserving space */
-  .right-side{
-    transform: none;   /* cancels the big desktop nudge */
-    gap: 0;
-    margin-right: 0;
-  }
-}
-
-
-@media (max-width: 680px){
-  :root { --ctrl-gap: 15px; } /* tweak: 8–20px */
-
-  .mapboxgl-ctrl-bottom-right .mapboxgl-ctrl{
-    /* sits above your responsive footer + a small gap + iOS safe area */
-    margin-bottom: calc(var(--footer-h) + var(--ctrl-gap) + env(safe-area-inset-bottom, 0px));
-    /* optional nudge from the right edge */
-    /* margin-right: 14px; */
-  }
-}
 
 /* 1) Never allow horizontal scrolling (prevents the bar overlaying the footer) */
 html, body {
@@ -452,22 +423,34 @@ html, body {
 .h-inner, .f-inner { max-width: min(1400px, 100vw); }
 
 /* ===== FOOTER (with COPYRIGHT on the left) ===== */
-
-
 :root{
-  --cpyrt-scale: 0.3;   /* 0.30 = 30% of footer height */
-  --cpyrt-left: 12px;   /* pick the exact pixel you want on YOUR screen */
+  --footer-h: 39px;                 /* footer band height */
+  --footer-pad-x: var(--pad-x);     /* match header padding */
+  --footer-shift-y:-2px;
 
+  /* left-side COPYRIGHT controls */
+  --cpyrt-scale: 0.22;              /* size of COPYRIGHT.svg (0.80–1.05) */
+  --cpyrt-shift-y: -1px;            /* vertical nudge; negative = up */
+  --foot-left-gutter: 14px;          /* distance from screen edge */
 }
 
 .sitios-footer{
   position: fixed;
   left: 0; right: 0; bottom: 0;
   height: var(--footer-h);            /* e.g. 48px */
-  background-color: #000000;          /* solid black base */
+  background-color: transparent;          /* solid black base */
   border-top: 0;                      /* let the SVG carry the look */
   overflow: hidden;
   z-index: 1000;
+}
+/* Draw the FOOTER.svg only DOWNWARD by ~2px (no overdraw on top) */
+.sitios-footer .footer-bg{
+  position: absolute;
+  left: 0; right: 0;
+  top: 0;                 /* keep the top edge aligned with the band */
+  bottom: -2px;           /* extend only below the band to kill the bottom seam */
+  background: url("ASSETS/SVG/FOOTER.svg") left bottom / 100% 100% no-repeat;
+  pointer-events: none;
 }
 .sitios-footer .f-inner{
   position: relative; height:100%;
@@ -485,31 +468,17 @@ html, body {
   );
 }
 
-
-/* Fixed position on the screen, centered vertically in the footer */
+/* scale + vertical nudge for COPYRIGHT.svg */
 .foot-copyright{
-  position: fixed;                     /* relative to viewport */
-  left: var(--cpyrt-left);             /* fixed pixel offset you chose */
-  bottom: calc((var(--footer-h) - (var(--footer-h) * var(--cpyrt-scale))) / 2);
-  height: calc(var(--footer-h) * var(--cpyrt-scale));  /* keep your existing scale */
-  width: auto;
-  z-index: 1001;                       /* above the footer bg */
+  height: calc(var(--footer-h) * var(--cpyrt-scale));
+  width: auto; display:block;
+  position: relative; top: var(--cpyrt-shift-y);
 }
-
 
 #map{
   position: fixed;
   inset: var(--h, var(--logo-h)) 0 var(--footer-h) 0;
 }
-
-
-@media (max-width: 680px){
-  :root{ --cpyrt-left: 0px;
---cpyrt-scale: 200px }  /* tighter on phones */
-}
-
-
-
 
 @media screen and (max-width: 768px) {
     body {
@@ -526,20 +495,20 @@ html, body {
     }
 
     .toggle-filter-button {
-        top: 170px; /* Move it lower */
+        top: 130px; /* Move it lower */
     }
 
     .toggle-polygon-button {
-        top: 210px; /* Adjust further down */
+        top: 170px; /* Adjust further down */
     }
 
     .toggle-project-button {
-        top: 130px; /* Keep consistent spacing */
+        top: 90px; /* Keep consistent spacing */
     }
 
     #map-overlay-bottom-right {
-        bottom: 20px; /* Move it slightly higher from the bottom */
-        right: 60px; /* Adjust it closer to the right edge */
+        bottom: 0px; /* Move it slightly higher from the bottom */
+        right: 40px; /* Adjust it closer to the right edge */
     }
 
     #map-overlay-bottom-right img {
@@ -1665,42 +1634,7 @@ document.getElementById('toggle-project').addEventListener('click', function() {
   window.addEventListener('load', syncHFVars);
   window.addEventListener('resize', syncHFVars);
 
-
-  // Dynamically size the footer to match the intrinsic ratio of FOOTER.svg
-  function computeFooterHeight() {
-    const img = new Image();
-    img.src = 'ASSETS/SVG/FOOTER.svg';
-
-    img.onload = () => {
-      // Height = viewport width * (svg naturalHeight / naturalWidth)
-      const ratio = img.naturalHeight / img.naturalWidth;
-      // FOOTER.svg spans full viewport width in your .footer-bg (background-size: 100% 100%)
-      const vw = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
-
-      // Optional: small extra pixels to hide any bottom seam you compensate with bottom:-2px
-      const h = Math.round(vw * ratio);
-
-      // Push to CSS variable used by #map insets and Mapbox control lifts
-      document.documentElement.style.setProperty('--footer-h', h + 'px');
-
-      // Also set the footer element’s explicit height so the background fills perfectly
-      const foot = document.querySelector('.sitios-footer');
-      if (foot) foot.style.height = h + 'px';
-
-      // Map needs a resize so it re-computes its viewport insets
-      if (window.map && map.resize) map.resize();
-    };
-  }
-
-  // Recompute on load and resize
-  window.addEventListener('load', computeFooterHeight, { passive: true });
-  window.addEventListener('resize', computeFooterHeight, { passive: true });
-    
-
-  // Kill broken images in the header (prevents the broken-image icon on mobile)
-document.querySelectorAll('.sitios-header img').forEach(img => {
-  img.onerror = () => img.remove();
-});
+        
     </script>
 </body>
 </html>
