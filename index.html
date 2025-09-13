@@ -707,7 +707,7 @@ font-family: Helvetica, Arial, sans-serif;
 </div> -->
 
 <div id="map-overlay-bottom-right">
-    <img src="ASSETS\legend.png" alt="Second Overlay Image">
+    <img src="ASSETS\SVG\LEYENDA.svg" alt="Second Overlay Image">
 </div>
 
 
@@ -1152,6 +1152,23 @@ if (geocoderInput) {
                     'line-width': .25
                 }
             });
+
+
+                 map.addSource('MUNICIPIOS-data', {
+                    'type': 'geojson',
+                    'data': 'https://storage.googleapis.com/sitios_bucket/MUNICIPIOS.geojson'
+                });
+
+                map.addLayer({
+                    'id': 'MUNICIPIOS-layer',
+                    'type': 'line',
+                    'source': 'MUNICIPIOS-data',
+                    'paint': {
+                         'line-color': '#CCCCCC', // Black outline for polygons
+                    'line-width': .5
+                    }
+                });
+            
 
             map.addSource('E_D-data', {
                     'type': 'geojson',
