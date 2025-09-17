@@ -267,6 +267,30 @@ select {
 
 }
 
+
+/* Inset key plan */
+#inset-map{
+  position: fixed;
+  right: 75px;
+  bottom: calc(var(--footer-h) + 45px);
+  width: 100px;
+  height: 40px;
+  z-index: 1;             /* above the main map & overlays */
+}
+
+/* Target the inset map's Mapbox logo and hide it */
+#inset-map .mapboxgl-ctrl-logo {
+  display: none !important;    /* completely hides it */
+  /* or if you prefer to paint it black instead:
+  background: black !important;
+  width: 100% !important;
+  height: 100% !important;
+  */
+}
+
+
+
+
 :root{
   --ctrl-gap: 60px;        /* space above the footer for RIGHT controls */
   --logo-gap: 0px;         /* space above the footer for the Mapbox logo */
@@ -640,6 +664,10 @@ html, body {
     </style>
 </head>
 <body>
+
+    <!-- Inset / Key Plan -->
+<div id="inset-map" aria-label="Key plan of Puerto Rico"></div>
+
 
 <footer class="sitios-footer" role="contentinfo" aria-label="Footer">
   <div class="footer-bg" aria-hidden="true"></div>
@@ -1719,6 +1747,113 @@ document.getElementById('toggle-project').addEventListener('click', function() {
 document.querySelectorAll('.sitios-header img').forEach(img => {
   img.onerror = () => img.remove();
 });
+
+
+// --- Inset / Key Plan of Puerto Rico (labels OFF, no municipality lines) ---
+const INSET_STYLE_MINIMAL = {
+  version: 8,
+  name: "inset-minimal",
+  sources: {},
+  layers: [
+  ],
+  glyphs: "mapbox://fonts/mapbox/{fontstack}/{range}.pbf" // required field; no labels added
+};
+
+const inset = new mapboxgl.Map({
+  container: 'inset-map',
+  style: INSET_STYLE_MINIMAL,      // <- minimal style (no labels)
+  center: [-66.4, 18.22],
+  zoom: 5.2,
+  interactive: false,
+  attributionControl: false        // <--- removes the Mapbox logo
+});
+
+
+
+// Build a bbox polygon from current main map bounds
+function boundsToPolygon(b) {
+  const sw = b.getSouthWest(), ne = b.getNorthEast();
+  return {
+    type: "Feature",
+    geometry: {
+      type: "Polygon",
+      coordinates: [[
+        [sw.lng, sw.lat],
+        [ne.lng, sw.lat],
+        [ne.lng, ne.lat],
+        [sw.lng, ne.lat],
+        [sw.lng, sw.lat]
+      ]]
+    },
+    properties: {}
+  };
+}
+
+inset.on('load', () => {
+  // Use your MUNICIPIOS polygons only as a SOLID FILL (no strokes) to get a clean island silhouette
+  inset.addSource('pr-land', {
+    type: 'geojson',
+    data: 'https://storage.googleapis.com/sitios_bucket/MUNICIPIOS.geojson'
+  });
+  inset.addLayer({
+    id: 'pr-land-fill',
+    type: 'fill',
+    source: 'pr-land',
+    paint: {
+      'fill-color': '#43464b',   // light land color
+      'fill-opacity': 1
+    }
+  });
+
+  // BBox of main map viewport (updates live)
+  inset.addSource('inset-bbox', { type: 'geojson', data: boundsToPolygon(map.getBounds()) });
+  inset.addLayer({
+    id: 'inset-bbox-fill',
+    type: 'fill',
+    source: 'inset-bbox',
+    paint: { 'fill-color': '#ff0000', 'fill-opacity': .2 }
+  });
+  inset.addLayer({
+    id: 'inset-bbox-outline',
+    type: 'line',
+    source: 'inset-bbox',
+    paint: { 'line-color': '#ff0000', 'line-width': 1.25 }
+  });
+
+  // Optional: tiny center dot
+  inset.addSource('inset-center', {
+    type: 'geojson',
+    data: { type: 'FeatureCollection', features: [] }
+  });
+  inset.addLayer({
+    id: 'inset-center-point',
+    type: 'circle',
+    source: 'inset-center',
+    paint: { 'circle-radius': 3, 'circle-color': '#ff0000', 'circle-opacity':0 }
+  });
+
+  updateInset();
+});
+
+// Sync inset to main map
+function updateInset(){
+  if (!inset.getSource('inset-bbox')) return;
+  const b = map.getBounds();
+  inset.getSource('inset-bbox').setData(boundsToPolygon(b));
+
+  const c = map.getCenter();
+  inset.getSource('inset-center').setData({
+    type:'FeatureCollection',
+    features:[{ type:'Feature', geometry:{ type:'Point', coordinates:[c.lng, c.lat] }, properties:{} }]
+  });
+}
+
+map.on('move', updateInset);
+map.on('moveend', updateInset);
+
+// Keep inset sized correctly when header/footer recompute
+window.addEventListener('resize', () => inset && inset.resize());
+
     </script>
 </body>
 </html>
